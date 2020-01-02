@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Cascais 360</string>
+
+    <string name="mycascais_email_phone">E-MAIL / UTILIZADOR</string>
+    <string name="mycascais_password">PALAVRA PASSE</string>
+    <string name="mycascais_re_password">CONFIRMAR PALAVRA PASSE</string>
+
+    <string name="mycascais_email">E-MAIL</string>
+    <string name="mycascais_nif">NIF</string>
+    <string name="mycascais_phone">TELEMÓVEL</string>
+    <string name="mycascais_full_name">NOME COMPLETO</string>
+    <string name="mycascais_full_birthday">DATA ANIVERSÁRIO</string>
+
+    <string name="mycascais_agree_terms">concordo com os </string>
+
+    <string name="mycascais_save">GUARDAR</string>
+    <string name="mycascais_confirm">CONFIRMAR</string>
+    <string name="mycascais_next">SEGUINTE</string>
+
+    <string name="mycascais_agree_terms_policy"><u>termos e condições.</u></string>
+
+</resources>

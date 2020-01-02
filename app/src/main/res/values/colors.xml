@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorBlack">#000</color>
+    <color name="colorWhite">#FFF</color>
+
+    <color name="colorSearchBlock">#BEBEBE</color>
+
+    <color name="mycascaisHeader">#DFE1DF</color>
+
+    <color name="black_overlay">#22000000</color>
+
+    <color name="colorHit">#fd7062</color>
+
+    <color name="colorInactive">#BEBEBE</color>
+</resources>

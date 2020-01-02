@@ -1,0 +1,30 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/list_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
+        <TextView
+            android:id="@+id/list_item_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorHit"
+            android:fontFamily="@font/montserrat_regular"
+            android:textSize="14dp"
+            android:text="29 MAR A 30 MAR ***"
+            android:layout_marginTop="10dp"/>
+        <TextView
+            android:id="@+id/list_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:fontFamily="@font/montserrat_bold"
+            android:textSize="15dp"
+            android:text="Miguel Araújo | Casca de Noz ***"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!--androidx.cardview.widget.CardView-->
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:paddingHorizontal="18dp"
+            android:layout_gravity="center"
+            app:cardElevation="0dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp"
+                android:orientation="vertical">
+            <ImageView
+                android:id="@+id/frame_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                android:scaleType="fitXY"/>
+            <TextView
+                android:id="@+id/frame_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorHit"
+                android:fontFamily="@font/montserrat_regular"
+                android:textSize="14sp"
+                android:text="29 MAR A 30 MAR ***"
+                android:layout_marginTop="10sp"/>
+            <!--Route briefing-->
+            <LinearLayout
+                android:id="@+id/route_briefing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/event_distance_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_hike"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_route_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.0 Km ***"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/event_difficulty_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_level"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_route_difficulty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="Difícil ***"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:orientation="vertical">
+                </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/frame_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/montserrat_bold"
+                android:textSize="15sp"
+                android:text="Miguel Araújo | Casca de Noz ***"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+</LinearLayout>

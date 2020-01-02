@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M5,11L19,11A2,2 0,0 1,21 13L21,20A2,2 0,0 1,19 22L5,22A2,2 0,0 1,3 20L3,13A2,2 0,0 1,5 11z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1"
+      android:fillColor="#808080"
+      android:strokeColor="#808080"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M7,11V7a5,5 0,0 1,10 0v4"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1"
+      android:fillColor="#00FFFFFF"
+      android:strokeColor="#808080"
+      android:strokeLineCap="round"/>
+</vector>
+
+
+    <!--triangulo-->
+<!--<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400px"
+    android:height="400px"
+    android:viewportWidth="400"
+    android:viewportHeight="400">
+  <path
+      android:fillColor="#0000FF"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="4"
+      android:pathData="M100,100 L300,100 L200,300 z"/>
+</vector>-->
