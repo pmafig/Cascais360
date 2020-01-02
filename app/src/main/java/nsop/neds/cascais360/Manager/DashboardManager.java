@@ -466,15 +466,11 @@ public class DashboardManager extends AsyncTask<String, Void, List<LayoutBlock>>
             }
 
             views.add(category);
-
-            /*flipper.addView(category);
-            flipper.setInAnimation(context, android.R.anim.slide_in_left);
-            flipper.setOutAnimation(context, android.R.anim.slide_out_right);*/
-
         }
 
 
-        viewPager.setAdapter(new SliderTwoPageAdapter(views, context));
+        SliderTwoPageAdapter pageAdapter = new SliderTwoPageAdapter(views);
+        viewPager.setAdapter(pageAdapter);
 
         final int total_dots =  node_list.size()/2 + (node_list.size() % 2 > 0 ? 1 : 0) + 1;
 

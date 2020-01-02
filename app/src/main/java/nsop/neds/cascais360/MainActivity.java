@@ -1,6 +1,7 @@
 package nsop.neds.cascais360;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
