@@ -15,6 +15,8 @@ public class Settings {
 
     public static int dotsMargin = 5;
 
+    public static int spotLightBottomMargin = 25;
+
     public static String resourcesChecksum;
 
 

@@ -1,8 +1,10 @@
 package nsop.neds.cascais360.Manager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.util.Log;
@@ -40,6 +42,7 @@ import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
+import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Entities.WeatherEntity;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
@@ -396,7 +399,6 @@ public class DashboardManager extends AsyncTask<String, Void, List<LayoutBlock>>
                     @Override
                     public void onClick(View v) {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
                         vibe.vibrate(100);
 
                         /*Intent event = new Intent(context, EventActivity.class);
@@ -408,13 +410,48 @@ public class DashboardManager extends AsyncTask<String, Void, List<LayoutBlock>>
             }
 
             TextView frameDate = frame.findViewById(R.id.frame_date);
-            frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            LinearLayout routeInfo = frame.findViewById(R.id.route_briefing);
 
+            if(f.SubTitle.size() > 1){
+                routeInfo.setVisibility(View.VISIBLE);
+                frameDate.setVisibility(View.GONE);
+
+                for (SubTitle st: f.SubTitle) {
+
+                    if(st.Icon != null) {
+                        switch (st.Icon) {
+                            case "Hike":
+                                LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                w_distance.setVisibility(View.VISIBLE);
+
+                                TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                t_distance.setText(st.Text);
+                                break;
+                            case "Level":
+                                LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                w_level.setVisibility(View.VISIBLE);
+
+                                TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                t_level.setText(st.Text);
+                                break;
+                        }
+                    }
+                }
+
+            }else {
+                frameDate.setVisibility(View.VISIBLE);
+                routeInfo.setVisibility(View.GONE);
+
+                frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                frameDate.setText(f.SubTitle.get(0).Text);
+            }
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-            layoutParams.setMargins(0, 0, 0, 100);
+            int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+            layoutParams.setMargins(0, 0, 0, px);
 
             views_wrapper.addView(frame, layoutParams);
         }
