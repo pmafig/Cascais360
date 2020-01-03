@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import nsop.neds.cascais360.Entities.BlockEntity;
 import nsop.neds.cascais360.Entities.DashboardEntity;
@@ -314,7 +315,10 @@ public class DashboardManager extends AsyncTask<String, Void, List<LayoutBlock>>
             dots[d].setColorFilter(Color.parseColor(Settings.colors.Gray2));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(12, 0, 12, 0);
+
+            int sp = Math.round(Settings.dotsMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+            params.setMargins(sp, 0, sp, 0);
 
             sliderdots.addView(dots[d], params);
         }
@@ -507,7 +511,10 @@ public class DashboardManager extends AsyncTask<String, Void, List<LayoutBlock>>
             dots[d].setColorFilter(Color.parseColor(Settings.colors.Gray2));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(12, 0, 12, 0);
+
+            int sp = Math.round(Settings.dotsMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+            params.setMargins(sp, 0, sp, 0);
 
             sliderdots.addView(dots[d], params);
         }

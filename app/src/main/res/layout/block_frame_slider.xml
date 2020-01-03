@@ -27,10 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <androidx.viewpager.widget.ViewPager
+            <nsop.neds.cascais360.HeightWrappingViewPager
                 android:id="@+id/sliderPager"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"/>
+                android:layout_height="wrap_content"/>
+            <!--<androidx.viewpager.widget.ViewPager
+                android:id="@+id/sliderPager"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>-->
         </LinearLayout>
 
         <LinearLayout

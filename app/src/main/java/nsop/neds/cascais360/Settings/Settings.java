@@ -13,6 +13,8 @@ public class Settings {
 
     public static int timeout = 2000;
 
+    public static int dotsMargin = 5;
+
     public static String resourcesChecksum;
 
 
