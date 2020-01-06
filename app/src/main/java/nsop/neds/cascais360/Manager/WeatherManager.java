@@ -4,29 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import nsop.neds.cascais360.Entities.WeatherEntity;
-import nsop.neds.cascais360.R;
 
 public class WeatherManager extends AsyncTask<String, Void, WeatherEntity> {
 
     Context context;
-    //NavigationView navigation;
-
 
     WeatherEntity weather;
 
     public WeatherManager(Context context){
         this.context = context;
-        //this.navigation = navigationView;
     }
 
     @Override
@@ -47,7 +38,7 @@ public class WeatherManager extends AsyncTask<String, Void, WeatherEntity> {
 
             //region Weather Constructor
             try {
-                TextView currentTemp = navigation.findViewById(R.id.currentTemperature);
+                TextView currentTemp = context.findViewById(R.id.currentTemperature);
                 currentTemp.setText(weather.getCurrent());
 
                 TextView infoMinMax = navigation.findViewById(R.id.infoMinMax);

@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <androidx.appcompat.widget.Toolbar android:id="@+id/toolbar"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/toolbar_border_bottom"
@@ -37,14 +38,35 @@
                     android:background="@drawable/ic_action_name"/>-->
 
                 <ImageButton
+                    android:id="@+id/menu_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="15dp"
                     android:background="@drawable/ic_action_name"/>
-            </RelativeLayout>
 
+                <LinearLayout
+                    android:id="@+id/menu_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="5dp">
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_left_black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:textSize="12sp"
+                        android:text="voltar"/>
+                </LinearLayout>
+
+            </RelativeLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
