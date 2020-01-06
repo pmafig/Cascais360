@@ -93,6 +93,7 @@
                     <Button
                         android:id="@+id/menu_button_login"
                         style="@style/MenuItem"
+                        android:onClick="login"
                         android:text="login" />
                 </LinearLayout>
 
