@@ -1,6 +1,56 @@
 package nsop.neds.cascais360.Manager;
 
-public class MenuBarManager {
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+
+import androidx.appcompat.widget.Toolbar;
+
+import nsop.neds.cascais360.LoginActivity;
+import nsop.neds.cascais360.MainActivity;
+import nsop.neds.cascais360.R;
+
+public class MenuManager {
+
+    Toolbar toolbar;
+
+    public MenuManager(final Context context, Toolbar toolbar, final LinearLayout menuFragment){
+        this.toolbar = toolbar;
+
+        final ImageButton menu = toolbar.findViewById(R.id.menu_button);
+
+        menu.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceType")
+            @Override
+            public void onClick(View v) {
+                if (menuFragment.getVisibility() == View.VISIBLE){
+                    menuFragment.setVisibility(View.GONE);
+                    menu.setBackground(context.getDrawable(R.drawable.ic_action_name));
+                }
+                else {
+                    menu.setBackground(context.getDrawable(R.drawable.ic_close));
+                    menuFragment.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, LoginActivity.class));
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_home).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, MainActivity.class));
+            }
+        });
+    }
 
     private static SessionManager sm;
 

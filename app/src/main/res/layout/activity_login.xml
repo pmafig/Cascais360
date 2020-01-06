@@ -1,43 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <include layout="@layout/app_bar"/>
+
+    <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
+
+    <RelativeLayout
+        android:id="@+id/fragment_menu"
+        android:background="#00000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:visibility="gone"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:background="@color/black_overlay">
 
-        <!--<include
-            layout="@layout/app_bar_mycascais"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />-->
-
-    </LinearLayout>
-
-    <!--<android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"
-        android:block_frame_slider="@style/AppTheme.MenuTextStyle"
-        android:paddingTop="20dp">
-
-        <LinearLayout
-            android:id="@+id/weather"
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
-            <include layout="@layout/content_weather" />
-        </LinearLayout>
+            android:indeterminate="true" />
+    </RelativeLayout>
 
-    </android.support.design.widget.NavigationView>-->
-</android.support.v4.widget.DrawerLayout>
+
+    <include layout="@layout/content_login"/>
+
+</LinearLayout>

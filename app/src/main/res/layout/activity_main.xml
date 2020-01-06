@@ -9,6 +9,7 @@
     <include layout="@layout/app_bar"/>
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
+
     <RelativeLayout
         android:id="@+id/fragment_menu"
         android:background="#00000000"

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +41,7 @@
 
         </LinearLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
@@ -68,7 +66,7 @@
                 <!--android:text="pmafig@gmail.com"-->
 
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/accountName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -82,7 +80,7 @@
                     android:inputType="text"
                     android:background="@drawable/mycascais_edittext"/>
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/accountPassword"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
@@ -160,8 +158,8 @@
                 <!--Fazer registo - cor preta-->
 
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </ScrollView>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

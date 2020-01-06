@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -22,9 +23,12 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
+import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
+import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.ReportManager;
+import nsop.neds.cascais360.WebApi.WebApiCalls;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 import nsop.neds.cascais360.WebApi.WebApiMessages;
 
@@ -51,9 +55,15 @@ public class LoginActivity extends AppCompatActivity {
         appSignatureHelper.getAppSignatures();
 
         setContentView(R.layout.activity_login);
+
+
+        new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
+
+        new MenuManager(this, (Toolbar) findViewById(R.id.toolbar), (LinearLayout) findViewById(R.id.menu));
+
         //Toolbar toolbar = findViewById(R.id.toolbar);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        //DrawerLayout drawer = findViewById(R.id.drawer_layout);
         //NavigationView navigationView = findViewById(R.id.nav_view);
         //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -67,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         title.setTextColor(Color.parseColor(Settings.color));
         title.setText(R.string.title_activity_mycascais);*/
 
-        LinearLayout header = findViewById(R.id.login_header);
+        /*LinearLayout header = findViewById(R.id.login_header);
         header.setBackgroundColor(Color.parseColor(Settings.colors.Gray1));
 
         Button logon = findViewById(R.id.logon);
@@ -104,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
         if (mAuthTokenType == null)
-            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
+            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;*/
 
         //MenuBarManager.CallWeather(this, (NavigationView) findViewById(R.id.nav_view));
     }
