@@ -34,12 +34,14 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAllCaps">true</item>
         <!--<item name="android:textSize">12sp</item>-->
-        <item name="android:paddingLeft">20dp</item>
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:fontFamily">@font/montserrat_light</item>
         <item name="android:textColor">@color/colorBlack</item>
         <item name="android:drawablePadding">10dp</item>
+        <item name="android:background">@drawable/ic_menu_item_button_state</item>
+        <item name="android:textAlignment">viewStart</item>
         <!--<item name="android:textColorHint">#50FFFFFF</item>-->
     </style>
 
@@ -47,8 +49,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:background">@drawable/menu_border_bottom</item>
     </style>
 </resources>

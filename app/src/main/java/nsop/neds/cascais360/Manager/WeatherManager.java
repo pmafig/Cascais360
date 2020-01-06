@@ -4,69 +4,72 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import nsop.neds.cascais360.Entities.WeatherEntity;
+import java.net.URISyntaxException;
+import java.util.List;
 
-public class WeatherManager extends AsyncTask<String, Void, WeatherEntity> {
+import nsop.neds.cascais360.Entities.Json.LayoutBlock;
+import nsop.neds.cascais360.Entities.Json.Weather;
+import nsop.neds.cascais360.Entities.WeatherEntity;
+import nsop.neds.cascais360.R;
+
+public class WeatherManager extends AsyncTask<String, Void, Weather> {
 
     Context context;
+    LinearLayout weartherContent;
 
     WeatherEntity weather;
 
-    public WeatherManager(Context context){
+    public WeatherManager(Context context, LinearLayout weartherContent){
         this.context = context;
+        this.weartherContent = weartherContent;
     }
 
     @Override
-    protected WeatherEntity doInBackground(String... strings) {
+    protected Weather doInBackground(String... strings) {
         try {
-            this.weather = setWeather(strings[0]);
+            return setWeather(strings[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return this.weather;
+        return null;
     }
 
     @Override
-    protected void onPostExecute(WeatherEntity weather) {
+    protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
 
-        /*try {
+        TextView currentTemp = weartherContent.findViewById(R.id.currentTemperature);
+        currentTemp.setText(String.valueOf(weather.Current));
 
-            //region Weather Constructor
-            try {
-                TextView currentTemp = context.findViewById(R.id.currentTemperature);
-                currentTemp.setText(weather.getCurrent());
+        TextView infoMinMax = weartherContent.findViewById(R.id.infoMinMax);
+        infoMinMax.setText(String.format("%dº | %dº", weather.Min, weather.Max));
 
-                TextView infoMinMax = navigation.findViewById(R.id.infoMinMax);
-                infoMinMax.setText(String.format("%dº | %dº", weather.getMin(), weather.getMax()));
+        ImageView iconTemp = weartherContent.findViewById(R.id.iconTemperature);
 
-                ImageView iconTemp = navigation.findViewById(R.id.iconTemperature);
+        Drawable icon = null;
+        try {
 
-                Drawable icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
+            String i = weather.getIcon();
 
-                icon.setTint(context.getResources().getColor(R.color.colorBlack));
+            icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
 
-                iconTemp.setImageDrawable(icon);
-
-            }catch (Exception e){
-                LinearLayout infoTemp = navigation.findViewById(R.id.weather);
-                infoTemp.setVisibility(View.GONE);
-            }
-
-        } catch (Exception e) {
-             Log.e("Error", e.getMessage());
-            context.startActivity(new Intent(context, NoServiceActivity.class));
-        }*/
+            iconTemp.setImageDrawable(icon);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 
-    private WeatherEntity setWeather(String data){
-
-        WeatherEntity weather = null;
+    private Weather setWeather(String data){
 
         try {
             JSONObject response = CommonManager.getResponseData(data);
@@ -76,14 +79,14 @@ public class WeatherManager extends AsyncTask<String, Void, WeatherEntity> {
 
                 JSONObject temp = responseData.getJSONObject("Data");
 
-                weather = new WeatherEntity(temp.getString("Current"), temp.getInt("Min"), temp.getInt("Max"), temp.getString("Text"), temp.getString("Icon"));
+                Weather weather = new Gson().fromJson(temp.toString(), Weather.class);
+
+                return weather;
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        }catch (Exception e){
-
         }
 
-        return weather;
+        return null;
     }
 }

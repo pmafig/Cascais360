@@ -18,10 +18,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import nsop.neds.cascais360.Manager.DashboardManager;
+import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 
-public class MainActivity extends AppCompatActivity implements MenuFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements MenuFragment.OnFr
         new DashboardManager(this,
                 (LinearLayout) findViewById(R.id.main_content), (RelativeLayout) findViewById(R.id.loadingPanel)
         ).execute(WebApiCalls.getDashBoard());
+
+        new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -73,11 +76,6 @@ public class MainActivity extends AppCompatActivity implements MenuFragment.OnFr
 
             }
         });
-
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
 
     }
 }

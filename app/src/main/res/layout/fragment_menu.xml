@@ -34,6 +34,7 @@
 
                     <LinearLayout
                         android:id="@+id/user_loggedon_header"
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -89,41 +90,42 @@
 
                 <LinearLayout
                     style="@style/MenuSplit">
-                    <TextView
+                    <Button
+                        android:id="@+id/menu_button_login"
                         style="@style/MenuItem"
                         android:text="login" />
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/MenuSplit">
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="início" />
 
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="agenda" />
 
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="visitar" />
 
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="rotas" />
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/MenuSplit">
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="pesquisar" />
 
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="calendario" />
 
-                    <TextView
+                    <Button
                         style="@style/MenuItem"
                         android:text="mapa" />
                 </LinearLayout>
@@ -143,9 +145,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom">
             <LinearLayout
+                android:id="@+id/wearther"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="0dp"
+                android:paddingVertical="15dp"
                 android:orientation="vertical"
                 android:paddingLeft="15dp"
                 tools:ignore="MissingConstraints">
@@ -166,8 +169,8 @@
                     <TableRow>
                         <ImageView
                             android:id="@+id/iconTemperature"
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_column="0" />
                         <LinearLayout
                             android:layout_width="wrap_content"
