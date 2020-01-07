@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".RegisterActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="30dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="true"
+                android:hint="@string/mycascais_email"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:drawableLeft="@drawable/ic_at"
+                android:drawablePadding="11dp"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountNif"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="true"
+                android:hint="@string/mycascais_nif"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="5dp"
+                android:drawableLeft="@drawable/ic_user"
+                android:drawablePadding="5dp"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountPhone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="true"
+                android:hint="@string/mycascais_phone"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:drawableLeft="@drawable/ic_phone"
+                android:drawablePadding="11dp"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="true"
+                android:hint="@string/mycascais_full_name"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="5dp"
+                android:drawableLeft="@drawable/ic_user"
+                android:drawablePadding="5dp"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountPassword"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cursorVisible="true"
+                android:drawablePadding="11dp"
+                android:hint="@string/mycascais_password"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:drawableStart="@drawable/ic_locker"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountRePassword"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cursorVisible="true"
+                android:drawablePadding="11dp"
+                android:hint="@string/mycascais_password"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                android:drawableStart="@drawable/ic_locker"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <!--<LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/pass_contains_size_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entre 9 e 32 caracteres"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/pass_contains_uppercase_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Uma letra maiúscula"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/pass_contains_lowercase_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Uma letra minúscula"
+                    android:textSize="15dp" />
+                <TextView
+                    android:id="@+id/pass_contains_number_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Um número"
+                    android:textSize="15dp" />
+                <TextView
+                    android:id="@+id/pass_contains_specialchar_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Um caractere especial (opcional)"
+                    android:textSize="15dp" />
+            </LinearLayout>-->
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <CheckBox
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/accountCheckboxAgreement"
+                    android:text="@string/mycascais_agree_terms" />
+
+                <TextView
+                    android:id="@+id/accountPolicyPrivacy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="0dp"
+                    android:clickable="true"
+                    android:text="@string/mycascais_agree_terms_policy" />
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/createAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingVertical="15dp"
+                android:text="CRIAR CONTA"
+                android:textColor="@color/colorWhite"
+                android:textSize="18dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

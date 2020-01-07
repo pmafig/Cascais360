@@ -6,6 +6,8 @@
     <color name="colorBlack">#000</color>
     <color name="colorWhite">#FFF</color>
 
+    <color name="colorRed">#F00</color>
+
     <color name="colorSearchBlock">#BEBEBE</color>
 
     <color name="mycascaisHeader">#DFE1DF</color>

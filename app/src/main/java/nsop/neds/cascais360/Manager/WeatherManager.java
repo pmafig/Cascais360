@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,24 +48,27 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
 
-        TextView currentTemp = weartherContent.findViewById(R.id.currentTemperature);
-        currentTemp.setText(String.valueOf(weather.Current));
+        if(weather != null) {
 
-        TextView infoMinMax = weartherContent.findViewById(R.id.infoMinMax);
-        infoMinMax.setText(String.format("%dº | %dº", weather.Min, weather.Max));
+            TextView currentTemp = weartherContent.findViewById(R.id.currentTemperature);
+            currentTemp.setText(String.valueOf(weather.Current));
 
-        ImageView iconTemp = weartherContent.findViewById(R.id.iconTemperature);
+            TextView infoMinMax = weartherContent.findViewById(R.id.infoMinMax);
+            infoMinMax.setText(String.format("%dº | %dº", weather.Min, weather.Max));
 
-        Drawable icon = null;
-        try {
+            ImageView iconTemp = weartherContent.findViewById(R.id.iconTemperature);
 
-            String i = weather.getIcon();
+            Drawable icon = null;
+            try {
+                String i = weather.getIcon();
+                icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
 
-            icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
-
-            iconTemp.setImageDrawable(icon);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+                iconTemp.setImageDrawable(icon);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }else{
+            this.weartherContent.setVisibility(View.GONE);
         }
     }
 

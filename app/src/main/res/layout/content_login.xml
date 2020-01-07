@@ -3,167 +3,171 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/login_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
         <LinearLayout
-            android:id="@+id/login_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="30dp"
-            android:paddingVertical="60dp">
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/ic_usercircle"/>
+            android:orientation="vertical">
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="30dp"
-                android:paddingVertical="1dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="28dp"
-                    android:textStyle="bold"
-                    android:text="Bem-vindo!"
-                    android:textColor="@color/colorBlack"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15dp"
-                    android:text="Identifique-se antes de continuar."
-                    android:textColor="@color/colorBlack"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:id="@+id/container"
+                android:id="@+id/login_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:orientation="vertical"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="30dp">
-                <!--
-                android:layout_gravity="bottom"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"-->
-
-
-                <!--android:text="pmafig@gmail.com"-->
-
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/accountName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-
-                    android:hint="@string/mycascais_email_phone"
-                    android:paddingHorizontal="5dp"
-                    android:paddingVertical="5dp"
-                    android:drawableLeft="@drawable/ic_user"
-                    android:drawablePadding="5dp"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:background="@drawable/mycascais_edittext"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"/>
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/accountPassword"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:drawablePadding="11dp"
-                    android:hint="@string/mycascais_password"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="10dp"
-                    android:drawableStart="@drawable/ic_lock"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPassword"
-                    android:background="@drawable/mycascais_edittext"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"/>
-
-                <!--Termos e condições - cor do ano-->
-
-                <!--Politica de privacidade - cor do ano-->
-
+                android:orientation="horizontal"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="40dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/ic_usercircle"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_gravity="center"
-                    android:paddingVertical="10dp">
+                    android:layout_marginLeft="30dp"
+                    android:paddingVertical="1dp">
                     <TextView
-                        android:id="@+id/terms_conditions"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingVertical="5dp"
-                        android:text="Termos e Condições"/>
+                        android:textSize="28dp"
+                        android:textStyle="bold"
+                        android:text="Bem-vindo!"
+                        android:textColor="@color/colorBlack"/>
                     <TextView
-                        android:id="@+id/privacy_manifest"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingVertical="5dp"
-                        android:text="Política de Privacidade"/>
+                        android:textSize="15dp"
+                        android:text="Identifique-se antes de continuar."
+                        android:textColor="@color/colorBlack"/>
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/logon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-
-                    android:paddingVertical="15dp"
-                    android:text="INICIAR SESSÃO"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="18dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="center"
-                    android:paddingVertical="10dp">
-                    <TextView
-                        android:id="@+id/recover"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingVertical="5dp"
-                        android:text="Recuperar palavra passe"/>
-                    <TextView
-                        android:id="@+id/register"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingVertical="5dp"
-                        android:text="Fazer registo"/>
-                </LinearLayout>
-
-
-                <!--Fazer registo - cor preta-->
 
             </LinearLayout>
-        </ScrollView>
 
-    </LinearLayout>
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="30dp">
+                    <!--
+                    android:layout_gravity="bottom"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"-->
+
+
+                    <!--android:text="pmafig@gmail.com"-->
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/accountName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+
+                        android:hint="@string/mycascais_email_phone"
+                        android:paddingHorizontal="5dp"
+                        android:paddingVertical="5dp"
+                        android:drawableLeft="@drawable/ic_user"
+                        android:drawablePadding="5dp"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:background="@drawable/mycascais_edittext"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"/>
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/accountPassword"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:drawablePadding="11dp"
+                        android:hint="@string/mycascais_password"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="10dp"
+                        android:drawableStart="@drawable/ic_lock"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPassword"
+                        android:background="@drawable/mycascais_edittext"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"/>
+
+                    <!--Termos e condições - cor do ano-->
+
+                    <!--Politica de privacidade - cor do ano-->
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center"
+                        android:paddingVertical="10dp">
+                        <TextView
+                            android:id="@+id/terms_conditions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingVertical="5dp"
+                            android:text="Termos e Condições"/>
+                        <TextView
+                            android:id="@+id/privacy_manifest"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingVertical="5dp"
+                            android:text="Política de Privacidade"/>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/logon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+
+                        android:paddingVertical="15dp"
+                        android:text="INICIAR SESSÃO"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="18dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center"
+                        android:paddingVertical="10dp">
+                        <TextView
+                            android:id="@+id/recover"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingVertical="5dp"
+                            android:text="Recuperar palavra passe"/>
+                        <TextView
+                            android:id="@+id/register"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingVertical="5dp"
+                            android:text="Fazer registo"/>
+                    </LinearLayout>
+
+
+                    <!--Fazer registo - cor preta-->
+
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

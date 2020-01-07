@@ -10,12 +10,8 @@ import nsop.neds.cascais360.Encrypt.MessageEncryption;
 public class WebApiClient {
     public static final String SITE_KEY = "ae1b1452-947b-4f09-b77a-24c87f0efa6d";
     public static final String SITE_ID = "17";
-    //private static final String BASE_URL = "https://webapiqua.cascais.pt/api/WebApiAccount/";
-    //"https://webapidsv.cascais.pt/api/WebApiAccount/";
-    //"https://alex.cascais.pt/api/WebApiAccount/";
 
-    public static String BASE_URL = "https://webapi.cascais.pt/api";
-
+    public static String BASE_URL = "https://webapiqua.cascais.pt/api";
 
     public enum API{
         cms,

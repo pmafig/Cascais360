@@ -47,7 +47,7 @@ public class MenuFragment extends Fragment{
 
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
-        Button login = view.findViewById(R.id.menu_button_login);
+        /*Button login = getView().findViewById(R.id.menu_button_login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +57,7 @@ public class MenuFragment extends Fragment{
                 transaction.addToBackStack("login");
                 transaction.commit();
             }
-        });
+        });*/
 
         return view;
     }

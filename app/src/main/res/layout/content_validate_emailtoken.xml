@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ValidateSMSTokenActivity"
+    tools:showIn="@layout/activity_validate_email_token">
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Código de validação" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailTokenPhone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cursorVisible="true"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            android:drawableLeft="@drawable/ic_locker"
+            android:drawablePadding="11dp"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/mycascais_edittext"/>
+
+        <Button
+            android:id="@+id/accountValidateEmailToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+
+            android:paddingVertical="15dp"
+            android:text="@string/mycascais_next"
+            android:textColor="@color/colorWhite"
+            android:textSize="18dp" />
+
+    </LinearLayout>
+</LinearLayout>

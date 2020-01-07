@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
+import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.R;
@@ -47,6 +48,16 @@ public class MenuManager {
                 else {
                     menu.setBackground(context.getDrawable(R.drawable.ic_close));
                     menuFragment.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                if(AccountGeneral.logout(context)){
+                    setToolbarUserInfo();
                 }
             }
         });

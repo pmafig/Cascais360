@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -262,6 +265,10 @@ public class LoginActivity extends AppCompatActivity {
         sm.clear();
         sm.setNewAccount();
 
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
         //startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
     }
 
@@ -280,6 +287,7 @@ public class LoginActivity extends AppCompatActivity {
         }else {
             //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
     }
