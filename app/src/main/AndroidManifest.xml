@@ -22,7 +22,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +52,24 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+
+        <service android:name=".Authenticator.CascaisAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <receiver
+            android:name=".Manager.Broadcast.SmsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

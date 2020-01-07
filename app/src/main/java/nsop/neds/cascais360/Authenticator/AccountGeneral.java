@@ -3,6 +3,7 @@ package nsop.neds.cascais360.Authenticator;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.os.Build;
 
 import nsop.neds.cascais360.Entities.UserEntity;
 
@@ -30,7 +31,9 @@ public class AccountGeneral {
         Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
         if(availableAccounts.length > 0) {
-            mAccountManager.removeAccountExplicitly(availableAccounts[0]);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                mAccountManager.removeAccountExplicitly(availableAccounts[0]);
+            }
             return true;
         }else{
             return false;

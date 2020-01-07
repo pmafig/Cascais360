@@ -6,21 +6,35 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.WebApi.ReportManager;
 
 public class MenuManager {
 
+    Context context;
+
     Toolbar toolbar;
+    LinearLayout menuFragment;
+    ImageButton menu;
+
+    SessionManager sm;
 
     public MenuManager(final Context context, Toolbar toolbar, final LinearLayout menuFragment){
-        this.toolbar = toolbar;
+        this.context = context;
 
-        final ImageButton menu = toolbar.findViewById(R.id.menu_button);
+        this.toolbar = toolbar;
+        this.menuFragment = menuFragment;
+        this.menu = toolbar.findViewById(R.id.menu_button);
+
+        sm = new SessionManager(context);
+
+        setToolbarUserInfo();
 
         menu.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ResourceType")
@@ -40,6 +54,7 @@ public class MenuManager {
         menuFragment.findViewById(R.id.menu_button_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeMenu();
                 context.startActivity(new Intent(context, LoginActivity.class));
             }
         });
@@ -47,12 +62,30 @@ public class MenuManager {
         menuFragment.findViewById(R.id.menu_button_home).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeMenu();
                 context.startActivity(new Intent(context, MainActivity.class));
             }
         });
     }
 
-    private static SessionManager sm;
+    private void closeMenu(){
+        menuFragment.setVisibility(View.GONE);
+        menu.setBackground(context.getDrawable(R.drawable.ic_action_name));
+    }
+
+    private void setToolbarUserInfo(){
+        if(sm.asUserLoggedOn()){
+            TextView name = menuFragment.findViewById(R.id.user_name);
+            name.setText(sm.getDisplayname());
+
+            menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
+            menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
+        }else{
+            menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.VISIBLE);
+            menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.GONE);
+        }
+    }
+
 
    /* public static void CallWeather(Context context, NavigationView nav_view){
         new WeatherManager(context, nav_view).execute(WebApiCalls.getWeather());

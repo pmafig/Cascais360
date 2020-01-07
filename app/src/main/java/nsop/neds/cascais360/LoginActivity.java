@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Binder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -47,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
     private AccountManager mAccountManager;
     private String mAuthTokenType;
 
+    LinearLayout menuFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,29 +59,19 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        menuFragment = findViewById(R.id.menu);
+
+        toolbar.findViewById(R.id.toolbar_image).setVisibility(View.GONE);
+
+        TextView title = toolbar.findViewById(R.id.toolbar_title);
+        title.setText(R.string.title_activity_mycascais);
+        title.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        title.setVisibility(View.VISIBLE);
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
-        new MenuManager(this, (Toolbar) findViewById(R.id.toolbar), (LinearLayout) findViewById(R.id.menu));
-
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-
-        //DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        //NavigationView navigationView = findViewById(R.id.nav_view);
-        //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        /*drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        //navigationView.setNavigationItemSelectedListener(this);
-
-        MenuBarManager.SetUserSettings(this, navigationView);*/
-
-        /*TextView title = toolbar.findViewById(R.id.title_quero_ver);
-        title.setTextColor(Color.parseColor(Settings.color));
-        title.setText(R.string.title_activity_mycascais);*/
-
-        /*LinearLayout header = findViewById(R.id.login_header);
-        header.setBackgroundColor(Color.parseColor(Settings.colors.Gray1));
+        new MenuManager(this, toolbar, menuFragment);
 
         Button logon = findViewById(R.id.logon);
         TextView recover = findViewById(R.id.recover);
@@ -114,9 +107,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
         if (mAuthTokenType == null)
-            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;*/
+            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
 
-        //MenuBarManager.CallWeather(this, (NavigationView) findViewById(R.id.nav_view));
     }
 
     private void submit(){
@@ -167,6 +159,11 @@ public class LoginActivity extends AppCompatActivity {
         if(ReportManager.isAuthenticated(json)){
             try {
                 SessionManager sm = new SessionManager(this);
+
+                menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
+                menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
+                TextView name = menuFragment.findViewById(R.id.user_name);
+                name.setText(ReportManager.getDisplayname(json));
 
                 sm.setDisplayname(ReportManager.getDisplayname(json));
                 sm.setFullName(ReportManager.getFullName(json));
@@ -237,6 +234,8 @@ public class LoginActivity extends AppCompatActivity {
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, true)) {
             String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authtokenType = mAuthTokenType;
+
+            final int uid = Binder.getCallingUid();
 
             mAccountManager.addAccountExplicitly(account, accountPassword, intent.getExtras());
             mAccountManager.setAuthToken(account, authtokenType, authtoken);

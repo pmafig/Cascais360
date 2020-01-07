@@ -70,7 +70,7 @@
                     android:id="@+id/accountName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:cursorVisible="true"
+
                     android:hint="@string/mycascais_email_phone"
                     android:paddingHorizontal="5dp"
                     android:paddingVertical="5dp"
@@ -78,14 +78,16 @@
                     android:drawablePadding="5dp"
                     android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:background="@drawable/mycascais_edittext"/>
+                    android:background="@drawable/mycascais_edittext"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"/>
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/accountPassword"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:cursorVisible="true"
+
                     android:drawablePadding="11dp"
                     android:hint="@string/mycascais_password"
                     android:paddingHorizontal="10dp"
@@ -93,7 +95,9 @@
                     android:drawableStart="@drawable/ic_lock"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
-                    android:background="@drawable/mycascais_edittext"/>
+                    android:background="@drawable/mycascais_edittext"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"/>
 
                 <!--Termos e condições - cor do ano-->
 
