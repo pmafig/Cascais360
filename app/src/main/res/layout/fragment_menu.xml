@@ -17,7 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                
+
                 <LinearLayout
                         android:id="@+id/user_loggedon_header"
                         android:layout_width="match_parent"
@@ -137,10 +137,12 @@
                 tools:ignore="MissingConstraints">
 
                 <TextView
+                    android:id="@+id/label_WeatherCascais"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_light"
                     android:text="O TEMPO EM CASCAIS"
+                    android:textAllCaps="true"
                     android:layout_span="2"
                     android:textColor="@color/colorBlack" />
 
@@ -178,12 +180,13 @@
                                 android:textSize="30sp" />
 
                             <TextView
-                                android:id="@+id/infoTemperature"
+                                android:id="@+id/label_Today"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="15dp"
                                 android:fontFamily="@font/montserrat_light"
                                 android:text="HOJE"
+                                android:textAllCaps="true"
                                 android:textColor="@color/colorBlack"
                                 android:textSize="12sp"/>
 

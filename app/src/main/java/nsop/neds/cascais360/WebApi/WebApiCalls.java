@@ -5,7 +5,7 @@ import nsop.neds.cascais360.Encrypt.MessageEncryption;
 public class WebApiCalls {
 
     public static String getDashBoard(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"dashboard\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"dashboard\", \"LangCode\":\"en\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
@@ -21,7 +21,7 @@ public class WebApiCalls {
     }
 
     public static String getResources(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"resources\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"resources\", \"LangCode\":\"pt\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 

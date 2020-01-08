@@ -21,6 +21,7 @@ import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Weather;
 import nsop.neds.cascais360.Entities.WeatherEntity;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.Settings.Settings;
 
 public class WeatherManager extends AsyncTask<String, Void, Weather> {
 
@@ -57,6 +58,11 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
             infoMinMax.setText(String.format("%dº | %dº", weather.Min, weather.Max));
 
             ImageView iconTemp = weartherContent.findViewById(R.id.iconTemperature);
+
+            TextView label_weatherCascais = weartherContent.findViewById(R.id.label_WeatherCascais);
+            label_weatherCascais.setText(Settings.labels.WeatherCascais);
+            TextView label_today = weartherContent.findViewById(R.id.label_Today);
+            label_today.setText(Settings.labels.Today);
 
             Drawable icon = null;
             try {

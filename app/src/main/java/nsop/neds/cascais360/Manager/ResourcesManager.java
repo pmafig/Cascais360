@@ -102,5 +102,6 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
     private void setSettings(Resources r){
         Settings.colors = r.Colors;
         Settings.labels = r.Labels;
+        Settings.labels = r.Labels;
     }
 }
