@@ -99,6 +99,7 @@ public class MenuManager {
         menuFragment.findViewById(R.id.menu_button_agenda).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeMenu();
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra(Variables.Type, Variables.Agenda);
                 context.startActivity(intent);
@@ -108,6 +109,7 @@ public class MenuManager {
         menuFragment.findViewById(R.id.menu_button_visit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeMenu();
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra(Variables.Type, Variables.Visit);
                 context.startActivity(intent);
@@ -117,6 +119,7 @@ public class MenuManager {
         menuFragment.findViewById(R.id.menu_button_route).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeMenu();
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra(Variables.Type, Variables.Routes);
                 context.startActivity(intent);

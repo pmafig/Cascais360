@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import nsop.neds.cascais360.Manager.ListDetailManager;
+import nsop.neds.cascais360.Manager.ListManager;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.Manager.WeatherManager;
@@ -29,15 +32,23 @@ public class ListDetailActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
-        /*CallCategoryList(intent.getIntExtra("id", 0),
-                intent.hasExtra("sort") ? intent.getStringExtra("sort") : "",
-                intent.hasExtra("data") ? intent.getStringExtra("data") : "");*/
+        int id = intent.getIntExtra(Variables.Id, 0);
+
+        new ListDetailManager(this, (LinearLayout) findViewById(R.id.main_content), (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getCategory(id));
 
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
         backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
 
         new MenuManager(this, toolbar, menuFragment, intent.getStringExtra(Variables.Title));
 
@@ -58,4 +69,9 @@ public class ListDetailActivity extends AppCompatActivity {
                 (LinearLayout) findViewById(R.id.sorting_content)).execute(WebApiCalls.getCategory(id), sort, data);*/
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
 }

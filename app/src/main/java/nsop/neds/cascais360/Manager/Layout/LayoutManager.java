@@ -1,5 +1,6 @@
 package nsop.neds.cascais360.Manager.Layout;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,8 +16,10 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import nsop.neds.cascais360.Entities.Json.CategoryListDetail;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
+import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
@@ -464,6 +467,7 @@ public class LayoutManager {
                     intent.putExtra(Variables.Title, n.Category.Description);
                     intent.putExtra(Variables.Id, n.Category.ID);
                     context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             });
 
@@ -499,5 +503,96 @@ public class LayoutManager {
         }
 
         return category_block;
+    }
+
+    public static View setCategoryListDetailBlock(String title, final CategoryListDetail categoryListDetail, final Context context){
+
+        View frame_list = View.inflate(context, R.layout.block_frame_list, null);
+
+        TextView layout_title = frame_list.findViewById(R.id.spotlight_block_title);
+        layout_title.setText(title);
+
+        LinearLayout views_wrapper = frame_list.findViewById(R.id.spotlight_block_views);
+
+        for (final InfoEventBlock f: categoryListDetail.Nodes) {
+            View frame = View.inflate(context, R.layout.block_frame, null);
+
+            TextView frameTitle = frame.findViewById(R.id.frame_title);
+            frameTitle.setText(f.Title);
+
+            final ImageView img = frame.findViewById(R.id.frame_image);
+            DownloadImageAsync obj = new DownloadImageAsync(){
+
+                @Override
+                protected void onPostExecute(Bitmap bmp) {
+                    super.onPostExecute(bmp);
+                    img.setImageBitmap(bmp);
+                }
+            };
+            obj.execute(f.Images.get(0));
+
+            if(f.ID > 0) {
+                img.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                        vibe.vibrate(100);
+
+                        /*Intent event = new Intent(context, EventActivity.class);
+                        int nid = f.Nid();
+                        event.putExtra("nid", nid);
+                        context.startActivity(event);*/
+                    }
+                });
+            }
+
+            TextView frameDate = frame.findViewById(R.id.frame_date);
+            LinearLayout routeInfo = frame.findViewById(R.id.route_briefing);
+
+            if(f.SubTitle.size() > 1){
+                routeInfo.setVisibility(View.VISIBLE);
+                frameDate.setVisibility(View.GONE);
+
+                for (SubTitle st: f.SubTitle) {
+
+                    if(st.Icon != null) {
+                        switch (st.Icon) {
+                            case "Hike":
+                                LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                w_distance.setVisibility(View.VISIBLE);
+
+                                TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                t_distance.setText(st.Text);
+                                break;
+                            case "Level":
+                                LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                w_level.setVisibility(View.VISIBLE);
+
+                                TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                t_level.setText(st.Text);
+                                break;
+                        }
+                    }
+                }
+
+            }else {
+                frameDate.setVisibility(View.VISIBLE);
+                routeInfo.setVisibility(View.GONE);
+
+                frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                frameDate.setText(f.SubTitle.get(0).Text);
+            }
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+            layoutParams.setMargins(0, 0, 0, px);
+
+            views_wrapper.addView(frame, layoutParams);
+        }
+
+        return frame_list;
     }
 }
