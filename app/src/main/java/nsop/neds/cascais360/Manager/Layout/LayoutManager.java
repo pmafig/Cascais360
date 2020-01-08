@@ -444,28 +444,28 @@ public class LayoutManager {
 
         View category_block = View.inflate(context, R.layout.block_category_scroller, null);
 
-        LinearLayout viewPager = category_block.findViewById(R.id.list_block_views);
+        LinearLayout scroller = category_block.findViewById(R.id.list_block_views);
 
         for(int c = 0; c < node_list.size(); c++){
 
             Node n = node_list.get(c);
 
-            View category = View.inflate(context, R.layout.block_category_list, null);
+            View category = View.inflate(context, R.layout.block_category_scroller_list, null);
 
             TextView category_title = category.findViewById(R.id.category_list_title);
             LinearLayout category_list = category.findViewById(R.id.category_list);
             ImageView icon = category.findViewById(R.id.category_icon);
 
             category_title.setText(n.Category.Description);
-            category_title.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            //category_title.setTextColor(Color.parseColor(Settings.colors.YearColor));
             icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
 
             if(c < node_list.size()-1){
-                category.setBackground(context.getDrawable(R.drawable.border_right));
+                category.setBackground(context.getDrawable(R.drawable.menu_border_bottom));
             }
 
             for(int i = 0; i < n.Nodes.size(); i++){
-                View category_item = View.inflate(context, R.layout.block_category_list_item, null);
+                View category_item = View.inflate(context, R.layout.block_category_scroller_item, null);
 
                 InfoBlock info = n.Nodes.get(i);
 
@@ -480,9 +480,8 @@ public class LayoutManager {
                 category_list.addView(category_item);
             }
 
-            viewPager.addView(category);
+            scroller.addView(category);
         }
-
 
         return category_block;
     }

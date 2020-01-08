@@ -2,8 +2,10 @@ package nsop.neds.cascais360;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,28 +26,33 @@ public class ListActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.MULTIPLY);
+
         final Intent intent = getIntent();
 
         CallList(intent.getStringExtra(Variables.Type));
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
-        LinearLayout menuFragment = findViewById(R.id.menu);
-        Toolbar toolbar = findViewById(R.id.toolbar);
 
-        new MenuManager(this, toolbar, menuFragment, Settings.labels.Agenda);
     }
 
     private void CallList(String type){
 
+        LinearLayout menuFragment = findViewById(R.id.menu);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
         switch (type){
             case Variables.Agenda:
+                new MenuManager(this, toolbar, menuFragment, Settings.labels.Agenda);
                 new ListManager(this,
                         (LinearLayout) findViewById(R.id.main_content),
                         (RelativeLayout) findViewById(R.id.loadingPanel)
                 ).execute(WebApiCalls.getAgenda());
                 break;
             case Variables.Visit:
+                new MenuManager(this, toolbar, menuFragment, Settings.labels.Places);
                 new ListManager(this,
                         (LinearLayout) findViewById(R.id.main_content),
 
@@ -53,6 +60,7 @@ public class ListActivity extends AppCompatActivity{
                 ).execute(WebApiCalls.getVisit());
                 break;
             case Variables.Routes:
+                new MenuManager(this, toolbar, menuFragment, Settings.labels.Routes);
                 new ListManager(this,
                         (LinearLayout) findViewById(R.id.main_content),
                         (RelativeLayout) findViewById(R.id.loadingPanel)

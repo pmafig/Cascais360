@@ -114,7 +114,6 @@ public class ListManager extends AsyncTask<String, Void, List<LayoutBlock>> {
         try {
             mainContent.removeAllViews();
 
-            //sort blocklist
             Collections.sort(blockList, new Comparator<LayoutBlock>() {
                 @Override
                 public int compare(LayoutBlock o1, LayoutBlock o2) {
@@ -123,8 +122,6 @@ public class ListManager extends AsyncTask<String, Void, List<LayoutBlock>> {
                             : 0;
                 }
             });
-
-            Type InfoBlockTypeList = new TypeToken<ArrayList<InfoBlock>>(){}.getType();
 
             for (LayoutBlock b : blockList) {
 

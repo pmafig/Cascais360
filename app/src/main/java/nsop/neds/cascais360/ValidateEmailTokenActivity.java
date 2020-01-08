@@ -4,14 +4,14 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
@@ -32,7 +32,7 @@ public class ValidateEmailTokenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validate_email_token);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        /*Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         TextView title = toolbar.findViewById(R.id.title_quero_ver);
@@ -54,7 +54,7 @@ public class ValidateEmailTokenActivity extends AppCompatActivity {
             public void onClick(View v) {
                 ValidateEmailToken(emailToken);
             }
-        });
+        });*/
     }
 
     private void ValidateEmailToken(final String token){
@@ -86,14 +86,14 @@ public class ValidateEmailTokenActivity extends AppCompatActivity {
                 task.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(ValidateEmailTokenActivity.this, String.format(getResources().getString(R.string.info_message_sms_codevalidation), new SessionManager(getBaseContext()).getMobileNumber()), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ValidateEmailTokenActivity.this, String.format(getResources().getString(R.string.info_message_sms_codevalidation), new SessionManager(getBaseContext()).getMobileNumber()), Toast.LENGTH_SHORT).show();
                     }
                 });
 
                 task.addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ValidateEmailTokenActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ValidateEmailTokenActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
