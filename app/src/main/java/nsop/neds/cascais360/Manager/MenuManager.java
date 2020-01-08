@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ public class MenuManager {
     Toolbar toolbar;
     LinearLayout menuFragment;
     ImageButton menu;
+    FrameLayout frame;
 
     SessionManager sm;
 
@@ -37,6 +39,7 @@ public class MenuManager {
         this.toolbar = toolbar;
         this.menuFragment = menuFragment;
         this.menu = toolbar.findViewById(R.id.menu_button);
+        this.frame = toolbar.findViewById(R.id.menu_button_frame);
 
         Drawable border = context.getDrawable(R.drawable.toolbar_border_bottom);
         border.setTint(Color.parseColor(Settings.colors.YearColor));
@@ -55,18 +58,17 @@ public class MenuManager {
 
         setToolbarUserInfo();
 
-        menu.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ResourceType")
+        frame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (menuFragment.getVisibility() == View.VISIBLE){
-                    menuFragment.setVisibility(View.GONE);
-                    menu.setBackground(context.getDrawable(R.drawable.ic_action_name));
-                }
-                else {
-                    menu.setBackground(context.getDrawable(R.drawable.ic_close));
-                    menuFragment.setVisibility(View.VISIBLE);
-                }
+                clickMenu();
+            }
+        });
+
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickMenu();
             }
         });
 
@@ -125,6 +127,17 @@ public class MenuManager {
                 context.startActivity(intent);
             }
         });
+    }
+
+    private void clickMenu(){
+        if (menuFragment.getVisibility() == View.VISIBLE){
+            menuFragment.setVisibility(View.GONE);
+            menu.setBackground(context.getDrawable(R.drawable.ic_action_name));
+        }
+        else {
+            menu.setBackground(context.getDrawable(R.drawable.ic_close));
+            menuFragment.setVisibility(View.VISIBLE);
+        }
     }
 
     private void closeMenu(){
