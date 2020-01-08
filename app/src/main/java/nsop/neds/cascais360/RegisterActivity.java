@@ -59,14 +59,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        TextView title = toolbar.findViewById(R.id.toolbar_title);
-        title.setText(R.string.title_activity_mycascais_register);
-        title.setTextColor(Color.parseColor(Settings.colors.YearColor));
-        title.setVisibility(View.VISIBLE);
-
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
-        new MenuManager(this, toolbar, menuFragment);
+        new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
 
         Button registerButton = findViewById(R.id.createAccount);
         registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));

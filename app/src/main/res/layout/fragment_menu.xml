@@ -86,14 +86,17 @@
                         android:text="início" />
 
                     <Button
+                        android:id="@+id/menu_button_agenda"
                         style="@style/MenuItem"
                         android:text="agenda" />
 
                     <Button
+                        android:id="@+id/menu_button_visit"
                         style="@style/MenuItem"
                         android:text="visitar" />
 
                     <Button
+                        android:id="@+id/menu_button_route"
                         style="@style/MenuItem"
                         android:text="rotas" />
                 </LinearLayout>
@@ -101,14 +104,17 @@
                 <LinearLayout
                     style="@style/MenuSplit">
                     <Button
+                        android:id="@+id/menu_button_search"
                         style="@style/MenuItem"
                         android:text="pesquisar" />
 
                     <Button
+                        android:id="@+id/menu_button_calendar"
                         style="@style/MenuItem"
                         android:text="calendario" />
 
                     <Button
+                        android:id="@+id/menu_button_map"
                         style="@style/MenuItem"
                         android:text="mapa" />
                 </LinearLayout>

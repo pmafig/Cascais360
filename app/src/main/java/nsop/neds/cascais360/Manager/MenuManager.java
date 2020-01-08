@@ -3,17 +3,21 @@ package nsop.neds.cascais360.Manager;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
+import nsop.neds.cascais360.ListActivity;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.ReportManager;
 
 public class MenuManager {
@@ -26,12 +30,22 @@ public class MenuManager {
 
     SessionManager sm;
 
-    public MenuManager(final Context context, Toolbar toolbar, final LinearLayout menuFragment){
+    public MenuManager(final Context context, Toolbar toolbar, final LinearLayout menuFragment, @Nullable String title){
         this.context = context;
 
         this.toolbar = toolbar;
         this.menuFragment = menuFragment;
         this.menu = toolbar.findViewById(R.id.menu_button);
+
+
+        if(title != null) {
+            TextView tv = toolbar.findViewById(R.id.toolbar_title);
+            tv.setText(title);
+            tv.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            tv.setVisibility(View.VISIBLE);
+
+            toolbar.findViewById(R.id.toolbar_image).setVisibility(View.GONE);
+        }
 
         sm = new SessionManager(context);
 
@@ -75,6 +89,33 @@ public class MenuManager {
             public void onClick(View v) {
                 closeMenu();
                 context.startActivity(new Intent(context, MainActivity.class));
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_agenda).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra(Variables.Type, Variables.Agenda);
+                context.startActivity(intent);
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_visit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra(Variables.Type, Variables.Visit);
+                context.startActivity(intent);
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_route).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra(Variables.Type, Variables.Routes);
+                context.startActivity(intent);
             }
         });
     }
