@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ListActivity">
+    tools:context=".DetailActivity">
 
     <include layout="@layout/app_bar"/>
 
@@ -24,17 +24,6 @@
             android:indeterminate="true" />
     </RelativeLayout>
 
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none">
-        <LinearLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        </LinearLayout>
-    </ScrollView>
+    <include layout="@layout/content_detail"/>
 
 </LinearLayout>

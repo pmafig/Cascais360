@@ -57,7 +57,9 @@
                     android:orientation="horizontal"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="5dp">
+                    android:layout_marginLeft="5dp"
+                    android:paddingVertical="5dp"
+                    android:paddingRight="10dp">
                     <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

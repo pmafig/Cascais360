@@ -16,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import nsop.neds.cascais360.DetailActivity;
 import nsop.neds.cascais360.Entities.Json.CategoryListDetail;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
@@ -52,18 +53,12 @@ public class LayoutManager {
         img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
                 vibe.vibrate(100);
 
-                /*Intent event = new Intent(context, EventActivity.class);
-
-                int nid = b.Nid();
-
-                event.putExtra("nid", nid);
-
-                context.startActivity(event);*/
+                Intent event = new Intent(context, DetailActivity.class);
+                event.putExtra(Variables.Id, b.ID);
+                context.startActivity(event);
             }
         });
 
@@ -267,16 +262,24 @@ public class LayoutManager {
                         switch (st.Icon) {
                             case "Hike":
                                 LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                ImageView distance_icon = frame.findViewById(R.id.event_distance_icon);
+                                distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
                                 w_distance.setVisibility(View.VISIBLE);
 
                                 TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
                                 t_distance.setText(st.Text);
                                 break;
                             case "Level":
                                 LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                ImageView level_icon = frame.findViewById(R.id.event_difficulty_icon);
+                                level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
                                 w_level.setVisibility(View.VISIBLE);
 
                                 TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
                                 t_level.setText(st.Text);
                                 break;
                         }
@@ -559,16 +562,25 @@ public class LayoutManager {
                         switch (st.Icon) {
                             case "Hike":
                                 LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                ImageView distance_icon = frame.findViewById(R.id.event_distance_icon);
+                                distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
                                 w_distance.setVisibility(View.VISIBLE);
 
                                 TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
                                 t_distance.setText(st.Text);
                                 break;
                             case "Level":
                                 LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                ImageView level_icon = frame.findViewById(R.id.event_difficulty_icon);
+                                level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
                                 w_level.setVisibility(View.VISIBLE);
 
+
                                 TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
                                 t_level.setText(st.Text);
                                 break;
                         }

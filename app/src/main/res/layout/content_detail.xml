@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detail_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:visibility="visible">
+        <LinearLayout
+            android:id="@+id/event_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="18dp">
+            <TextView
+                android:id="@+id/event_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/montserrat_light"
+                android:textColor="@color/colorHit"
+                android:textSize="18dp"/>
+            <TextView
+                android:id="@+id/event_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/montserrat_bold"
+                android:textColor="@color/colorBlack"
+                android:textSize="22dp"
+                android:paddingTop="5dp"/>
+            <ImageView
+                android:id="@+id/event_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="false"
+                android:scaleType="fitXY"
+                android:paddingTop="22dp"
+                android:paddingBottom="5dp"/>
+
+            <!--Social buttons-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/border_bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/event_ac_heart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_heart"
+                    android:tint="@color/colorBlack" />
+
+                <ImageView
+                    android:id="@+id/event_ac_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_share" />
+
+                <ImageView
+                    android:id="@+id/event_ac_bell"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_bell" />
+
+                <ImageView
+                    android:id="@+id/event_ac_calendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_calendarplus" />
+            </LinearLayout>
+
+            <!--Route briefing-->
+            <LinearLayout
+                android:id="@+id/event_route_briefing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_bottom"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/event_distance_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_hike"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_route_distance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="10dp">
+
+                    <ImageView
+                        android:id="@+id/event_duration_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_clock"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_route_duration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/event_difficulty_icon"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_level"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_route_difficulty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/event_euro_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_euro"
+                        android:tint="@color/colorHit" />
+
+                    <TextView
+                        android:id="@+id/event_price_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:text="Grátis" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--Route Maps buttons-->
+            <LinearLayout
+                android:id="@+id/event_route_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center_horizontal"
+                android:layout_marginVertical="20dp">
+                <Button
+                    android:id="@+id/btn_route_seemap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="10dp"
+                    android:paddingHorizontal="25dp"
+                    android:text="Ver Mapa"
+                    /> <!--android:background="@drawable/hit_border"-->
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <Button
+                    android:id="@+id/btn_route_route"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Iniciar Percurso"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="10dp"
+                    android:paddingHorizontal="25dp"
+                    android:layout_marginLeft="20dp"/> <!--android:background="@drawable/hit_border_2"-->
+            </LinearLayout>
+            
+            <!--Date-->
+            <LinearLayout
+                android:id="@+id/event_date_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp">
+                    <LinearLayout
+                        android:layout_width="15dp"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/date_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_calendar" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="10dp"
+                android:layout_marginLeft="10dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/date_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="DATA"
+                            android:fontFamily="@font/montserrat_regular"
+                            android:textColor="@color/colorHit"
+                            android:textSize="16dp"/>
+                        <TextView
+                            android:id="@+id/label_more_dates"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="[+ datas]"
+                            android:fontFamily="@font/montserrat_light"
+                            android:textColor="@color/colorHit"
+                            android:textSize="14dp"/>
+                    </LinearLayout>
+
+                <TextView
+                    android:id="@+id/event_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="11 mai a 19 mai 2019"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="15dp" />
+            </LinearLayout>
+            </LinearLayout>
+
+            <!--Location-->
+            <LinearLayout
+                android:id="@+id/event_location_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="12dp">
+                    <LinearLayout
+                        android:layout_width="15dp"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/location_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_locationmark" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:layout_marginLeft="10dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/label_locality"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="LOCAL"
+                            android:fontFamily="@font/montserrat_regular"
+                            android:textColor="@color/colorHit"
+                            android:textSize="16dp"/>
+                        <TextView
+                            android:id="@+id/label_more_info"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="[+ info]"
+                            android:fontFamily="@font/montserrat_light"
+                            android:textColor="@color/colorHit"
+                            android:textSize="14dp"/>
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/event_geo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Quinta do pisão - Parque de Natureza. Alcabideche"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="15dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--Price-->
+            <LinearLayout
+                android:id="@+id/event_price_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="12dp">
+                    <LinearLayout
+                        android:layout_width="15dp"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/euro_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_euro" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:layout_marginLeft="10dp">
+                    <TextView
+                        android:id="@+id/label_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="PREÇO"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:textColor="@color/colorHit"
+                        android:textSize="16dp"/>
+                    <TextView
+                        android:id="@+id/price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="5,00€ - 25,50€"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <Button
+                    android:id="@+id/event_ticket"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="comprar"
+                    android:padding="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="40dp"
+                    android:backgroundTint="@color/colorHit"
+                    android:textColor="@color/colorWhite"
+                    android:fontFamily="@font/montserrat_bold"/>
+            </LinearLayout>
+
+            <!--Description-->
+            <LinearLayout
+                android:id="@+id/event_description_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/border_top">
+                <TextView
+                    android:id="@+id/event_description_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="DESCRIÇÃO"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:textColor="@color/colorHit"
+                    android:textSize="16dp"
+                    android:layout_marginBottom="15dp"/>
+
+                <TextView
+                    android:id="@+id/event_description_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:fontFamily="@font/montserrat_regular"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tab_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="20dp"
+                android:visibility="gone">
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
