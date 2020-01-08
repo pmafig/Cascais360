@@ -65,16 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
 
-        toolbar.findViewById(R.id.toolbar_image).setVisibility(View.GONE);
-
-        TextView title = toolbar.findViewById(R.id.toolbar_title);
-        title.setText(R.string.title_activity_mycascais);
-        title.setTextColor(Color.parseColor(Settings.colors.YearColor));
-        title.setVisibility(View.VISIBLE);
-
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
-        new MenuManager(this, toolbar, menuFragment);
+        new MenuManager(this, toolbar, menuFragment, "MYCASCAIS");
 
         Button logon = findViewById(R.id.logon);
         TextView recover = findViewById(R.id.recover);

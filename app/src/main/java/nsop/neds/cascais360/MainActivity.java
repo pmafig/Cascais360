@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        new MenuManager(this, toolbar, menuFragment);
+        new MenuManager(this, toolbar, menuFragment, null);
 
     }
 }

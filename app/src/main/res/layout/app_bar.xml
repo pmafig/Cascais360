@@ -25,6 +25,7 @@
                     android:fontFamily="@font/montserrat_light"
                     android:textSize="22sp"
                     android:textColor="@color/colorBlack"
+                    android:textAllCaps="true"
                     android:visibility="gone"/>
                 <ImageView
                     android:id="@+id/toolbar_image"
