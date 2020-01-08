@@ -1,6 +1,7 @@
 package nsop.neds.cascais360.Manager.Layout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Vibrator;
@@ -18,9 +19,11 @@ import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
+import nsop.neds.cascais360.ListDetailActivity;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderTwoPageAdapter;
+import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.Settings.Settings;
 
@@ -448,21 +451,33 @@ public class LayoutManager {
 
         for(int c = 0; c < node_list.size(); c++){
 
-            Node n = node_list.get(c);
+            final Node n = node_list.get(c);
 
             View category = View.inflate(context, R.layout.block_category_scroller_list, null);
+
+            LinearLayout category_frame = category.findViewById(R.id.category_title);
+
+            category_frame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ListDetailActivity.class);
+                    intent.putExtra(Variables.Title, n.Category.Description);
+                    intent.putExtra(Variables.Id, n.Category.ID);
+                    context.startActivity(intent);
+                }
+            });
 
             TextView category_title = category.findViewById(R.id.category_list_title);
             LinearLayout category_list = category.findViewById(R.id.category_list);
             ImageView icon = category.findViewById(R.id.category_icon);
 
             category_title.setText(n.Category.Description);
-            //category_title.setTextColor(Color.parseColor(Settings.colors.YearColor));
             icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
 
             if(c < node_list.size()-1){
-                category.setBackground(context.getDrawable(R.drawable.menu_border_bottom));
+                category.setBackground(context.getDrawable(R.drawable.border_bottom));
             }
+
 
             for(int i = 0; i < n.Nodes.size(); i++){
                 View category_item = View.inflate(context, R.layout.block_category_scroller_item, null);

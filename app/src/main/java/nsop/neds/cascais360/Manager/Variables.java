@@ -23,4 +23,6 @@ public class Variables {
     public static final String Email = "email";
 
 
+    public static String Id = "id";
+    public static String Title = "Title";
 }

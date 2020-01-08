@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -37,6 +38,9 @@ public class MenuManager {
         this.menuFragment = menuFragment;
         this.menu = toolbar.findViewById(R.id.menu_button);
 
+        Drawable border = context.getDrawable(R.drawable.toolbar_border_bottom);
+        border.setTint(Color.parseColor(Settings.colors.YearColor));
+        toolbar.setBackground(border);
 
         if(title != null) {
             TextView tv = toolbar.findViewById(R.id.toolbar_title);

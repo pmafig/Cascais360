@@ -26,6 +26,11 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name=".ListDetailActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".ListActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">

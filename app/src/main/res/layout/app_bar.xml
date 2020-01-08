@@ -8,7 +8,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_border_bottom"
+
             app:contentInsetStart="0dp"
             xmlns:android="http://schemas.android.com/apk/res/android">
 
