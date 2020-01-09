@@ -3,10 +3,16 @@ package nsop.neds.cascais360.Manager.Layout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
+import android.net.Uri;
 import android.os.Vibrator;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +43,8 @@ import nsop.neds.cascais360.Settings.Settings;
 
 public class LayoutManager {
 
+    private static String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} a{ color:%s; }</style><body>%s</body>";
+
     public static View setHighLightBlock(final HighLight b, final Context context){
         View block = View.inflate(context, R.layout.block_highlight, null);
 
@@ -63,6 +71,7 @@ public class LayoutManager {
                 Intent event = new Intent(context, DetailActivity.class);
                 event.putExtra(Variables.Id, b.ID);
                 context.startActivity(event);
+                ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
@@ -117,6 +126,7 @@ public class LayoutManager {
                     Intent event = new Intent(context, DetailActivity.class);
                     event.putExtra(Variables.Id, f.ID);
                     context.startActivity(event);
+                    ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             });
 
@@ -247,6 +257,7 @@ public class LayoutManager {
                         Intent event = new Intent(context, DetailActivity.class);
                         int id = f.ID;
                         event.putExtra(Variables.Id, id);
+                        ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         context.startActivity(event, activityOptionsCompat.toBundle());
                     }
                 });
@@ -611,9 +622,10 @@ public class LayoutManager {
         return frame_list;
     }
 
+    public static void setEvent(final Context context, LinearLayout mainContent, Event event){
 
-    public static void setEvent(LinearLayout mainContent, Event event){
         TextView title = mainContent.findViewById(R.id.event_title);
+        title.setText(event.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
         DownloadImageAsync obj = new DownloadImageAsync(){
@@ -626,10 +638,79 @@ public class LayoutManager {
         };
         obj.execute(event.Images.get(0));
 
-        title.setText(event.Title);
+        TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
+        descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+        String dateInfo = event.SubTitle != null && event.SubTitle.size() > 0 ? event.SubTitle.get(0).Text : null;
+        LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
+        if(dateInfo != null) {
+            ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
+            dateIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView dateLabel = mainContent.findViewById(R.id.date_label);
+            dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView moreDateLabel = mainContent.findViewById(R.id.label_more_dates);
+            moreDateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView date = mainContent.findViewById(R.id.event_date);
+            date.setText(event.SubTitle.get(0).Text);
+            date_frame.setVisibility(View.VISIBLE);
+        }
+
+
+
+        ImageView timeIcon = mainContent.findViewById(R.id.time_icon);
+        timeIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+        TextView timeLabel = mainContent.findViewById(R.id.label_time);
+        timeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        TextView moreTimeLabel = mainContent.findViewById(R.id.label_more_time);
+        moreTimeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+        ImageView locationIcon = mainContent.findViewById(R.id.location_icon);
+        locationIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+        TextView locationLabel = mainContent.findViewById(R.id.label_locality);
+        locationLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        TextView moreInfoLabel = mainContent.findViewById(R.id.label_more_info);
+        moreInfoLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+
+
+        LinearLayout price_frame = mainContent.findViewById(R.id.event_price_wrapper);
+
+        if(event.Price.Text != null) {
+            ImageView euroIcon = mainContent.findViewById(R.id.euro_icon);
+            euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView priceLabel = mainContent.findViewById(R.id.label_price);
+            priceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            WebView price = mainContent.findViewById(R.id.price);
+
+            String _p = event.Price.Text.substring(event.Price.Text.indexOf("<p>"), event.Price.Text.indexOf("</p>")) + "</p>" ;
+
+            price.loadData(String.format(html, Settings.colors.YearColor, _p), "text/html; charset=utf-8", "UTF-8");
+
+            Button eventTicket = mainContent.findViewById(R.id.event_ticket);
+            eventTicket.setVisibility(event.OnlineTicket != null ? View.VISIBLE : View.GONE );
+            if(event.OnlineTicket != null) {
+                final String ticket_page = event.OnlineTicket;
+                eventTicket.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
+                eventTicket.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(ticket_page));
+                        context.startActivity(browser);
+                    }
+                });
+            }
+
+            price_frame.setVisibility(View.VISIBLE);
+        }
+
+        if(event.Description != null) {
+            WebView description = mainContent.findViewById(R.id.event_description_info);
+            description.loadData(String.format(html, Settings.colors.YearColor, event.Description), "text/html; charset=utf-8", "UTF-8");
+            mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
+        }
     }
 
-    public static void setPlace(LinearLayout mainContent,Place place){
+    public static void setPlace(LinearLayout mainContent, Place place){
         TextView title = mainContent.findViewById(R.id.event_title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);

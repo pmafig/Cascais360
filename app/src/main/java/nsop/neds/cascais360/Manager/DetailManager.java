@@ -80,13 +80,14 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         try {
 
             if(detail.Events != null && detail.Events.size() > 0){
-                LayoutManager.setEvent(mainContent, detail.Events.get(0));
+                LayoutManager.setEvent(context, mainContent, detail.Events.get(0));
             }if(detail.Places != null && detail.Places.size() > 0){
                 LayoutManager.setPlace(mainContent, detail.Places.get(0));
             }if(detail.Routes != null && detail.Routes.size() > 0){
                 LayoutManager.setRoute(mainContent, detail.Routes.get(0));
             }
 
+            mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             //context.startActivity(new Intent(context, NoServiceActivity.class));
