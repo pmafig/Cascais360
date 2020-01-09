@@ -10,20 +10,6 @@
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 
-    <RelativeLayout
-        android:id="@+id/loadingPanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:background="@color/black_overlay">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true" />
-    </RelativeLayout>
-
     <include layout="@layout/content_detail"/>
 
 </LinearLayout>

@@ -29,20 +29,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import nsop.neds.cascais360.Entities.BlockEntity;
-import nsop.neds.cascais360.Entities.CategoryEntity;
-import nsop.neds.cascais360.Entities.CategoryNodeEntity;
-import nsop.neds.cascais360.Entities.DashboardEntity;
+
 import nsop.neds.cascais360.Entities.Json.Dashboard;
 import nsop.neds.cascais360.Entities.Json.HighLight;
-import nsop.neds.cascais360.Entities.Json.InfoBlock;
+
 import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
-import nsop.neds.cascais360.Entities.WeatherEntity;
+
 
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
-import nsop.neds.cascais360.R;
-import nsop.neds.cascais360.Settings.Settings;
+
 
 public class ListManager extends AsyncTask<String, Void, List<LayoutBlock>> {
 
@@ -135,7 +131,6 @@ public class ListManager extends AsyncTask<String, Void, List<LayoutBlock>> {
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
-            //context.startActivity(new Intent(context, NoServiceActivity.class));
         }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
@@ -18,10 +19,13 @@ import java.util.List;
 
 import nsop.neds.cascais360.DetailActivity;
 import nsop.neds.cascais360.Entities.Json.CategoryListDetail;
+import nsop.neds.cascais360.Entities.Json.Event;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
 import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
+import nsop.neds.cascais360.Entities.Json.Place;
+import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
@@ -107,15 +111,12 @@ public class LayoutManager {
             img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
                     vibe.vibrate(100);
 
-                    /*Intent event = new Intent(context, EventActivity.class);
-                    int nid = f.Nid();
-                    event.putExtra("nid", nid);
-                    context.startActivity(event);*/
+                    Intent event = new Intent(context, DetailActivity.class);
+                    event.putExtra(Variables.Id, f.ID);
+                    context.startActivity(event);
                 }
             });
 
@@ -241,10 +242,12 @@ public class LayoutManager {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         vibe.vibrate(100);
 
-                        /*Intent event = new Intent(context, EventActivity.class);
-                        int nid = f.Nid();
-                        event.putExtra("nid", nid);
-                        context.startActivity(event);*/
+                        ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
+
+                        Intent event = new Intent(context, DetailActivity.class);
+                        int id = f.ID;
+                        event.putExtra(Variables.Id, id);
+                        context.startActivity(event, activityOptionsCompat.toBundle());
                     }
                 });
             }
@@ -541,10 +544,10 @@ public class LayoutManager {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         vibe.vibrate(100);
 
-                        /*Intent event = new Intent(context, EventActivity.class);
-                        int nid = f.Nid();
-                        event.putExtra("nid", nid);
-                        context.startActivity(event);*/
+                        Intent event = new Intent(context, DetailActivity.class);
+                        int id = f.ID;
+                        event.putExtra(Variables.Id, id);
+                        context.startActivity(event);
                     }
                 });
             }
@@ -606,5 +609,56 @@ public class LayoutManager {
         }
 
         return frame_list;
+    }
+
+
+    public static void setEvent(LinearLayout mainContent, Event event){
+        TextView title = mainContent.findViewById(R.id.event_title);
+
+        final ImageView img = mainContent.findViewById(R.id.detail_image);
+        DownloadImageAsync obj = new DownloadImageAsync(){
+
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+        obj.execute(event.Images.get(0));
+
+        title.setText(event.Title);
+    }
+
+    public static void setPlace(LinearLayout mainContent,Place place){
+        TextView title = mainContent.findViewById(R.id.event_title);
+
+        final ImageView img = mainContent.findViewById(R.id.detail_image);
+        DownloadImageAsync obj = new DownloadImageAsync(){
+
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+        obj.execute(place.Images.get(0));
+        title.setText(place.Title);
+    }
+
+    public static void setRoute(LinearLayout mainContent, Route route){
+        TextView title = mainContent.findViewById(R.id.event_title);
+
+        final ImageView img = mainContent.findViewById(R.id.detail_image);
+        DownloadImageAsync obj = new DownloadImageAsync(){
+
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+        obj.execute(route.Images.get(0));
+
+        title.setText(route.Title);
     }
 }

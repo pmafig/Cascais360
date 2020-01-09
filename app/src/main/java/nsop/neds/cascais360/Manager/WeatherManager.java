@@ -1,7 +1,6 @@
 package nsop.neds.cascais360.Manager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
@@ -15,11 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.List;
-
-import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Weather;
-import nsop.neds.cascais360.Entities.WeatherEntity;
+
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.Settings.Settings;
 
@@ -27,8 +23,6 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
 
     Context context;
     LinearLayout weartherContent;
-
-    WeatherEntity weather;
 
     public WeatherManager(Context context, LinearLayout weartherContent){
         this.context = context;
@@ -64,15 +58,13 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
             TextView label_today = weartherContent.findViewById(R.id.label_Today);
             label_today.setText(Settings.labels.Today);
 
-            Drawable icon = null;
             try {
-                String i = weather.getIcon();
-                icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
-
+                Drawable icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
                 iconTemp.setImageDrawable(icon);
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                iconTemp.setVisibility(View.GONE);
             }
+
         }else{
             this.weartherContent.setVisibility(View.GONE);
         }

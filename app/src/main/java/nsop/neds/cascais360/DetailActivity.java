@@ -1,17 +1,25 @@
 package nsop.neds.cascais360;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Entities.UserEntity;
 import nsop.neds.cascais360.Manager.DetailManager;
+import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
 import nsop.neds.cascais360.Manager.Variables;
+import nsop.neds.cascais360.Manager.WeatherManager;
+import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 
 public class DetailActivity extends AppCompatActivity {
@@ -23,7 +31,27 @@ public class DetailActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
 
-        CallEvent(intent.getIntExtra(Variables.Id, 0));
+        int id = intent.getIntExtra(Variables.Id, 0);
+
+        CallEvent(id);
+
+        new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
+
+        LinearLayout menuFragment = findViewById(R.id.menu);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
+
+        new MenuManager(this, toolbar, menuFragment, null);
     }
 
 
@@ -33,15 +61,20 @@ public class DetailActivity extends AppCompatActivity {
             UserEntity user = AccountGeneral.getUser(this);
             new DetailManager(nid,
                     this,
-                    (LinearLayout) findViewById(R.id.detail_frame),
-                    (RelativeLayout) findViewById(R.id.loadingPanel)
+                    (LinearLayout) findViewById(R.id.detail_frame)
             ).execute(WebApiCalls.getDetail(nid, user.getSsk(), user.getUserId()));
         }else{
             new DetailManager(nid,
                     this,
-                    (LinearLayout) findViewById(R.id.detail_frame),
-                    (RelativeLayout) findViewById(R.id.loadingPanel)
+                    (LinearLayout) findViewById(R.id.detail_frame)
             ).execute(WebApiCalls.getDetail(nid, "", ""));
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
 }

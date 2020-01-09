@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -22,27 +23,29 @@ import java.util.Comparator;
 import java.util.List;
 
 import nsop.neds.cascais360.Entities.Json.Dashboard;
+import nsop.neds.cascais360.Entities.Json.Detail;
+import nsop.neds.cascais360.Entities.Json.Event;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
+import nsop.neds.cascais360.Entities.Json.Place;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
+import nsop.neds.cascais360.R;
 
-public class DetailManager extends AsyncTask<String, Void, List<LayoutBlock>> {
+public class DetailManager extends AsyncTask<String, Void, Detail> {
 
-    RelativeLayout loading;
     LinearLayout mainContent;
     Context context;
     int nid;
 
-    public DetailManager(int nid, Context context, LinearLayout mainContent, RelativeLayout loading){
+    public DetailManager(int nid, Context context, LinearLayout mainContent){
         this.nid = nid;
-        this.loading = loading;
         this.context = context;
         this.mainContent = mainContent;
     }
 
     @Override
-    protected List<LayoutBlock> doInBackground(String... strings) {
+    protected Detail doInBackground(String... strings) {
         try {
             JSONObject response = CommonManager.getResponseData(strings[0]);
 
@@ -54,28 +57,15 @@ public class DetailManager extends AsyncTask<String, Void, List<LayoutBlock>> {
 
                 String crc = responseData.getString("CRC");
 
-                Dashboard inMemory = sm.getDashboard();
+                final JSONObject jsonObject = responseData.getJSONObject("Data");
 
-                if(inMemory != null && crc.startsWith(inMemory.CRC))
-                    return inMemory.Blocks;
+                String _s = jsonObject.toString();
 
-                final JSONArray jsonArray = responseData.getJSONArray("Data");
-
-                String _s = jsonArray.toString();
-
-                Type listType = new TypeToken<ArrayList<LayoutBlock>>(){}.getType();
-                List<LayoutBlock> list = new Gson().fromJson(_s, listType);
+                Detail detail = new Gson().fromJson(_s, Detail.class);
 
                 sm = null;
 
-                return list;
-            }else{
-                Dashboard inMemory = sm.getDashboard();
-
-                sm = null;
-
-                if(inMemory != null)
-                    return inMemory.Blocks;
+                return detail;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,43 +74,23 @@ public class DetailManager extends AsyncTask<String, Void, List<LayoutBlock>> {
     }
 
     @Override
-    protected void onPostExecute(List<LayoutBlock> blockList) {
-        super.onPostExecute(blockList);
+    protected void onPostExecute(Detail detail) {
+        super.onPostExecute(detail);
 
         try {
-            mainContent.removeAllViews();
 
-            Collections.sort(blockList, new Comparator<LayoutBlock>() {
-                @Override
-                public int compare(LayoutBlock o1, LayoutBlock o2) {
-                    return o1.Weight < o2.Weight ? -1
-                            : o1.Weight > o2.Weight ? 1
-                            : 0;
-                }
-            });
-
-            for (LayoutBlock b : blockList) {
-
-                switch (b.Type) {
-                    case 1:
-                        JsonObject jsonObjectType1 = new Gson().toJsonTree(b.Contents).getAsJsonObject();
-                        HighLight t1 = new Gson().fromJson(jsonObjectType1.toString(), HighLight.class);
-                        mainContent.addView(LayoutManager.setHighLightBlock(t1, context));
-                        break;
-                    case 6:
-                        JsonArray jsonObjectType6 = new Gson().toJsonTree(b.Contents).getAsJsonArray();
-                        Type NodeTypeList = new TypeToken<ArrayList<Node>>(){}.getType();
-                        List<Node> node_list = new Gson().fromJson(jsonObjectType6.toString(), NodeTypeList);
-                        mainContent.addView(LayoutManager.setCategoryListBlock(b.Title, node_list, context));
-                        break;
-                }
+            if(detail.Events != null && detail.Events.size() > 0){
+                LayoutManager.setEvent(mainContent, detail.Events.get(0));
+            }if(detail.Places != null && detail.Places.size() > 0){
+                LayoutManager.setPlace(mainContent, detail.Places.get(0));
+            }if(detail.Routes != null && detail.Routes.size() > 0){
+                LayoutManager.setRoute(mainContent, detail.Routes.get(0));
             }
-
-            loading.setVisibility(View.GONE);
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             //context.startActivity(new Intent(context, NoServiceActivity.class));
         }
     }
+
 }
