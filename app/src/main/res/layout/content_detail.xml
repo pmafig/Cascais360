@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/block_loading" android:visibility="visible"/>
+    <include layout="@layout/block_loading" android:visibility="gone"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -273,7 +273,7 @@
                             android:id="@+id/date_label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="DATA"
+                            android:text=""
                             android:fontFamily="@font/montserrat_regular"
                             android:textColor="@color/colorHit"
                             android:textSize="16dp"/>

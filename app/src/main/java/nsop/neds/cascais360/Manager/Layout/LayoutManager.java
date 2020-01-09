@@ -647,6 +647,7 @@ public class LayoutManager {
             ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
             dateIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView dateLabel = mainContent.findViewById(R.id.date_label);
+            dateLabel.setText(Settings.labels.Date);
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
             TextView moreDateLabel = mainContent.findViewById(R.id.label_more_dates);
             moreDateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -660,6 +661,7 @@ public class LayoutManager {
         ImageView timeIcon = mainContent.findViewById(R.id.time_icon);
         timeIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
         TextView timeLabel = mainContent.findViewById(R.id.label_time);
+        timeLabel.setText(Settings.labels.Schedule);
         timeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
         TextView moreTimeLabel = mainContent.findViewById(R.id.label_more_time);
         moreTimeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -667,6 +669,7 @@ public class LayoutManager {
         ImageView locationIcon = mainContent.findViewById(R.id.location_icon);
         locationIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
         TextView locationLabel = mainContent.findViewById(R.id.label_locality);
+        locationLabel.setText(Settings.labels.Place);
         locationLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
         TextView moreInfoLabel = mainContent.findViewById(R.id.label_more_info);
         moreInfoLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
