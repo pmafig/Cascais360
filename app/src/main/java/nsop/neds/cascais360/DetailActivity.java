@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -17,6 +20,8 @@ import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 
 public class DetailActivity extends AppCompatActivity {
+
+    TextView titleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,9 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        new MenuManager(this, toolbar, menuFragment, null);
+        new MenuManager(this, toolbar, menuFragment, "684");
+
+        titleView = toolbar.findViewById(R.id.toolbar_title);
     }
 
 
@@ -53,9 +60,11 @@ public class DetailActivity extends AppCompatActivity {
         SessionManager sm = new SessionManager(this);
         if(sm.asUserLoggedOn()){
             UserEntity user = AccountGeneral.getUser(this);
-            new DetailManager(nid,this,(LinearLayout) findViewById(R.id.detail_frame)).execute(WebApiCalls.getDetail(nid, user.getSsk(), user.getUserId()));
+            new DetailManager(titleView, nid,this,(LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
+                    .execute(WebApiCalls.getDetail(nid, user.getSsk(), user.getUserId()));
         }else{
-            new DetailManager(nid, this, (LinearLayout) findViewById(R.id.detail_frame)).execute(WebApiCalls.getDetail(nid, "", ""));
+            new DetailManager(titleView, nid, this, (LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
+                    .execute(WebApiCalls.getDetail(nid, "", ""));
         }
     }
 

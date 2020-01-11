@@ -103,5 +103,6 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
         Settings.colors = r.Colors;
         Settings.labels = r.Labels;
         Settings.labels = r.Labels;
+        Settings.aboutApp = r.AboutApp;
     }
 }

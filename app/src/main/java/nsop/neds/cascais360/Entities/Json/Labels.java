@@ -1,6 +1,7 @@
 package nsop.neds.cascais360.Entities.Json;
 
 public class Labels {
+    public String AboutApp;
     public String Agenda;
     public String Event;
     public String Events;

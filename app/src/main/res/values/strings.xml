@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cascais 360</string>
+    <string name="myCascais">MyCascais</string>
 
     <string name="mycascais_email_phone">E-MAIL / UTILIZADOR</string>
     <string name="mycascais_password">PALAVRA PASSE</string>

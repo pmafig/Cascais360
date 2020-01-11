@@ -4,15 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".DetailActivity">
+    tools:context=".AboutAppActivity">
 
     <include layout="@layout/app_bar"/>
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 
-    <include layout="@layout/loading"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+        <WebView
+            android:id="@+id/about_app"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"/>
 
-    <include layout="@layout/content_detail"/>
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -11,6 +11,8 @@ public class Settings {
     public static Colors colors;
     public static Labels labels;
 
+    public static String aboutApp;
+
     public static int timeout = 2000;
 
     public static int dotsMargin = 5;

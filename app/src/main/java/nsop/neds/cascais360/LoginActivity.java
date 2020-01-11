@@ -24,14 +24,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
+import nsop.neds.cascais360.Entities.Json.LoginUserData;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
+import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.ReportManager;
@@ -102,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mAccountManager = AccountManager.get(getBaseContext());
+        mAccountManager = AccountManager.get(this);
 
         mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
         if (mAuthTokenType == null)
@@ -155,29 +158,26 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postSuccess(String json){
-        if(ReportManager.isAuthenticated(json)){
+
+        LoginUserData data = new Gson().fromJson(json, LoginUserData.class);
+
+
+        if(data.ResponseData.IsAuthenticated){ // ReportManager.isAuthenticated(json)
             try {
                 SessionManager sm = new SessionManager(this);
 
                 menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
                 menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
                 TextView name = menuFragment.findViewById(R.id.user_name);
-                name.setText(ReportManager.getDisplayname(json));
+                name.setText(data.ResponseData.DisplayName);
 
-                sm.setDisplayname(ReportManager.getDisplayname(json));
+                sm.setDisplayname(data.ResponseData.DisplayName);
                 sm.setFullName(ReportManager.getFullName(json));
-                sm.setDisplaystatus(ReportManager.getDisplayvalidation(json));
                 sm.setEmail(ReportManager.getEmail(json));
                 sm.setMobileNumber(ReportManager.getMobileNumber(json));
                 sm.setAddress(ReportManager.getAddress(json));
 
-                submit(ReportManager.getSSk(json), ReportManager.getUserID(json), ReportManager.getRefreshToken(json));
-
-                sm.setDisclaimers(ReportManager.getDisclaimers(json));
-                sm.setAppKeys(ReportManager.getAppKeys(json));
-                sm.setFullDisclaimer(ReportManager.getFullDisclaimer(json));
-
-                //intentNavegation();
+                submit(data.ResponseData.SSK, data.ResponseData.UserID, data.ResponseData.RefreshToken);
             }catch (Exception e){
                 AccountGeneral.logout(this);
                 intentNavegation();
@@ -193,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
         final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
         final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
 
-        final String accountType = AccountGeneral.ACCOUNT_TYPE; // getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
+        final String accountType = AccountGeneral.ACCOUNT_TYPE;
 
         String authtoken = null;
         Bundle data = new Bundle();
@@ -226,20 +226,15 @@ public class LoginActivity extends AppCompatActivity {
     private void finishLogin(Intent intent) {
         String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-        String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
 
-        final Account account = new Account(accountName, accountType);
+        final Account account = new Account(accountName, AccountGeneral.ACCOUNT_TYPE);
 
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, true)) {
             String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
             String authtokenType = mAuthTokenType;
 
-            final int uid = Binder.getCallingUid();
-
             mAccountManager.addAccountExplicitly(account, accountPassword, intent.getExtras());
             mAccountManager.setAuthToken(account, authtokenType, authtoken);
-
-
         }else{
             mAccountManager.setPassword(account, accountPassword);
         }
@@ -275,13 +270,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void intentNavegation(){
-        if(getIntent().hasExtra("nid")){
-            /*Intent event = new Intent(this, EventActivity.class);
-            event.putExtra("nid", getIntent().getIntExtra("nid", 0));
+        if(getIntent().hasExtra(Variables.Id)){
+            Intent event = new Intent(this, DetailActivity.class);
+            event.putExtra(Variables.Id, getIntent().getIntExtra(Variables.Id, 0));
+            event.putExtra(Variables.RequiredLogin, true);
             event.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(event);*/
+            startActivity(event);
         }else {
-            //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

@@ -14,12 +14,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
+import nsop.neds.cascais360.AboutAppActivity;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.ListActivity;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.Settings.Settings;
+import nsop.neds.cascais360.SettingsActivity;
 import nsop.neds.cascais360.WebApi.ReportManager;
 
 public class MenuManager {
@@ -69,6 +71,29 @@ public class MenuManager {
             @Override
             public void onClick(View v) {
                 clickMenu();
+            }
+        });
+
+        menuFragment.findViewById(R.id.user_frame).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                context.startActivity(new Intent(context, SettingsActivity.class));
+            }
+        });
+
+        menuFragment.findViewById(R.id.menu_button_about).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                context.startActivity(new Intent(context, AboutAppActivity.class));
             }
         });
 

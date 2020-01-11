@@ -34,14 +34,18 @@ import nsop.neds.cascais360.R;
 
 public class DetailManager extends AsyncTask<String, Void, Detail> {
 
+    TextView title;
+    RelativeLayout loading;
     LinearLayout mainContent;
     Context context;
     int nid;
 
-    public DetailManager(int nid, Context context, LinearLayout mainContent){
+    public DetailManager(TextView titleView, int nid, Context context, LinearLayout mainContent, RelativeLayout loading){
         this.nid = nid;
         this.context = context;
         this.mainContent = mainContent;
+        this.loading = loading;
+        title = titleView;
     }
 
     @Override
@@ -55,15 +59,11 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
                 JSONObject responseData = response.getJSONObject("ResponseData");
 
-                String crc = responseData.getString("CRC");
-
                 final JSONObject jsonObject = responseData.getJSONObject("Data");
 
                 String _s = jsonObject.toString();
 
                 Detail detail = new Gson().fromJson(_s, Detail.class);
-
-                sm = null;
 
                 return detail;
             }
@@ -80,6 +80,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         try {
 
             if(detail.Events != null && detail.Events.size() > 0){
+                title.setText(detail.Events.get(0).CategoryTheme);
                 LayoutManager.setEvent(context, mainContent, detail.Events.get(0));
             }if(detail.Places != null && detail.Places.size() > 0){
                 LayoutManager.setPlace(mainContent, detail.Places.get(0));
@@ -92,6 +93,8 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
             Log.e("Error", e.getMessage());
             //context.startActivity(new Intent(context, NoServiceActivity.class));
         }
+
+        loading.setVisibility(View.GONE);
     }
 
 }

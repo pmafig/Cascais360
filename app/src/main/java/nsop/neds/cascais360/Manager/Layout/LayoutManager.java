@@ -43,7 +43,7 @@ import nsop.neds.cascais360.Settings.Settings;
 
 public class LayoutManager {
 
-    private static String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} a{ color:%s; }</style><body>%s</body>";
+    private static String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} }</style><body>%s</body>";
 
     public static View setHighLightBlock(final HighLight b, final Context context){
         View block = View.inflate(context, R.layout.block_highlight, null);
@@ -623,7 +623,6 @@ public class LayoutManager {
     }
 
     public static void setEvent(final Context context, LinearLayout mainContent, Event event){
-
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(event.Title);
 
@@ -687,7 +686,7 @@ public class LayoutManager {
 
             String _p = event.Price.Text.substring(event.Price.Text.indexOf("<p>"), event.Price.Text.indexOf("</p>")) + "</p>" ;
 
-            price.loadData(String.format(html, Settings.colors.YearColor, _p), "text/html; charset=utf-8", "UTF-8");
+            price.loadData(String.format(html, _p), "text/html; charset=utf-8", "UTF-8");
 
             Button eventTicket = mainContent.findViewById(R.id.event_ticket);
             eventTicket.setVisibility(event.OnlineTicket != null ? View.VISIBLE : View.GONE );
@@ -708,7 +707,7 @@ public class LayoutManager {
 
         if(event.Description != null) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(html, Settings.colors.YearColor, event.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(String.format(html, event.Description), "text/html; charset=utf-8", "UTF-8");
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
     }

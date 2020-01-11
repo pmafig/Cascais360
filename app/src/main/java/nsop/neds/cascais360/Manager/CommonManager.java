@@ -107,4 +107,12 @@ public class CommonManager {
     public void ShowErrorPage(Context context, Exception ex){
         //context.startActivity(new Intent(context, NoServiceActivity.class));
     }
+
+    public static String WebViewFormat(String content){
+        String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} a{ color:%s; }</style><body>%s</body>";
+
+        String h = String.format(html, Settings.colors.YearColor, content);
+
+        return String.format("<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";}</style><body>%s</body>", content);
+    }
 }

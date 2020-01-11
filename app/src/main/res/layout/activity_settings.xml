@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AboutAppActivity">
+
+    <include layout="@layout/app_bar"/>
+
+    <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/app_settings_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingVertical="10dp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginHorizontal="15dp"
+            android:textSize="16dp"
+            android:text="Idioma"
+            android:fontFamily="@font/montserrat_bold"
+            android:background="@drawable/border_bottom"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginHorizontal="15dp"
+            android:textSize="16dp"
+            android:text="Português"
+            android:fontFamily="@font/montserrat_light" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:paddingVertical="10dp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginHorizontal="15dp"
+            android:textSize="16dp"
+            android:text="Permissões"
+            android:fontFamily="@font/montserrat_bold"
+            android:background="@drawable/border_bottom"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:paddingVertical="10dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/app_settings_permissions_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_calendar"/>
+            <TextView
+                android:id="@+id/app_settings_permissions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:layout_marginLeft="10dp"
+                android:textSize="16dp"
+                android:text="Permissões"
+                android:fontFamily="@font/montserrat_light" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="15dp"
+            android:paddingVertical="10dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/app_settings_notifications_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_bell"/>
+                <Switch
+                    android:id="@+id/app_settings_notifications_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked = "true"
+                    android:text="Notificações"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="10dp"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/app_settings_notifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:paddingHorizontal="35dp"
+                android:textSize="11dp"
+                android:text="Configure as suas notificações"
+                android:fontFamily="@font/montserrat_light" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

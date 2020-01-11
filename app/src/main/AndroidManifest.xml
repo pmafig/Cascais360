@@ -21,6 +21,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SettingsActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".AboutAppActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".EmailSentActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
