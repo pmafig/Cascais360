@@ -23,9 +23,11 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
 
     private LinearLayout mainContent;
     private Context context;
+    private boolean redirect;
 
-    public ResourcesManager(Context context){
+    public ResourcesManager(Context context, boolean redirect){
         this.context = context;
+        this.redirect = redirect;
     }
 
     @Override
@@ -53,17 +55,13 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
 
                 sm.setResources(resources);
 
-                sm = null;
-
                 return resources;
             }else{
                 Resources inMemory = sm.getResources();
 
-                if(inMemory != null)
-
-                    sm = null;
-
+                if(inMemory != null) {
                     return inMemory;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,14 +81,16 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
 
                 setSettings(resources);
 
-                SessionManager sm = new SessionManager(context);
+                if(redirect) {
+                    SessionManager sm = new SessionManager(context);
 
-                if (sm != null) {
-                    if (sm.getOnboarding()) {
-                        context.startActivity(new Intent(context, MainActivity.class));
-                    } else {
-                        sm.setOnboarding();
-                        context.startActivity(new Intent(context, OnBoardingActivity.class));
+                    if (sm != null) {
+                        if (sm.getOnboarding()) {
+                            context.startActivity(new Intent(context, MainActivity.class));
+                        } else {
+                            sm.setOnboarding();
+                            context.startActivity(new Intent(context, OnBoardingActivity.class));
+                        }
                     }
                 }
             }

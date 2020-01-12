@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="15dp"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/more_dates_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="datas"
+        android:textAllCaps="true"
+        android:textSize="18dp"
+        android:paddingVertical="15dp"
+        android:paddingHorizontal="15dp"
+        android:background="@drawable/border_bottom"
+        android:textColor="@color/colorBlack"
+        android:fontFamily="@font/montserrat_regular"/>
+    <LinearLayout
+        android:id="@+id/more_dates_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="15dp"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+</LinearLayout>

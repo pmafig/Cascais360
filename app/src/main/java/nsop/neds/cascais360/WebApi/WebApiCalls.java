@@ -1,11 +1,12 @@
 package nsop.neds.cascais360.WebApi;
 
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
+import nsop.neds.cascais360.Settings.Settings;
 
 public class WebApiCalls {
 
     public static String getDashBoard(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"dashboard\", \"LangCode\":\"en\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"dashboard\", \"LangCode\":\""+ Settings.LangCode +"\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
@@ -21,7 +22,9 @@ public class WebApiCalls {
     }
 
     public static String getResources(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"resources\", \"LangCode\":\"pt\"}", WebApiClient.SITE_KEY);
+        String json = String.format("{\"ContentType\":\"resources\", \"LangCode\":\"%s\"}", Settings.LangCode);
+
+        String rt = new MessageEncryption().Encrypt(json, WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 

@@ -12,9 +12,14 @@ public class Place {
     public List<Category> Category;
 
     public String CustomHours;
+    public List<String> NextDates;
     public List<String> Images;
 
+    public OfficeHours OfficeHours;
+
     public String Description;
+
+    public List<Point> Points;
 
     public Price Price;
 }

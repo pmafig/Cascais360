@@ -56,8 +56,6 @@ public class CommonManager {
                 BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 String response = WebApiMessages.DecryptMessage(CommonManager.readStream(in));
 
-                DebugConsoleLog(response);
-
                 return new JSONObject(response);
             } finally {
                 urlConnection.disconnect();

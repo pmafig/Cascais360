@@ -27,6 +27,9 @@ public class SessionManager {
     private static final String townCouncil = "TownCouncil";
 
 
+    private static final String langcode = "LangCode";
+    private static final String langcodeposition = "LangCodePosition";
+
     private static final String onBoarding = "onboarding";
     private static final String recover = "recover";
     private static final String newaccount = "newaccount";
@@ -111,6 +114,14 @@ public class SessionManager {
     //public void setRecoverEmail(String email){ editor.putString(routesNotifications, email).commit(); }
 
     //public String getRecoverEmail(){ return sharedpreferences.getString(routesNotifications, "");    }
+
+    public String getLangCode(){ return sharedpreferences.getString(langcode, "pt");    }
+
+    public void setLangCode(String langCode){ editor.putString(langcode, langCode).commit(); }
+
+    public int getLangCodePosition(){ return sharedpreferences.getInt(langcodeposition, 0);    }
+
+    public void setLangCodePosition(int langCodePosition){ editor.putInt(langcodeposition, langCodePosition).commit(); }
 
     public String getDisplayname(){ return sharedpreferences.getString(username, "--");    }
 

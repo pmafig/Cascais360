@@ -45,7 +45,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         this.context = context;
         this.mainContent = mainContent;
         this.loading = loading;
-        title = titleView;
+        this.title = titleView;
     }
 
     @Override
@@ -80,11 +80,13 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         try {
 
             if(detail.Events != null && detail.Events.size() > 0){
-                title.setText(detail.Events.get(0).CategoryTheme);
+                this.title.setText(detail.Events.get(0).CategoryTheme);
                 LayoutManager.setEvent(context, mainContent, detail.Events.get(0));
             }if(detail.Places != null && detail.Places.size() > 0){
-                LayoutManager.setPlace(mainContent, detail.Places.get(0));
+                this.title.setText(detail.Places.get(0).CategoryTheme);
+                LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
             }if(detail.Routes != null && detail.Routes.size() > 0){
+                this.title.setText(detail.Routes.get(0).CategoryTheme);
                 LayoutManager.setRoute(mainContent, detail.Routes.get(0));
             }
 

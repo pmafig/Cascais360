@@ -1,13 +1,13 @@
 package nsop.neds.cascais360.Manager.Layout;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableContainer;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.view.View;
@@ -31,6 +31,7 @@ import nsop.neds.cascais360.Entities.Json.InfoBlock;
 import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Place;
+import nsop.neds.cascais360.Entities.Json.Point;
 import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
@@ -622,7 +623,7 @@ public class LayoutManager {
         return frame_list;
     }
 
-    public static void setEvent(final Context context, LinearLayout mainContent, Event event){
+    public static void setEvent(final Context context, LinearLayout mainContent, final Event event){
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(event.Title);
 
@@ -648,31 +649,124 @@ public class LayoutManager {
             TextView dateLabel = mainContent.findViewById(R.id.date_label);
             dateLabel.setText(Settings.labels.Date);
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
             TextView moreDateLabel = mainContent.findViewById(R.id.label_more_dates);
-            moreDateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            if(event.NextDates.size() > 0) {
+                moreDateLabel.setText(String.format("[+ %s]", Settings.labels.Dates));
+                moreDateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                moreDateLabel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Dialog dialog = new Dialog(context);
+
+                        View dates = View.inflate(context, R.layout.block_event_more_dates, null);
+                        LinearLayout wrapper = dates.findViewById(R.id.more_dates_content);
+
+                        for (String d : event.NextDates) {
+                            TextView date = new TextView(context);
+                            date.setText(d);
+
+                            wrapper.addView(date);
+                        }
+
+                        dialog.setContentView(dates);
+
+                        ((TextView) dialog.findViewById(R.id.more_dates_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                        dialog.show();
+                    }
+                });
+                moreDateLabel.setVisibility(View.VISIBLE);
+            }else{
+                moreDateLabel.setVisibility(View.GONE);
+            }
+
             TextView date = mainContent.findViewById(R.id.event_date);
             date.setText(event.SubTitle.get(0).Text);
+            date.setVisibility(View.VISIBLE);
             date_frame.setVisibility(View.VISIBLE);
+        }else{
+            date_frame.setVisibility(View.GONE);
         }
 
 
+        LinearLayout schedule_frame = mainContent.findViewById(R.id.event_time_wrapper);
+        if(event.CustomHours != null){
+            schedule_frame.setVisibility(View.VISIBLE);
 
-        ImageView timeIcon = mainContent.findViewById(R.id.time_icon);
-        timeIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
-        TextView timeLabel = mainContent.findViewById(R.id.label_time);
-        timeLabel.setText(Settings.labels.Schedule);
-        timeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
-        TextView moreTimeLabel = mainContent.findViewById(R.id.label_more_time);
-        moreTimeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            ImageView timeIcon = mainContent.findViewById(R.id.time_icon);
+            timeIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView timeLabel = mainContent.findViewById(R.id.label_time);
+            timeLabel.setText(Settings.labels.Schedule);
+            timeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView moreTimeLabel = mainContent.findViewById(R.id.label_more_time);
+            moreTimeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
-        ImageView locationIcon = mainContent.findViewById(R.id.location_icon);
-        locationIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
-        TextView locationLabel = mainContent.findViewById(R.id.label_locality);
-        locationLabel.setText(Settings.labels.Place);
-        locationLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
-        TextView moreInfoLabel = mainContent.findViewById(R.id.label_more_info);
-        moreInfoLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            schedule_frame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.block_event_hours);
 
+                    ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    WebView schedule = dialog.findViewById(R.id.more_hours_content);
+                    schedule.loadData(String.format(html, event.CustomHours), "text/html; charset=utf-8", "UTF-8");
+
+                    dialog.show();
+                }
+            });
+        }else{
+            schedule_frame.setVisibility(View.GONE);
+        }
+
+        LinearLayout locationWrapper = mainContent.findViewById(R.id.event_location_wrapper);
+
+        if(event.Points != null && event.Points.size() > 0) {
+            final Point point = event.Points.get(0);
+
+            ImageView locationIcon = mainContent.findViewById(R.id.location_icon);
+            locationIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView locationLabel = mainContent.findViewById(R.id.label_locality);
+            locationLabel.setText(Settings.labels.Place);
+            locationLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView moreInfoLabel = mainContent.findViewById(R.id.label_more_info);
+            moreInfoLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+            TextView locationName = mainContent.findViewById(R.id.location_name);
+            locationName.setText(point.Title);
+
+            LinearLayout locationFrame = mainContent.findViewById(R.id.location_frame);
+            locationFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.block_event_more_info);
+
+                    ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_name)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    TextView name = (TextView) dialog.findViewById(R.id.more_info_name);
+                    name.setText(point.Title);
+
+                    WebView addess = dialog.findViewById(R.id.more_info_address);
+                    addess.loadData(String.format(html, point.Address), "text/html; charset=utf-8", "UTF-8");
+
+                    TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
+                    town.setText(point.TownCouncil.Description);
+
+                    TextView location = (TextView) dialog.findViewById(R.id.more_info_geo_location);
+                    location.setText(String.format("%s, %s", point.Coordinates.Lat, point.Coordinates.Lng));
+
+                    dialog.show();
+                }
+            });
+
+            locationWrapper.setVisibility(View.VISIBLE);
+        }
 
 
         LinearLayout price_frame = mainContent.findViewById(R.id.event_price_wrapper);
@@ -708,6 +802,193 @@ public class LayoutManager {
         if(event.Description != null) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
             description.loadData(String.format(html, event.Description), "text/html; charset=utf-8", "UTF-8");
+            mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public static void setPlace(final Context context, LinearLayout mainContent, final Place place){
+        TextView title = mainContent.findViewById(R.id.event_title);
+        title.setText(place.Title);
+
+        final ImageView img = mainContent.findViewById(R.id.detail_image);
+        DownloadImageAsync obj = new DownloadImageAsync(){
+
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+        obj.execute(place.Images.get(0));
+
+        TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
+        descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+        String dateInfo = place.SubTitle != null && place.SubTitle.size() > 0 ? place.SubTitle.get(0).Text : null;
+        LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
+        if(dateInfo != null) {
+            ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
+            dateIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView dateLabel = mainContent.findViewById(R.id.date_label);
+            dateLabel.setText(Settings.labels.Date);
+            dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+            if(place.OfficeHours != null) {
+                TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
+                officeHoursLabel.setText(place.OfficeHours.StatusLabel);
+                officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
+
+                Drawable border = context.getDrawable(R.drawable.office_hours);
+                border.setTint(Color.parseColor(Settings.colors.YearColor));
+                officeHoursLabel.setBackground(border);
+
+                officeHoursLabel.setVisibility(View.VISIBLE);
+
+                WebView officeHours = mainContent.findViewById(R.id.place_date);
+                officeHours.loadData(String.format(html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
+                officeHours.setVisibility(View.VISIBLE);
+            }
+
+            date_frame.setVisibility(View.VISIBLE);
+        }else{
+            date_frame.setVisibility(View.GONE);
+        }
+
+
+        LinearLayout schedule_frame = mainContent.findViewById(R.id.event_time_wrapper);
+        if(place.CustomHours != null){
+            schedule_frame.setVisibility(View.VISIBLE);
+
+            ImageView timeIcon = mainContent.findViewById(R.id.time_icon);
+            timeIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView timeLabel = mainContent.findViewById(R.id.label_time);
+            timeLabel.setText(Settings.labels.Schedule);
+            timeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView moreTimeLabel = mainContent.findViewById(R.id.label_more_time);
+            moreTimeLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+            schedule_frame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.block_event_hours);
+
+                    ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    WebView schedule = dialog.findViewById(R.id.more_hours_content);
+                    schedule.loadData(String.format(html, place.CustomHours), "text/html; charset=utf-8", "UTF-8");
+
+                    dialog.show();
+                }
+            });
+        }else{
+            schedule_frame.setVisibility(View.GONE);
+        }
+
+        LinearLayout locationWrapper = mainContent.findViewById(R.id.event_location_wrapper);
+
+        if(place.Points != null && place.Points.size() > 0) {
+            final Point point = place.Points.get(0);
+
+            ImageView locationIcon = mainContent.findViewById(R.id.location_icon);
+            locationIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView locationLabel = mainContent.findViewById(R.id.label_locality);
+            locationLabel.setText(Settings.labels.Place);
+            locationLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            TextView moreInfoLabel = mainContent.findViewById(R.id.label_more_info);
+            moreInfoLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+            TextView locationName = mainContent.findViewById(R.id.location_name);
+            locationName.setText(point.Title);
+
+            LinearLayout locationFrame = mainContent.findViewById(R.id.location_frame);
+            locationFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.block_event_more_info);
+
+                    ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_name)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    TextView name = (TextView) dialog.findViewById(R.id.more_info_name);
+                    name.setText(point.Title);
+
+                    WebView addess = dialog.findViewById(R.id.more_info_address);
+                    addess.loadData(String.format(html, point.Address), "text/html; charset=utf-8", "UTF-8");
+
+                    TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
+                    town.setText(point.TownCouncil.Description);
+
+                    TextView location = (TextView) dialog.findViewById(R.id.more_info_geo_location);
+                    location.setText(String.format("%s, %s", point.Coordinates.Lat, point.Coordinates.Lng));
+
+                    dialog.show();
+                }
+            });
+
+            locationWrapper.setVisibility(View.VISIBLE);
+        }
+
+
+        LinearLayout price_frame = mainContent.findViewById(R.id.event_price_wrapper);
+
+        if(place.Price.Text != null) {
+            ImageView euroIcon = mainContent.findViewById(R.id.euro_icon);
+            euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+            TextView priceLabel = mainContent.findViewById(R.id.label_price);
+            priceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            WebView price = mainContent.findViewById(R.id.price);
+
+            String _p = place.Price.Text.substring(place.Price.Text.indexOf("<p>"), place.Price.Text.indexOf("</p>")) + "</p>" ;
+
+            price.loadData(String.format(html, _p), "text/html; charset=utf-8", "UTF-8");
+
+            TextView morePriceLabel = mainContent.findViewById(R.id.label_more_price);
+            morePriceLabel.setText(String.format("[+ %s]", Settings.labels.Info));
+            morePriceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            morePriceLabel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.block_event_hours);
+
+                    TextView title = dialog.findViewById(R.id.more_hours);
+                    title.setText(Settings.labels.Price);
+                    title.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    WebView schedule = dialog.findViewById(R.id.more_hours_content);
+                    schedule.loadData(String.format(html, place.Price.Text), "text/html; charset=utf-8", "UTF-8");
+
+                    dialog.show();
+                }
+            });
+            morePriceLabel.setVisibility(View.VISIBLE);
+
+
+            Button eventTicket = mainContent.findViewById(R.id.event_ticket);
+            eventTicket.setVisibility(place.OnlineTicket != null ? View.VISIBLE : View.GONE );
+            if(place.OnlineTicket != null) {
+                final String ticket_page = place.OnlineTicket;
+                eventTicket.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
+                eventTicket.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        /*Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(ticket_page));
+                        context.startActivity(browser);*/
+                    }
+                });
+            }
+
+            price_frame.setVisibility(View.VISIBLE);
+        }
+
+        if(place.Description != null) {
+            WebView description = mainContent.findViewById(R.id.event_description_info);
+            description.loadData(String.format(html, place.Description), "text/html; charset=utf-8", "UTF-8");
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
     }

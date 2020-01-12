@@ -10,9 +10,8 @@
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 
-    <include layout="@layout/loading"/>
+    <include layout="@layout/loading" />
 
-    <include layout="@layout/content_detail"/>
-
+    <include layout="@layout/content_detail" />
 
 </LinearLayout>

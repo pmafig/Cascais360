@@ -12,9 +12,12 @@ public class Event {
     public List<Category> Category;
 
     public String CustomHours;
+    public List<String> NextDates;
     public List<String> Images;
 
     public String Description;
+
+    public List<Point> Points;
 
     public OfficeHours OfficeHours;
 

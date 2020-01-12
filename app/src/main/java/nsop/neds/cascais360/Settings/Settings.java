@@ -8,6 +8,8 @@ import nsop.neds.cascais360.Entities.Json.Labels;
 
 public class Settings {
 
+    public static String LangCode;
+
     public static Colors colors;
     public static Labels labels;
 
