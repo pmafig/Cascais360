@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.ViewPager;
 
@@ -37,6 +38,7 @@ import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Place;
 import nsop.neds.cascais360.Entities.Json.Point;
+import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
@@ -44,6 +46,7 @@ import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderTwoPageAdapter;
 import nsop.neds.cascais360.Manager.Variables;
+import nsop.neds.cascais360.MapsActivity;
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.Settings.Settings;
 
@@ -1140,15 +1143,73 @@ public class LayoutManager {
 
         TextView t_price = frame.findViewById(R.id.event_price_label);
         t_price.setTextColor(Color.parseColor(Settings.colors.YearColor));
-        //t_price.setText(route.Price);
+
+
+        final LinearLayout routeMaps = mainContent.findViewById(R.id.event_route_buttons);
+
+        if(route.PointsMap.size() > 0){
+            routeMaps.setVisibility(View.VISIBLE);
+            Button seeMap = mainContent.findViewById(R.id.btn_route_seemap);
+            Drawable border = context.getDrawable(R.drawable.see_map_border);
+            border.setTint(Color.parseColor(Settings.colors.YearColor));
+            seeMap.setBackground(border);
+
+            seeMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, MapsActivity.class);
+
+                    List<Point> pointsList = new ArrayList<>();
+
+                    for (PointMap pm:route.PointsMap) {
+                        for (Point p:pm.Point) {
+                            pointsList.add(p);
+                        }
+                    }
+
+                    String points = new Gson().toJson(pointsList);
+
+                    intent.putExtra(Variables.Title, route.Title);
+                    intent.putExtra(Variables.MapPoints, points);
+                    context.startActivity(intent);
+                    ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
+            });
+
+            Button seeRoute = mainContent.findViewById(R.id.btn_route_route);
+            //seeRoute.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
+            Drawable bg = context.getDrawable(R.drawable.see_map_bg);
+            bg.setTint(Color.parseColor(Settings.colors.YearColor));
+            seeRoute.setBackground(bg);
+
+            seeRoute.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, MapsActivity.class);
+
+                    String points = new Gson().toJson(route.PointsMap);
+
+                    intent.putExtra(Variables.MapPoints, points);
+                    context.startActivity(intent);
+                    ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
+            });
+
+        }else{
+            routeMaps.setVisibility(View.GONE);
+        }
 
 
         frame.setVisibility(View.VISIBLE);
 
+        LinearLayout description_frame = mainContent.findViewById(R.id.event_description_wrapper);
+
         if(route.Description != null) {
+            description_frame.setBackground(null);
+
             WebView description = mainContent.findViewById(R.id.event_description_info);
             description.loadData(String.format(html, route.Description), "text/html; charset=utf-8", "UTF-8");
-            mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
+            description_frame.setVisibility(View.VISIBLE);
         }
     }
 }

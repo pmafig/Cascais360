@@ -20,5 +20,5 @@ public class Route {
 
     public String Duration;
 
-    public List<Point> Points;
+    public List<PointMap> PointsMap;
 }
