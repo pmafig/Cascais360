@@ -87,7 +87,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                 LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
             }if(detail.Routes != null && detail.Routes.size() > 0){
                 this.title.setText(detail.Routes.get(0).CategoryTheme);
-                LayoutManager.setRoute(mainContent, detail.Routes.get(0));
+                LayoutManager.setRoute(context, mainContent, detail.Routes.get(0));
             }
 
             mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);

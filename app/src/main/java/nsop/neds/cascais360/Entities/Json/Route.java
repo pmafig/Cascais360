@@ -17,4 +17,8 @@ public class Route {
     public String Description;
 
     public Price Price;
+
+    public String Duration;
+
+    public List<Point> Points;
 }

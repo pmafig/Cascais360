@@ -20,6 +20,11 @@ import android.widget.TextView;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +110,9 @@ public class LayoutManager {
 
             TextView frameTitle = frame.findViewById(R.id.frame_title);
             frameTitle.setText(f.Title);
+
+            TextView subTitle = frame.findViewById(R.id.frame_date);
+            subTitle.setText(f.SubTitle.get(0).Text);
 
             final ImageView img = frame.findViewById(R.id.frame_image);
 
@@ -253,13 +261,14 @@ public class LayoutManager {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                         vibe.vibrate(100);
 
-                        ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
-
+                        //ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
                         Intent event = new Intent(context, DetailActivity.class);
                         int id = f.ID;
                         event.putExtra(Variables.Id, id);
+                        context.startActivity(event);
                         ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        context.startActivity(event, activityOptionsCompat.toBundle());
+                        //context.startActivity(event, activityOptionsCompat.toBundle());
+
                     }
                 });
             }
@@ -504,16 +513,66 @@ public class LayoutManager {
             for(int i = 0; i < n.Nodes.size(); i++){
                 View category_item = View.inflate(context, R.layout.block_category_scroller_item, null);
 
-                InfoBlock info = n.Nodes.get(i);
+
+                final InfoBlock info = n.Nodes.get(i);
+
+                LinearLayout frame = category_item.findViewById(R.id.list_item_frame);
+                frame.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, DetailActivity.class);
+                        intent.putExtra(Variables.Title, n.Category.Description);
+                        intent.putExtra(Variables.Id, info.ID);
+                        context.startActivity(intent);
+                        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+                });
+
 
                 TextView t = category_item.findViewById(R.id.list_item_title);
-                TextView st = category_item.findViewById(R.id.list_item_date);
+                LinearLayout routeInfo = category_item.findViewById(R.id.route_briefing);
 
-                st.setTextColor(Color.parseColor(Settings.colors.YearColor));
-                st.setText(info.SubTitle.get(0).Text);
+                if(info.SubTitle.size() > 1){
+                    routeInfo.setVisibility(View.VISIBLE);
+                    category_item.findViewById(R.id.list_item_date).setVisibility(View.GONE);
+
+                    for (SubTitle st: info.SubTitle) {
+                        if(st.Icon != null) {
+                            switch (st.Icon) {
+                                case "Hike":
+                                    LinearLayout w_distance = category_item.findViewById(R.id.event_distance_icon_wrapper);
+                                    ImageView distance_icon = category_item.findViewById(R.id.event_distance_icon);
+                                    distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_distance.setVisibility(View.VISIBLE);
+
+                                    TextView t_distance = category_item.findViewById(R.id.event_route_distance);
+                                    t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_distance.setText(st.Text);
+                                    break;
+                                case "Level":
+                                    LinearLayout w_level = category_item.findViewById(R.id.event_difficulty_icon_wrapper);
+                                    ImageView level_icon = category_item.findViewById(R.id.event_difficulty_icon);
+                                    level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_level.setVisibility(View.VISIBLE);
+
+                                    TextView t_level = category_item.findViewById(R.id.event_route_difficulty);
+                                    t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_level.setText(st.Text);
+                                    break;
+                            }
+                        }
+                    }
+
+                }else {
+                    TextView st = category_item.findViewById(R.id.list_item_date);
+
+                    st.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    st.setText(info.SubTitle.get(0).Text);
+                }
 
                 t.setText(info.Title);
-
                 category_list.addView(category_item);
             }
 
@@ -834,22 +893,30 @@ public class LayoutManager {
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
             if(place.OfficeHours != null) {
-                TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
-                officeHoursLabel.setText(place.OfficeHours.StatusLabel);
-                officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
+                if(place.OfficeHours.StatusLabel != null) {
+                    TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
+                    officeHoursLabel.setText(place.OfficeHours.StatusLabel);
+                    officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
 
-                Drawable border = context.getDrawable(R.drawable.office_hours);
-                border.setTint(Color.parseColor(Settings.colors.YearColor));
-                officeHoursLabel.setBackground(border);
+                    Drawable border = context.getDrawable(R.drawable.office_hours);
+                    border.setTint(Color.parseColor(Settings.colors.YearColor));
+                    officeHoursLabel.setBackground(border);
 
-                officeHoursLabel.setVisibility(View.VISIBLE);
+                    officeHoursLabel.setVisibility(View.VISIBLE);
+                }
 
-                WebView officeHours = mainContent.findViewById(R.id.place_date);
-                officeHours.loadData(String.format(html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
-                officeHours.setVisibility(View.VISIBLE);
+                if(place.OfficeHours.Text != null) {
+                    WebView officeHours = mainContent.findViewById(R.id.place_date);
+                    officeHours.loadData(String.format(html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
+                    officeHours.setVisibility(View.VISIBLE);
+                }
             }
 
-            date_frame.setVisibility(View.VISIBLE);
+            if((place.OfficeHours.Text != null) || (place.OfficeHours.StatusLabel != null)) {
+                date_frame.setVisibility(View.VISIBLE);
+            }else{
+                date_frame.setVisibility(View.GONE);
+            }
         }else{
             date_frame.setVisibility(View.GONE);
         }
@@ -991,26 +1058,21 @@ public class LayoutManager {
             description.loadData(String.format(html, place.Description), "text/html; charset=utf-8", "UTF-8");
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
+
+        if(place.ItHappensHere != null){
+
+            LinearLayout here = mainContent.findViewById(R.id.detail_it_happens_here);
+
+            JsonArray jsonObjectType5 = new Gson().toJsonTree(place.ItHappensHere.Contents).getAsJsonArray();
+            Type NodeTypeList = new TypeToken<ArrayList<InfoBlock>>(){}.getType();
+            List<InfoBlock> node_list = new Gson().fromJson(jsonObjectType5.toString(), NodeTypeList);
+            here.addView(LayoutManager.setSpotlightBlock(place.ItHappensHere.Title, node_list, context));
+        }
     }
 
-    public static void setPlace(LinearLayout mainContent, Place place){
+    public static void setRoute(final Context context, LinearLayout mainContent, final Route route){
         TextView title = mainContent.findViewById(R.id.event_title);
-
-        final ImageView img = mainContent.findViewById(R.id.detail_image);
-        DownloadImageAsync obj = new DownloadImageAsync(){
-
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(place.Images.get(0));
-        title.setText(place.Title);
-    }
-
-    public static void setRoute(LinearLayout mainContent, Route route){
-        TextView title = mainContent.findViewById(R.id.event_title);
+        title.setText(route.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
         DownloadImageAsync obj = new DownloadImageAsync(){
@@ -1023,6 +1085,70 @@ public class LayoutManager {
         };
         obj.execute(route.Images.get(0));
 
-        title.setText(route.Title);
+        TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
+        descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+
+        ImageView distanceIcon = mainContent.findViewById(R.id.event_distance_icon);
+        distanceIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+        TextView distanceLabel = mainContent.findViewById(R.id.event_route_distance);
+        distanceLabel.setText(Settings.labels.Place);
+        distanceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+        LinearLayout frame = mainContent.findViewById(R.id.event_route_briefing);
+
+        for (SubTitle st: route.SubTitle) {
+
+            if(st.Icon != null) {
+                switch (st.Icon) {
+                    case "Hike":
+                        LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                        ImageView distance_icon = frame.findViewById(R.id.event_distance_icon);
+                        distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                        w_distance.setVisibility(View.VISIBLE);
+
+                        TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                        t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                        t_distance.setText(st.Text);
+                        break;
+                    case "Level":
+                        LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                        ImageView level_icon = frame.findViewById(R.id.event_difficulty_icon);
+                        level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                        w_level.setVisibility(View.VISIBLE);
+
+                        TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                        t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                        t_level.setText(st.Text);
+                        break;
+                }
+            }
+        }
+
+        ImageView duration_icon = frame.findViewById(R.id.event_duration_icon);
+        duration_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+        TextView t_duration = frame.findViewById(R.id.event_route_duration);
+        t_duration.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        t_duration.setText(route.Duration);
+
+
+        ImageView price_icon = frame.findViewById(R.id.event_euro_icon);
+        price_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+        TextView t_price = frame.findViewById(R.id.event_price_label);
+        t_price.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        //t_price.setText(route.Price);
+
+
+        frame.setVisibility(View.VISIBLE);
+
+        if(route.Description != null) {
+            WebView description = mainContent.findViewById(R.id.event_description_info);
+            description.loadData(String.format(html, route.Description), "text/html; charset=utf-8", "UTF-8");
+            mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
+        }
     }
 }

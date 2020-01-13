@@ -14,6 +14,7 @@
         android:textAllCaps="true"
         android:text="29 MAR A 30 MAR ***"
         android:layout_marginTop="10sp"/>
+
     <TextView
         android:id="@+id/list_item_title"
         android:layout_width="match_parent"

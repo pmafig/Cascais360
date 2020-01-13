@@ -22,4 +22,6 @@ public class Place {
     public List<Point> Points;
 
     public Price Price;
+
+    public ItHappensHere ItHappensHere;
 }
