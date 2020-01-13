@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -117,18 +119,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
+        int i = 1;
+
         for (Point p: point_list) {
 
             LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
 
+            builder.include(_pinpoint);
+
+            float sp = 20;
+            int px = Math.round(sp * getResources().getDisplayMetrics().scaledDensity);
+
             Marker m = mMap.addMarker(new MarkerOptions().position(_pinpoint).icon(BitmapDescriptorFactory.defaultMarker(1)));
 
-            builder.include(m.getPosition());
-
-            Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap( px, px, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
 
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);;
+            Paint paint = new Paint();
+            paint.setColor(Color.parseColor(Settings.colors.YearColor));
+
+            Paint text = new Paint();
+            text.setColor(getResources().getColor(R.color.colorWhite));
+            text.setTextSize(px/2);
+
+            canvas.drawCircle(px/2,px/2,px/2, paint);
+            canvas.drawText(String.valueOf(i++), px/2-((px/2)/6), px/2+((px/2)/6), text);
+
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
 
             m.setIcon(icon);
         }
