@@ -1,14 +1,20 @@
 package nsop.neds.cascais360;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -24,10 +30,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -46,8 +57,10 @@ import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, OnRequestPermissionsResultCallback{
 
+
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private List<Point> point_list;
 
@@ -56,6 +69,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+
+
+
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout menuFragment = findViewById(R.id.menu);
@@ -112,6 +130,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
+        }
+
+
+        mMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
+
         // Add a marker in Sydney and move the camera
         /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -121,9 +150,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         int i = 1;
 
+        PolylineOptions pol = new PolylineOptions();
+
         for (Point p: point_list) {
 
             LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
+
+            pol.add(_pinpoint);
 
             builder.include(_pinpoint);
 
@@ -142,8 +175,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             text.setColor(getResources().getColor(R.color.colorWhite));
             text.setTextSize(px/2);
 
-            canvas.drawCircle(px/2,px/2,px/2, paint);
-            canvas.drawText(String.valueOf(i++), px/2-((px/2)/6), px/2+((px/2)/6), text);
+            float v = text.ascent() + text.descent();
+
+            int xPos = canvas.getWidth() / 2;
+            int yPos = (int) ((canvas.getHeight() / 2) - ((text.descent() + text.ascent()) / 2)) ;
+
+            canvas.drawCircle(xPos,xPos,xPos, paint);
+
+            //TODO: mellhorar a forma como está a ser desenhado o número no circulo
+            if(i > 9) {
+                canvas.drawText(String.valueOf(i++), (xPos - (int)(px * 0.3)), yPos, text);
+            }else{
+                canvas.drawText(String.valueOf(i++), (xPos - (int)(px * 0.15)), yPos, text);
+            }
 
             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
 
@@ -157,7 +201,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int padding = 50; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
+        pol.color(Color.parseColor(Settings.colors.YearColor));
+
+        Polyline polyline1 = mMap.addPolyline(pol);
+
+        polyline1.setStartCap(new RoundCap());
+        polyline1.setEndCap(new RoundCap());
+
+        polyline1.setJointType(JointType.ROUND);
+
         mMap.animateCamera(cu);
 
     }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            } else {
+                // Permission was denied. Display an error message.
+            }
+        }
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
+        return url;
+    }
+
+    //https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/MapActivity.java
+
+    //https://www.youtube.com/watch?v=wRDLjUK8nyU
 }
