@@ -1167,10 +1167,13 @@ public class LayoutManager {
                         }
                     }
 
+                    String mapPoints = new Gson().toJson(route.PointsMap);
                     String points = new Gson().toJson(pointsList);
 
                     intent.putExtra(Variables.Title, route.Title);
-                    intent.putExtra(Variables.MapPoints, points);
+                    intent.putExtra(Variables.SeeRoute, false);
+                    intent.putExtra(Variables.MapPoints, mapPoints);
+                    intent.putExtra(Variables.Points, points);
                     context.startActivity(intent);
                     ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
@@ -1187,9 +1190,21 @@ public class LayoutManager {
                 public void onClick(View v) {
                     Intent intent = new Intent(context, MapsActivity.class);
 
-                    String points = new Gson().toJson(route.PointsMap);
+                    List<Point> pointsList = new ArrayList<>();
 
-                    intent.putExtra(Variables.MapPoints, points);
+                    for (PointMap pm:route.PointsMap) {
+                        for (Point p:pm.Point) {
+                            pointsList.add(p);
+                        }
+                    }
+
+                    String mapPoints = new Gson().toJson(route.PointsMap);
+                    String points = new Gson().toJson(pointsList);
+
+                    intent.putExtra(Variables.Title, route.Title);
+                    intent.putExtra(Variables.SeeRoute, true);
+                    intent.putExtra(Variables.MapPoints, mapPoints);
+                    intent.putExtra(Variables.Points, points);
                     context.startActivity(intent);
                     ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }

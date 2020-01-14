@@ -16,6 +16,8 @@
 
     <color name="maps_info_background">#DD000000</color>
 
+    <color name="maps_point_background">#99000000</color>
+
     <color name="colorHit">#fd7062</color>
 
     <color name="colorInactive">#BEBEBE</color>

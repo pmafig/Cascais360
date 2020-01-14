@@ -32,4 +32,27 @@ public class Settings {
 
     public static int screen_heigth;
 
+    public static String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+            "<head>\n" +
+            "<title>WebView9</title>\n" +
+            "<meta forua=\"true\" http-equiv=\"Cache-Control\" content=\"max-age=0\"/>\n" +
+            "<style type=\"text/css\">\n" +
+            "   @font-face {\n" +
+            "      font-family: 'Font';\n" +
+            "      src:url(\"file:///android_asset/montserrat_regular.otf\")\n" +
+            "   }\n" +
+            "   body {\n" +
+            "      font-family: 'Font';\n" +
+            //"      font-size: medium;\n" +
+            "      text-align: justify;\n" +
+            "      margin: 0;\n" +
+            //"      color:#ffffff\n" +
+            "   }\n" +
+            "</style>\n" +
+            "</head>\n" +
+            //"<body style=\"background-color:#212121\">\n" +
+            "<body>\n" +
+            "%s</body>\n" +
+            "</html>";
+
 }

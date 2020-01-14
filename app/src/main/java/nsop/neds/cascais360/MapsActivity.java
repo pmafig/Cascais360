@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -12,14 +13,21 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -50,30 +58,32 @@ import java.util.List;
 import nsop.neds.cascais360.Entities.Json.Detail;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Point;
+import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Manager.ControlsManager.CustomExpandableListAdapter;
+import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
+import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, OnRequestPermissionsResultCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback{
 
 
     private static final int MY_LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
+    private List<PointMap> map_point_list;
     private List<Point> point_list;
+
+    private boolean seeRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-
-
-
-
+        seeRoute = getIntent().getBooleanExtra(Variables.SeeRoute, false);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         LinearLayout menuFragment = findViewById(R.id.menu);
@@ -107,56 +117,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         HashMap<String, List<String>> expandableListDetail = new HashMap<>();
 
+
         List<String> points = new ArrayList<>();
 
-        Type PointTypeList = new TypeToken<ArrayList<Point>>(){}.getType();
-        point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.MapPoints), PointTypeList);
+        Type MapPointTypeList = new TypeToken<ArrayList<PointMap>>() {}.getType();
+        Type PointTypeList = new TypeToken<ArrayList<Point>>() {}.getType();
+
+        map_point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.MapPoints), MapPointTypeList);
+        point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.Points), PointTypeList);
 
         int i = 1;
 
-        for (Point p: point_list) {
-            points.add(String.format("%s - %s", i++, p.Title));
+        if(!seeRoute) {
+            for (Point p : point_list) {
+                points.add(String.format("%s - %s", i++, p.Title));
+            }
         }
 
         expandableListDetail.put(Settings.labels.Route, points);
 
-        List<String>  expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+        List<String> expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
 
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
+
+        drawInfoPoints(map_point_list);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setInfoWindowAdapter(this);
+        mMap.setOnInfoWindowClickListener(this);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            // Show rationale and request permission.
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
+        if(seeRoute) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            } else {
+                // Show rationale and request permission.
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
+            }
         }
 
 
         mMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
 
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         int i = 1;
-
-        PolylineOptions pol = new PolylineOptions();
 
         for (Point p: point_list) {
 
             LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
 
-            pol.add(_pinpoint);
+            //pol.add(_pinpoint);
 
             builder.include(_pinpoint);
 
@@ -164,6 +179,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             int px = Math.round(sp * getResources().getDisplayMetrics().scaledDensity);
 
             Marker m = mMap.addMarker(new MarkerOptions().position(_pinpoint).icon(BitmapDescriptorFactory.defaultMarker(1)));
+
+            PointMap pointMap = map_point_list.get(i-1);
+            pointMap.Index = i;
+            m.setTag(pointMap);
 
             Bitmap bitmap = Bitmap.createBitmap( px, px, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
@@ -201,14 +220,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int padding = 50; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-        pol.color(Color.parseColor(Settings.colors.YearColor));
+        if(seeRoute) {
 
-        Polyline polyline1 = mMap.addPolyline(pol);
+            PolylineOptions pol = new PolylineOptions();
 
-        polyline1.setStartCap(new RoundCap());
-        polyline1.setEndCap(new RoundCap());
+            pol.color(Color.parseColor(Settings.colors.YearColor));
 
-        polyline1.setJointType(JointType.ROUND);
+
+            /*LocationListener mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            };*/
+
+            LatLng _pinpoint = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
+
+            pol.add(_pinpoint);
+
+            Polyline polyline1 = mMap.addPolyline(pol);
+
+            polyline1.setStartCap(new RoundCap());
+            polyline1.setEndCap(new RoundCap());
+
+            polyline1.setJointType(JointType.ROUND);
+
+        }
 
         mMap.animateCamera(cu);
 
@@ -216,6 +268,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public View getInfoWindow(Marker marker) {
+
+        PointMap point = (PointMap) marker.getTag();
+
+        ViewPager viewPager = findViewById(R.id.sliderPager);
+
+        viewPager.setCurrentItem(point.Index-1, false);
+
+        findViewById(R.id.sliderPagerWrapper).animate().alpha(1.0f);
+        findViewById(R.id.sliderPagerWrapper).setVisibility(View.VISIBLE);
+
         return null;
     }
 
@@ -223,6 +285,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public View getInfoContents(Marker marker) {
         return null;
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -256,4 +319,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/MapActivity.java
 
     //https://www.youtube.com/watch?v=wRDLjUK8nyU
+
+    private void drawInfoPoints(List<PointMap> pointMap){
+
+        List<View> views = new ArrayList<>();
+
+        int i = 1;
+
+        for (PointMap info: pointMap) {
+            View view = View.inflate(this, R.layout.block_marker_info, null);
+
+            TextView index = view.findViewById(R.id.marker_index);
+            index.setText(String.valueOf(i++));
+
+            Drawable bg = getDrawable(R.drawable.ic_dot);
+            bg.setTint(Color.parseColor(Settings.colors.YearColor));
+            index.setBackground(bg);
+
+            TextView title = view.findViewById(R.id.marker_title);
+            title.setText(info.Point.get(0).Title);
+
+            //String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} }</style><body>%s</body>";
+
+            WebView address = view.findViewById(R.id.marker_address);
+            address.loadData(String.format(Settings.html, info.Point.get(0).Address), "text/html; charset=utf-8", "UTF-8");
+
+            TextView latLng = view.findViewById(R.id.marker_lat_log);
+            latLng.setText(String.format("Lat:%s | lng:%s", info.Point.get(0).Coordinates.Lat, info.Point.get(0).Coordinates.Lng));
+
+            WebView description = view.findViewById(R.id.marker_description);
+            description.loadData(String.format(Settings.html, info.Description), "text/html; charset=utf-8", "UTF-8");
+
+            final ImageView img = view.findViewById(R.id.frame_image);
+
+            DownloadImageAsync obj = new DownloadImageAsync() {
+                @Override
+                protected void onPostExecute(Bitmap bmp) {
+                    super.onPostExecute(bmp);
+                    img.setImageBitmap(bmp);
+                }
+            };
+            obj.execute(info.Images.get(0));
+
+            ImageView close = view.findViewById(R.id.marker_close);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    findViewById(R.id.sliderPagerWrapper).animate().alpha(0.0f);
+                    findViewById(R.id.sliderPagerWrapper).setVisibility(View.GONE);
+                }
+            });
+
+            views.add(view);
+        }
+
+        final ViewPager viewPager = findViewById(R.id.sliderPager);
+
+        viewPager.setAdapter(new SliderPageAdapter(views, this));
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+    }
 }

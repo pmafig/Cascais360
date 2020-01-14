@@ -26,7 +26,9 @@ public class Variables {
     public static String Id = "id";
     public static String Title = "Title";
 
+    public static String SeeRoute = "SeeRoute";
     public static String MapPoints = "MapPoints";
+    public static String Points = "Points";
 
     public static String RequiredLogin = "requiredLogin";
 }

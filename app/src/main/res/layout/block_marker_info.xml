@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:id="@+id/dashboard_highlight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:translationZ="1dp">
+                <ImageView
+                    android:id="@+id/marker_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_close"
+                    android:layout_gravity="right"
+                    android:padding="10dp"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/frame_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:cropToPadding="false"
+                android:src="@drawable/image_frame"
+                android:scaleType="fitXY"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/marker_index"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorWhite"
+                    android:background="@drawable/ic_dot"
+                    android:text="1"/>
+
+                <TextView
+                    android:id="@+id/marker_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Casa D. Maria Pia"
+                    android:textSize="14dp"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:paddingLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
+
+
+                <WebView
+                    android:id="@+id/marker_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Avenida Marginal n.º 10"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="12dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/marker_lat_log"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="38.78945º"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="12dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_gravity="center_vertical" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <WebView
+                            android:id="@+id/marker_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Avenida Marginal n.º 10"
+                            android:textColor="@color/colorBlack"
+                            android:textSize="12dp"
+                            android:layout_gravity="center_vertical" />
+                    </LinearLayout>
+
+                </ScrollView>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
