@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "965048922226",
+    "firebase_url": "https://test-4ab1a.firebaseio.com",
+    "project_id": "test-4ab1a",
+    "storage_bucket": "test-4ab1a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965048922226:android:193987308b6ae3cb3612eb",
+        "android_client_info": {
+          "package_name": "nsop.neds.cascais360"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "965048922226-3vg2slk5ppat1rjkd6ksrqn7l5bgoq35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZRpLuOWkKrXHkRLALg62TbpPM-knisvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "965048922226-3vg2slk5ppat1rjkd6ksrqn7l5bgoq35.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "965048922226-m7oqk1fjlrjpdrh0fl7ojanmfvsrlnd7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "pt.cascais.360"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

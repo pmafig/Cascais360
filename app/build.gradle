@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -53,4 +54,7 @@ dependencies {
 
     //polyutil
     implementation 'com.google.maps.android:android-maps-utils:0.5'
+
+    //firebase
+    implementation 'com.google.firebase:firebase-analytics:17.2.0'
 }
