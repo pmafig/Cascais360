@@ -15,6 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import nsop.neds.cascais360.Manager.DashboardManager;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.WeatherManager;
@@ -39,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
+
+        //Task<InstanceIdResult> id = FirebaseInstanceId.getInstance().getInstanceId();
+
+        String token = FirebaseInstanceId.getInstance().getToken();
 
         new MenuManager(this, toolbar, menuFragment, null);
 

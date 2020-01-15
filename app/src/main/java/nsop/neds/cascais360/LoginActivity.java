@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-        String jsonRequest = String.format("{\"Email\":\"%s\", \"Password\":\"%s\"}", userName, encPass);
+        String jsonRequest = String.format("{\"Email\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguagueID:1}", userName, encPass, "dOkOG7C5yFY:APA91bGycnjG9YZ5qjDN8bk_2LdPsETsOjHag_83-3kgBtxGnzjzT-Rzst7lm5Ftvlzz6d1ucR_4wa8R4Trs7scEs6R2QmWxRGJfGzKMhF72ZMsi0LDv-TzyEoe2FP0zX_J0aH3HjU3X");
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
