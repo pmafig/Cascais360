@@ -44,6 +44,11 @@ public class WebApiClient {
         }
     }
 
+    public static void get(String url, AsyncHttpResponseHandler responseHandler) {
+        setHttpClient();
+        client.get(url, responseHandler);
+    }
+
     public static void get(String url, String message, AsyncHttpResponseHandler responseHandler) {
         setHttpClient();
         client.get(getAbsoluteUrl(url, new MessageEncryption().Encrypt(message, SITE_KEY)), responseHandler);

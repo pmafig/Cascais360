@@ -50,4 +50,7 @@ dependencies {
 
     // Maps utils (required for custom markers)
     implementation 'com.google.maps.android:android-maps-utils:0.6.2'
+
+    //polyutil
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
 }

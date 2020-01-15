@@ -20,5 +20,13 @@
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDeIZrMxWnCBRWs_p9jpeXQ0IgyYimOX64</string>
+
+    <!--Cascais 360-->
+    <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDeIZrMxWnCBRWs_p9jpeXQ0IgyYimOX64</string>-->
+
+    <!--Javali & Cascais 360-->
+    <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBLNP-pV7V3sm1aU7YQzIOtuzm0IntXdDw</string>-->
+
+    <!--Server key 1-->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyC9U2cnZcDdHpq4cFnrppGYk1DaSYdw0po</string>
 </resources>

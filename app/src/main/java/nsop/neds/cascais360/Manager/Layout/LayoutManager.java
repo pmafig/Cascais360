@@ -1069,7 +1069,7 @@ public class LayoutManager {
             JsonArray jsonObjectType5 = new Gson().toJsonTree(place.ItHappensHere.Contents).getAsJsonArray();
             Type NodeTypeList = new TypeToken<ArrayList<InfoBlock>>(){}.getType();
             List<InfoBlock> node_list = new Gson().fromJson(jsonObjectType5.toString(), NodeTypeList);
-            here.addView(LayoutManager.setSpotlightBlock(place.ItHappensHere.Title, node_list, context));
+            here.addView(LayoutManager.setSliderBlock(place.ItHappensHere.Title, node_list, context));
         }
     }
 

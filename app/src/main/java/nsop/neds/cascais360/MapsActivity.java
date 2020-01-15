@@ -1,5 +1,6 @@
 package nsop.neds.cascais360;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -19,6 +20,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -29,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,16 +52,24 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.maps.android.PolyUtil;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import nsop.neds.cascais360.Entities.Json.Detail;
-import nsop.neds.cascais360.Entities.Json.Node;
+import cz.msebera.android.httpclient.Header;
+import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.Point;
 import nsop.neds.cascais360.Entities.Json.PointMap;
+import nsop.neds.cascais360.Entities.Maps.Directions;
+import nsop.neds.cascais360.Entities.Maps.Route;
+import nsop.neds.cascais360.Entities.Maps.Step;
 import nsop.neds.cascais360.Manager.ControlsManager.CustomExpandableListAdapter;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
@@ -67,16 +78,19 @@ import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.Manager.WeatherManager;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
+import nsop.neds.cascais360.WebApi.WebApiClient;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback {
 
 
+    LocationManager locationManager;
     private static final int MY_LOCATION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private List<PointMap> map_point_list;
     private List<Point> point_list;
 
     private boolean seeRoute;
+    private LatLng destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,18 +131,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         HashMap<String, List<String>> expandableListDetail = new HashMap<>();
 
-
         List<String> points = new ArrayList<>();
 
-        Type MapPointTypeList = new TypeToken<ArrayList<PointMap>>() {}.getType();
-        Type PointTypeList = new TypeToken<ArrayList<Point>>() {}.getType();
+        Type MapPointTypeList = new TypeToken<ArrayList<PointMap>>() {
+        }.getType();
+        Type PointTypeList = new TypeToken<ArrayList<Point>>() {
+        }.getType();
 
         map_point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.MapPoints), MapPointTypeList);
         point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.Points), PointTypeList);
 
+        if(point_list.size() > 0) {
+            destination = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
+        }
+
         int i = 1;
 
-        if(!seeRoute) {
+        if (!seeRoute) {
             for (Point p : point_list) {
                 points.add(String.format("%s - %s", i++, p.Title));
             }
@@ -142,7 +161,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         expandableListView.setAdapter(expandableListAdapter);
 
         drawInfoPoints(map_point_list);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    Activity#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for Activity#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                2000,
+                10, locationListenerGPS);
     }
+
+    LocationListener locationListenerGPS=new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            if(seeRoute) {
+                //LatLng origin = new LatLng(location.getLatitude(), location.getLongitude());
+                LatLng origin = new LatLng(38.699192,-9.423563);
+                DrawRoute(origin, destination);
+            }
+            /*double latitude=location.getLatitude();
+            double longitude=location.getLongitude();
+            String msg="New Latitude: "+latitude + "New Longitude: "+longitude;
+            Toast.makeText(getBaseContext(), msg,Toast.LENGTH_LONG).show();*/
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -170,8 +235,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (Point p: point_list) {
 
             LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
-
-            //pol.add(_pinpoint);
 
             builder.include(_pinpoint);
 
@@ -222,45 +285,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(seeRoute) {
 
-            PolylineOptions pol = new PolylineOptions();
-
-            pol.color(Color.parseColor(Settings.colors.YearColor));
-
-
-            /*LocationListener mLocationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };*/
-
             LatLng _pinpoint = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
 
-            pol.add(_pinpoint);
+            LatLng _pinpoint2 = new LatLng(point_list.get(1).Coordinates.Lat, point_list.get(1).Coordinates.Lng);
 
-            Polyline polyline1 = mMap.addPolyline(pol);
-
-            polyline1.setStartCap(new RoundCap());
-            polyline1.setEndCap(new RoundCap());
-
-            polyline1.setJointType(JointType.ROUND);
-
+            //DrawRoute(_pinpoint, _pinpoint2);
         }
+
+        /*polyline.setStartCap(new RoundCap());
+        polyline.setEndCap(new RoundCap());
+
+        polyline.setJointType(JointType.ROUND);*/
 
         mMap.animateCamera(cu);
 
@@ -277,6 +312,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         findViewById(R.id.sliderPagerWrapper).animate().alpha(1.0f);
         findViewById(R.id.sliderPagerWrapper).setVisibility(View.VISIBLE);
+
+        //TODO set destination for walking route
 
         return null;
     }
@@ -300,29 +337,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
-        // Origin of route
+    private String getUrl(LatLng origin, LatLng dest, String directionMode, String language) {
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-        // Destination of route
         String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        // Mode
         String mode = "mode=" + directionMode;
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
-        // Output format
+        String lang = "language=" + language;
+        String parameters = str_origin + "&" + str_dest + "&" + mode+ "&" + lang;
         String output = "json";
-        // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_maps_key);
         return url;
     }
 
-    //https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/MapActivity.java
-
-    //https://www.youtube.com/watch?v=wRDLjUK8nyU
-
     private void drawInfoPoints(List<PointMap> pointMap){
 
-        List<View> views = new ArrayList<>();
+        final List<View> views = new ArrayList<>();
 
         int i = 1;
 
@@ -345,7 +373,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             address.loadData(String.format(Settings.html, info.Point.get(0).Address), "text/html; charset=utf-8", "UTF-8");
 
             TextView latLng = view.findViewById(R.id.marker_lat_log);
-            latLng.setText(String.format("Lat:%s | lng:%s", info.Point.get(0).Coordinates.Lat, info.Point.get(0).Coordinates.Lng));
+            latLng.setText(String.format("Lat:%s | Lng:%s", info.Point.get(0).Coordinates.Lat, info.Point.get(0).Coordinates.Lng));
 
             WebView description = view.findViewById(R.id.marker_description);
             description.loadData(String.format(Settings.html, info.Description), "text/html; charset=utf-8", "UTF-8");
@@ -374,12 +402,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         final ViewPager viewPager = findViewById(R.id.sliderPager);
+        final TextView numeration = findViewById(R.id.sliderPagerNumeration);
 
         viewPager.setAdapter(new SliderPageAdapter(views, this));
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                numeration.setText(String.format("%s / %s", position + 1 , views.size()));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
 
+    }
+
+    private void DrawRoute(LatLng origin, LatLng destination){
+        String mode = "walking";
+        String language = "pt-PT";
+
+        if(origin != null && destination != null) {
+            switch (Settings.LangCode) {
+                case "en":
+                    language = "en";
+                    break;
+            }
+
+            WebApiClient.get(getUrl(origin, destination, mode, language), new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+
+                        Directions directions = new Gson().fromJson(responseString, Directions.class);
+
+                        List<String> points = new ArrayList<>();
+
+                        Route route = directions.routes.get(0);
+
+                        for (Step s : route.legs.get(0).steps){
+                            points.add(String.format("%s\t%s", s.duration.text, s.distance.text));
+                            points.add(Html.fromHtml(s.html_instructions).toString());
+                        }
+
+                        List<LatLng> list = PolyUtil.decode(route.overview_polyline.points);
+
+                        PolylineOptions options = new PolylineOptions();
+
+                        if (list != null) {
+                            for (LatLng p : list) {
+                                options.add(p).width(20).color(Color.parseColor(Settings.colors.YearColor));
+                            }
+                        }
+
+                        mMap.addPolyline(options);
+
+
+                        ExpandableListAdapter expandableListAdapter;
+                        ExpandableListView expandableListView = findViewById(R.id.expandableListView);
+
+                        HashMap<String, List<String>> expandableListDetail = new HashMap<>();
+
+                        expandableListDetail.put(Settings.labels.Route, points);
+
+                        List<String> expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+
+                        expandableListAdapter = new CustomExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
+                        expandableListView.setAdapter(expandableListAdapter);
+
+                    } catch (Exception ex) {
+                    }
+                }
+            });
+        }
     }
 }
