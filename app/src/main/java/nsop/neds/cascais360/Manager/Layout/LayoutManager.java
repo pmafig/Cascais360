@@ -787,6 +787,99 @@ public class LayoutManager {
             }
         }
 
+        if(search.Routes != null && search.Routes.size() > 0) {
+            for (final Route f: search.Routes) {
+                View frame = View.inflate(context, R.layout.block_frame, null);
+
+                TextView frameTitle = frame.findViewById(R.id.frame_title);
+                frameTitle.setText(f.Title);
+
+                final ImageView img = frame.findViewById(R.id.frame_image);
+                DownloadImageAsync obj = new DownloadImageAsync(){
+
+                    @Override
+                    protected void onPostExecute(Bitmap bmp) {
+                        super.onPostExecute(bmp);
+                        img.setImageBitmap(bmp);
+                    }
+                };
+                obj.execute(f.Images.get(0));
+
+                if(f.ID > 0) {
+                    img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                            vibe.vibrate(100);
+
+                            //ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
+                            Intent event = new Intent(context, DetailActivity.class);
+                            int id = f.ID;
+                            event.putExtra(Variables.Id, id);
+                            context.startActivity(event);
+                            ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            //context.startActivity(event, activityOptionsCompat.toBundle());
+
+                        }
+                    });
+                }
+
+                TextView frameDate = frame.findViewById(R.id.frame_date);
+                LinearLayout routeInfo = frame.findViewById(R.id.route_briefing);
+
+                if(f.SubTitle.size() > 1){
+                    routeInfo.setVisibility(View.VISIBLE);
+                    frameDate.setVisibility(View.GONE);
+
+                    for (SubTitle st: f.SubTitle) {
+
+                        if(st.Icon != null) {
+                            switch (st.Icon) {
+                                case "Hike":
+                                    LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                    ImageView distance_icon = frame.findViewById(R.id.event_distance_icon);
+                                    distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_distance.setVisibility(View.VISIBLE);
+
+                                    TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                    t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_distance.setText(st.Text);
+                                    break;
+                                case "Level":
+                                    LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                    ImageView level_icon = frame.findViewById(R.id.event_difficulty_icon);
+                                    level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_level.setVisibility(View.VISIBLE);
+
+                                    TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                    t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_level.setText(st.Text);
+                                    break;
+                            }
+                        }
+                    }
+
+                }else {
+                    frameDate.setVisibility(View.VISIBLE);
+                    routeInfo.setVisibility(View.GONE);
+
+                    frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    frameDate.setText(f.SubTitle.get(0).Text);
+                }
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+                layoutParams.setMargins(0, 0, 0, px);
+
+                views_wrapper.addView(frame, layoutParams);
+            }
+        }
+
         return frame_list;
     }
 

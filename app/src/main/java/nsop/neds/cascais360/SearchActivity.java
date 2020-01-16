@@ -538,8 +538,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     private void loading(){
         RelativeLayout loading = findViewById(R.id.loadingPanel);
 
-        findViewById(R.id.search_result_text).setVisibility(View.GONE);
-
         loading.setVisibility(View.VISIBLE);
         loading.bringToFront();
     }

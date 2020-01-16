@@ -59,7 +59,7 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
     protected Search doInBackground(String... strings) {
 
         if(strings.length == 1){
-            return byText(strings[0]);
+            return getSearchResult(strings[0]);
         }
 
         if(Data.CalendarEvents == null){
@@ -213,7 +213,7 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
         }
     }
 
-    protected Search byText(String... strings) {
+    protected Search getSearchResult(String... strings) {
         try {
 
             JSONObject response = CommonManager.getResponseData(strings[0]);

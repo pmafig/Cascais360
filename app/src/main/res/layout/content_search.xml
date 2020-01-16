@@ -119,8 +119,6 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
-
             <!--SearchActivity Results painel-->
             <ScrollView
                 android:layout_width="match_parent"
