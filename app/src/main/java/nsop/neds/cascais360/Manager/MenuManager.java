@@ -23,6 +23,7 @@ import nsop.neds.cascais360.ListActivity;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.SearchActivity;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.SettingsActivity;
 import nsop.neds.cascais360.WebApi.ReportManager;
@@ -169,6 +170,42 @@ public class MenuManager {
                 closeMenu();
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra(Variables.Type, Variables.Routes);
+                context.startActivity(intent);
+            }
+        });
+
+        Button search = menuFragment.findViewById(R.id.menu_button_search);
+        search.setText(Settings.menus.get(4).Label);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                Intent intent = new Intent(context, SearchActivity.class);
+                intent.putExtra(Variables.Type, Variables.Search);
+                context.startActivity(intent);
+            }
+        });
+
+        Button calendar = menuFragment.findViewById(R.id.menu_button_calendar);
+        calendar.setText(Settings.menus.get(5).Label);
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                Intent intent = new Intent(context, SearchActivity.class);
+                intent.putExtra(Variables.Type, Variables.Calendar);
+                context.startActivity(intent);
+            }
+        });
+
+        Button maps = menuFragment.findViewById(R.id.menu_button_map);
+        maps.setText(Settings.menus.get(6).Label);
+        maps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeMenu();
+                Intent intent = new Intent(context, SearchActivity.class);
+                intent.putExtra(Variables.Type, Variables.Maps);
                 context.startActivity(intent);
             }
         });

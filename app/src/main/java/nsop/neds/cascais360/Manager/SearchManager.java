@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import nsop.neds.cascais360.Entities.FrameEntity;
+import nsop.neds.cascais360.Entities.Json.Search;
+import nsop.neds.cascais360.Manager.Layout.LayoutManager;
 import nsop.neds.cascais360.Settings.Data;
 
 
-public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<FrameEntity>>> {
+public class SearchManager extends AsyncTask<String, Void, Search> {
 
     Context context;
     LinearLayout mainContent;
@@ -47,14 +51,15 @@ public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<
     }
 
     @Override
-    protected HashMap<String, List<FrameEntity>> doInBackground(String... strings) {
-        HashMap<String, List<FrameEntity>> dateList = new HashMap();
+    protected Search doInBackground(String... strings) {
 
-        if(strings.length == 1){
-            return byText(strings);
+        if(strings.length > 0){
+            return byText(strings[0]);
         }
 
-        if(Data.CalendarEvents == null){
+        return null;
+
+        /*if(Data.CalendarEvents == null){
             Data.CalendarEvents = new HashMap();
         }
 
@@ -64,6 +69,8 @@ public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<
             if(response != null) {
                 JSONObject responseData = response.getJSONObject("ResponseData");
                 JSONArray jsonArray = responseData.getJSONArray("Data");
+
+                Search search = new Gson().fromJson(jsonArray.toString(), Search.class);
 
                 try {
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -109,64 +116,20 @@ public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<
             }
         }
 
-        return dateList;
+        return dateList;*/
     }
 
     @Override
-    protected void onPostExecute(final HashMap<String, List<FrameEntity>> eventDetail) {
-        super.onPostExecute(eventDetail);
+    protected void onPostExecute(final Search search) {
+        super.onPostExecute(search);
 
         if(render) {
             mainContent.removeAllViews();
 
-            String key = null;
-
-            Iterator<Map.Entry<String, List<FrameEntity>>> iterator = eventDetail.entrySet().iterator();
-
-            while (iterator.hasNext()) {
-                Map.Entry<String, List<FrameEntity>> entry = iterator.next();
-
-                if (key == null) {
-                    key = entry.getKey();
-
-                    if(key == "search"){
-                        key = null;
-                    }
-                }
-
-                for (FrameEntity e : entry.getValue()) {
-                    setSpotlightBlock(e);
-                }
-            }
-
-
-            /*Drawable bg = context.getDrawable(R.drawable.calendar_search_eventday);
-            bg.setTint(Color.parseColor(Settings.color));*/
-
-            if (key != null) {
-
-                String[] keys = key.split("\\/+");
-
-                if (keys[1].length() == 1) {
-                    keys[1] = "0" + keys[1];
-                }
-
-                Data.selected_month = keys[1];
-                Data.selected_year = keys[0];
-
-                for (int d = 0; d < daysPainel.getChildCount(); d++) {
-                    LinearLayout day = (LinearLayout) daysPainel.getChildAt(d);
-
-                    String _d = ((TextView) day.getChildAt(0)).getText().toString();
-
-                    if (_d.length() == 1) {
-                        _d = "0" + _d;
-                    }
-
-                    if (eventDetail.containsKey(String.format("%s/%s/%s", keys[0], keys[1], _d))) {
-                        //((TextView) day.getChildAt(0)).setBackground(bg);
-                    }
-                }
+            if(search != null) {
+                mainContent.addView(LayoutManager.setSearch(search, context));
+            }else{
+                //TODO não foram encontrados dados
             }
 
             loading.setVisibility(View.GONE);
@@ -281,9 +244,7 @@ public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<
         }
     }
 
-    protected HashMap<String, List<FrameEntity>> byText(String... strings) {
-        HashMap<String, List<FrameEntity>> dateList = new HashMap();
-
+    protected Search byText(String... strings) {
         try {
 
             JSONObject response = CommonManager.getResponseData(strings[0]);
@@ -291,28 +252,15 @@ public class SearchManager extends AsyncTask<String, Void, HashMap<String, List<
             if(response != null) {
                 JSONObject responseData = response.getJSONObject("ResponseData");
                 JSONObject jsonArray = responseData.getJSONObject("Data");
-                JSONArray events = jsonArray.getJSONArray("Events");
 
-                List<FrameEntity> eventList = new ArrayList<>();
+                Search search = new Gson().fromJson(jsonArray.toString(), Search.class);
 
-                String date = "search";
-
-                for (int e = 0; e < events.length(); e++) {
-                    JSONObject event = (JSONObject) events.get(e);
-
-                    int id = event.getInt("ID");
-                    String title = event.getString("Title");
-                    String image = event.getJSONArray("Images").get(0).toString();
-                    String dateTitle = event.getJSONArray("SubTitle").get(0).toString();
-
-                    eventList.add(new FrameEntity(id, title, image, dateTitle));
-                }
-                dateList.put(date, eventList);
+                return search;
             }
         } catch (JSONException je) {
 
         }
 
-        return dateList;
+        return null;
     }
 }

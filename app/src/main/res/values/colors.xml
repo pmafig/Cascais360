@@ -21,4 +21,6 @@
     <color name="colorHit">#fd7062</color>
 
     <color name="colorInactive">#BEBEBE</color>
+
+    <color name="searchBarColor">#DFE1DF</color>
 </resources>

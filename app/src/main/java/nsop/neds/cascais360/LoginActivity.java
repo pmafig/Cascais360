@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
 
         SessionManager sm = new SessionManager(this);
 
-        String jsonRequest = String.format("{\"Email\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguagueID:%s}",
+        String jsonRequest = String.format("{\"Email\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
                 userName, encPass, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);

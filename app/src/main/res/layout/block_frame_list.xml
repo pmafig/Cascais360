@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <!--<TextView
         android:id="@+id/spotlight_block_category_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:fontFamily="@font/montserrat_bold"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginLeft="20dp"/>
+        android:layout_marginLeft="20dp"/>-->
 
     <TextView
         android:id="@+id/spotlight_block_title"

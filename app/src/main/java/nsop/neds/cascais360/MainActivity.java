@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        //Task<InstanceIdResult> id = FirebaseInstanceId.getInstance().getInstanceId();
-
         new MenuManager(this, toolbar, menuFragment, null);
 
     }

@@ -100,7 +100,7 @@
         android:animateLayoutChanges="true"
         android:background="@color/maps_info_background"
         android:padding="50dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="@+id/linearLayout">
 

@@ -40,6 +40,7 @@ import nsop.neds.cascais360.Entities.Json.Place;
 import nsop.neds.cascais360.Entities.Json.Point;
 import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Json.Route;
+import nsop.neds.cascais360.Entities.Json.Search;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
@@ -680,6 +681,110 @@ public class LayoutManager {
             layoutParams.setMargins(0, 0, 0, px);
 
             views_wrapper.addView(frame, layoutParams);
+        }
+
+        return frame_list;
+    }
+
+    public static View setSearch(final Search search, final Context context){
+
+        View frame_list = View.inflate(context, R.layout.block_frame_list, null);
+
+        TextView layout_title = frame_list.findViewById(R.id.spotlight_block_title);
+        layout_title.setVisibility(View.GONE);
+
+        LinearLayout views_wrapper = frame_list.findViewById(R.id.spotlight_block_views);
+
+        if(search.Events != null && search.Events.size() > 0) {
+            for (final Event e : search.Events) {
+                View frame = View.inflate(context, R.layout.block_frame, null);
+
+                TextView frameTitle = frame.findViewById(R.id.frame_title);
+                frameTitle.setText(e.Title);
+
+                TextView subTitle = frame.findViewById(R.id.frame_date);
+                subTitle.setText(e.SubTitle.get(0).Text);
+                subTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                final ImageView img = frame.findViewById(R.id.frame_image);
+                DownloadImageAsync obj = new DownloadImageAsync() {
+
+                    @Override
+                    protected void onPostExecute(Bitmap bmp) {
+                        super.onPostExecute(bmp);
+                        img.setImageBitmap(bmp);
+                    }
+                };
+                obj.execute(e.Images.get(0));
+
+                if (e.ID > 0) {
+                    img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent event = new Intent(context, DetailActivity.class);
+                            int id = e.ID;
+                            event.putExtra(Variables.Id, id);
+                            context.startActivity(event);
+                            ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    });
+                }
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+                layoutParams.setMargins(0, 0, 0, px);
+
+                views_wrapper.addView(frame, layoutParams);
+            }
+        }
+
+        if(search.Places != null && search.Places.size() > 0) {
+            for (final Place e : search.Places) {
+                View frame = View.inflate(context, R.layout.block_frame, null);
+
+                TextView frameTitle = frame.findViewById(R.id.frame_title);
+                frameTitle.setText(e.Title);
+
+                TextView subTitle = frame.findViewById(R.id.frame_date);
+                subTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                subTitle.setText(e.SubTitle.get(0).Text);
+
+                final ImageView img = frame.findViewById(R.id.frame_image);
+                DownloadImageAsync obj = new DownloadImageAsync() {
+
+                    @Override
+                    protected void onPostExecute(Bitmap bmp) {
+                        super.onPostExecute(bmp);
+                        img.setImageBitmap(bmp);
+                    }
+                };
+                obj.execute(e.Images.get(0));
+
+                if (e.ID > 0) {
+                    img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent event = new Intent(context, DetailActivity.class);
+                            int id = e.ID;
+                            event.putExtra(Variables.Id, id);
+                            context.startActivity(event);
+                            ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    });
+                }
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+                layoutParams.setMargins(0, 0, 0, px);
+
+                views_wrapper.addView(frame, layoutParams);
+            }
         }
 
         return frame_list;

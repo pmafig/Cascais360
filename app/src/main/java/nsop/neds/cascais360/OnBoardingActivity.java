@@ -31,7 +31,7 @@ public class OnBoardingActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_on_boarding);
 
-        setFirebasetoken();
+        //setFirebasetoken();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -131,7 +131,7 @@ public class OnBoardingActivity extends AppCompatActivity {
         });
     }
 
-    private void setFirebasetoken(){
+    /*private void setFirebasetoken(){
         final SessionManager sm = new SessionManager(this);
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
@@ -140,5 +140,5 @@ public class OnBoardingActivity extends AppCompatActivity {
                 sm.setFirebaseToken(instanceIdResult.getToken());
             }
         });
-    }
+    }*/
 }
