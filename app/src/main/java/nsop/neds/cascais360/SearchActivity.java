@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -71,7 +72,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        LinearLayout drawer = findViewById(R.id.drawer_layout);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.MULTIPLY);
 
         String type = getIntent().getStringExtra(Variables.Type);
 
@@ -535,6 +537,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private void loading(){
         RelativeLayout loading = findViewById(R.id.loadingPanel);
+
+        findViewById(R.id.search_result_text).setVisibility(View.GONE);
 
         loading.setVisibility(View.VISIBLE);
         loading.bringToFront();

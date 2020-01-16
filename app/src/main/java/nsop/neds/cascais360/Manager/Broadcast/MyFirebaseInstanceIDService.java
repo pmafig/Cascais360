@@ -3,7 +3,9 @@ package nsop.neds.cascais360.Manager.Broadcast;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -16,12 +18,14 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.Random;
 
 import nsop.neds.cascais360.Manager.SessionManager;
+import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.R;
 
 public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
@@ -41,7 +45,7 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
 
         String NOTIFICATION_CHANNEL_ID = "360_channel";
 
-        long pattern[] = {0, 1000, 500, 1000};
+        //long pattern[] = {0, 1000, 500, 1000};
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -53,8 +57,8 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
             notificationChannel.setDescription("");
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
-            notificationChannel.setVibrationPattern(pattern);
-            notificationChannel.enableVibration(true);
+            //notificationChannel.setVibrationPattern(pattern);
+            //notificationChannel.enableVibration(true);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
 
@@ -65,6 +69,17 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+
+        String click_action = message.getNotification().getClickAction();
+
+        Intent intent = new Intent(click_action);
+        try {
+            String nid = object.getString("nid");
+            intent.putExtra(Variables.Id, nid);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
+            notificationBuilder.setContentIntent(pendingIntent);
+        } catch (JSONException e) {  }
 
         notificationBuilder.setAutoCancel(true)
                 .setColor(ContextCompat.getColor(this, R.color.colorAccent))

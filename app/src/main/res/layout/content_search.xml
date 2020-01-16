@@ -12,12 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:background="@color/colorSearchBlock"
         android:visibility="gone">
 
         <ProgressBar
+            android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            android:translationZ="20dp"/>
     </RelativeLayout>
 
     <LinearLayout

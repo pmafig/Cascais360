@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.SearchEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -13,11 +14,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import nsop.neds.cascais360.Entities.FrameEntity;
+import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Search;
+import nsop.neds.cascais360.Entities.Json.SearchByDate;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
 import nsop.neds.cascais360.Settings.Data;
 
@@ -53,13 +58,11 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
     @Override
     protected Search doInBackground(String... strings) {
 
-        if(strings.length > 0){
+        if(strings.length == 1){
             return byText(strings[0]);
         }
 
-        return null;
-
-        /*if(Data.CalendarEvents == null){
+        if(Data.CalendarEvents == null){
             Data.CalendarEvents = new HashMap();
         }
 
@@ -70,53 +73,19 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
                 JSONObject responseData = response.getJSONObject("ResponseData");
                 JSONArray jsonArray = responseData.getJSONArray("Data");
 
-                Search search = new Gson().fromJson(jsonArray.toString(), Search.class);
+                Type listType = new TypeToken<ArrayList<SearchByDate>>(){}.getType();
+                List<SearchByDate> list = new Gson().fromJson(jsonArray.toString(), listType);
 
-                try {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject dateEvents = (JSONObject) jsonArray.get(i);
-                        List<FrameEntity> eventList = new ArrayList<>();
+                Search s = new Search();
+                s.Events = list.get(0).Data;
 
-                        String date = dateEvents.getString("Date");
-
-                        JSONArray events = dateEvents.getJSONArray("Data");
-
-                        for (int e = 0; e < events.length(); e++) {
-                            JSONObject event = (JSONObject) events.get(e);
-
-                            int id = event.getInt("ID");
-
-                            String title = event.getString("Title");
-                            String image = event.getJSONArray("Images").get(0).toString();
-                            String dateTitle = ((JSONObject)event.getJSONArray("SubTitle").get(0)).getString("Text");
-
-                            eventList.add(new FrameEntity(id, title, image, dateTitle));
-                        }
-
-                        if (!dateList.containsKey(date)) {
-                            dateList.put(date, eventList);
-                        }
-
-                    }
-                } catch (JSONException je) {
-
-                }
+                return s;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if(strings.length > 1) {
-            String timestamp = strings[1];
-
-            if (!Data.CalendarEvents.containsKey(timestamp) && dateList.size() > 0) {
-                Data.CalendarEvents.put(timestamp, dateList);
-            }else{
-                Data.noMoreCalendarEvents = true;
-            }
-        }
-
-        return dateList;*/
+        return null;
     }
 
     @Override
