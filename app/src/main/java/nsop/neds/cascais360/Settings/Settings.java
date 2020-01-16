@@ -2,9 +2,12 @@ package nsop.neds.cascais360.Settings;
 
 import android.widget.TextView;
 
+import java.util.List;
+
 import nsop.neds.cascais360.Entities.EventDetailEntity;
 import nsop.neds.cascais360.Entities.Json.Colors;
 import nsop.neds.cascais360.Entities.Json.Labels;
+import nsop.neds.cascais360.Entities.Json.Menu;
 
 public class Settings {
 
@@ -12,6 +15,8 @@ public class Settings {
 
     public static Colors colors;
     public static Labels labels;
+
+    public static List<Menu> menus;
 
     public static String aboutApp;
 

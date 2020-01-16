@@ -12,10 +12,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
+import nsop.neds.cascais360.Manager.SessionManager;
 import nsop.neds.cascais360.Settings.Settings;
 
 public class OnBoardingActivity extends AppCompatActivity {
@@ -26,11 +31,12 @@ public class OnBoardingActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_on_boarding);
 
+        setFirebasetoken();
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-
 
         final ViewPager viewPager = findViewById(R.id.sliderPager);
 
@@ -121,6 +127,17 @@ public class OnBoardingActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+    }
+
+    private void setFirebasetoken(){
+        final SessionManager sm = new SessionManager(this);
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                sm.setFirebaseToken(instanceIdResult.getToken());
             }
         });
     }

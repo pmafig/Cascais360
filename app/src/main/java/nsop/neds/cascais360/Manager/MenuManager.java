@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.SettingInjectorService;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -16,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import nsop.neds.cascais360.AboutAppActivity;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
+import nsop.neds.cascais360.Entities.Json.Resources;
 import nsop.neds.cascais360.ListActivity;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
@@ -56,6 +59,9 @@ public class MenuManager {
             toolbar.findViewById(R.id.toolbar_image).setVisibility(View.GONE);
         }
 
+        TextView backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setText(Settings.labels.Back);
+
         sm = new SessionManager(context);
 
         setToolbarUserInfo();
@@ -81,7 +87,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_settings).setOnClickListener(new View.OnClickListener() {
+        Button settings = menuFragment.findViewById(R.id.menu_button_settings);
+        settings.setText(Settings.labels.Settings);
+        settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -89,7 +97,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_about).setOnClickListener(new View.OnClickListener() {
+        Button about = menuFragment.findViewById(R.id.menu_button_about);
+        about.setText(Settings.labels.AboutApp);
+        about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -107,7 +117,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_login).setOnClickListener(new View.OnClickListener() {
+        Button login = menuFragment.findViewById(R.id.menu_button_login);
+        login.setText(Settings.labels.LoginButton);
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -115,7 +127,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_home).setOnClickListener(new View.OnClickListener() {
+        Button home = menuFragment.findViewById(R.id.menu_button_home);
+        home.setText(Settings.menus.get(0).Label);
+        home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -123,7 +137,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_agenda).setOnClickListener(new View.OnClickListener() {
+        Button agenda = menuFragment.findViewById(R.id.menu_button_agenda);
+        agenda.setText(Settings.menus.get(1).Label);
+        agenda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -133,7 +149,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_visit).setOnClickListener(new View.OnClickListener() {
+        Button visit = menuFragment.findViewById(R.id.menu_button_visit);
+        visit.setText(Settings.menus.get(2).Label);
+        visit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();
@@ -143,7 +161,9 @@ public class MenuManager {
             }
         });
 
-        menuFragment.findViewById(R.id.menu_button_route).setOnClickListener(new View.OnClickListener() {
+        Button route = menuFragment.findViewById(R.id.menu_button_route);
+        route.setText(Settings.menus.get(3).Label);
+        route.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 closeMenu();

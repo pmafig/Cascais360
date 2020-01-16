@@ -59,6 +59,8 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
                 JSONObject responseData = response.getJSONObject("ResponseData");
 
+                //final JSONObject jsonDetail = responseData.getJSONObject("ContentDetail");
+
                 final JSONObject jsonObject = responseData.getJSONObject("Data");
 
                 String _s = jsonObject.toString();

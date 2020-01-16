@@ -20,7 +20,6 @@
             android:layout_height="35mm"
             android:adjustViewBounds="true"
             android:cropToPadding="false"
-            android:src="@drawable/ic_icon_cascais"
             android:scaleType="centerCrop"/>
 
         <LinearLayout

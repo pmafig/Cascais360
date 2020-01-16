@@ -26,6 +26,7 @@ public class SessionManager {
     private static final String routes = "Routes";
     private static final String townCouncil = "TownCouncil";
 
+    private static final String firebasetoken = "FirebaseToken";
 
     private static final String langcode = "LangCode";
     private static final String langcodeposition = "LangCodePosition";
@@ -116,6 +117,10 @@ public class SessionManager {
     //public String getRecoverEmail(){ return sharedpreferences.getString(routesNotifications, "");    }
 
     public String getLangCode(){ return sharedpreferences.getString(langcode, "pt");    }
+
+    public void setFirebaseToken(String token){ editor.putString(firebasetoken, token).commit(); }
+
+    public String getFirebaseToken(){ return sharedpreferences.getString(firebasetoken, "");    }
 
     public void setLangCode(String langCode){ editor.putString(langcode, langCode).commit(); }
 

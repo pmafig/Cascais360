@@ -28,6 +28,6 @@ public class SplashActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        new ResourcesManager(this, true).execute(WebApiCalls.getResources());
+        new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
     }
 }

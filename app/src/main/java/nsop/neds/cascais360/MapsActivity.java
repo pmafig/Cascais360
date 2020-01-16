@@ -1,6 +1,5 @@
 package nsop.neds.cascais360;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -14,25 +13,25 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,31 +39,25 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.maps.android.PolyUtil;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
-import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.Point;
 import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Maps.Directions;
@@ -80,6 +73,8 @@ import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback {
 
 
@@ -91,6 +86,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private boolean seeRoute;
     private LatLng destination;
+
+    private LatLng origin;
+
+    private Polyline line;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,13 +164,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    Activity#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for Activity#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -183,8 +175,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onLocationChanged(android.location.Location location) {
             if(seeRoute) {
-                //LatLng origin = new LatLng(location.getLatitude(), location.getLongitude());
-                LatLng origin = new LatLng(38.699192,-9.423563);
+                LatLng origin = new LatLng(location.getLatitude(), location.getLongitude());
+                //LatLng origin = new LatLng(38.699192,-9.423563);
                 DrawRoute(origin, destination);
             }
             /*double latitude=location.getLatitude();
@@ -216,9 +208,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setInfoWindowAdapter(this);
         mMap.setOnInfoWindowClickListener(this);
 
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            origin = new LatLng(location.getLatitude(), location.getLongitude());
+                        }
+                    }
+                });
+
         if(seeRoute) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mMap.setMyLocationEnabled(true);
+                DrawRoute(origin, destination);
             } else {
                 // Show rationale and request permission.
                 ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
@@ -310,8 +316,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         viewPager.setCurrentItem(point.Index-1, false);
 
-        findViewById(R.id.sliderPagerWrapper).animate().alpha(1.0f);
-        findViewById(R.id.sliderPagerWrapper).setVisibility(View.VISIBLE);
+        findViewById(R.id.marker_info_wrapper).animate().alpha(1.0f);
+        findViewById(R.id.marker_info_wrapper).setVisibility(View.VISIBLE);
 
         //TODO set destination for walking route
 
@@ -354,7 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         int i = 1;
 
-        for (PointMap info: pointMap) {
+        for (final PointMap info: pointMap) {
             View view = View.inflate(this, R.layout.block_marker_info, null);
 
             TextView index = view.findViewById(R.id.marker_index);
@@ -369,14 +375,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} }</style><body>%s</body>";
 
-            WebView address = view.findViewById(R.id.marker_address);
-            address.loadData(String.format(Settings.html, info.Point.get(0).Address), "text/html; charset=utf-8", "UTF-8");
+            TextView address = view.findViewById(R.id.marker_address);
+            address.setText(Html.fromHtml(info.Point.get(0).Address));
+            //address.loadData(String.format(Settings.html, info.Point.get(0).Address), "text/html; charset=utf-8", "UTF-8");
 
             TextView latLng = view.findViewById(R.id.marker_lat_log);
             latLng.setText(String.format("Lat:%s | Lng:%s", info.Point.get(0).Coordinates.Lat, info.Point.get(0).Coordinates.Lng));
 
-            WebView description = view.findViewById(R.id.marker_description);
-            description.loadData(String.format(Settings.html, info.Description), "text/html; charset=utf-8", "UTF-8");
+            TextView description = view.findViewById(R.id.marker_description);
+            description.setText(Html.fromHtml(info.Description));
+            //description.loadData(String.format(Settings.html, info.Description), "text/html; charset=utf-8", "UTF-8");
 
             final ImageView img = view.findViewById(R.id.frame_image);
 
@@ -389,12 +397,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             };
             obj.execute(info.Images.get(0));
 
+            final MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            ImageView playButton = view.findViewById(R.id.play_media);
+
+            final Boolean[] playing = {false};
+            final Boolean[] firstPlaying = {true};
+
+            if(info.AudioGuide != null && info.AudioGuide.size() > 0){
+                playButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        try {
+
+                            if (playing[0]) {
+                                mediaPlayer.pause();
+                                playing[0] = false;
+                                ((ImageView) v).setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                            } else {
+                                if(firstPlaying[0]) {
+                                    Uri myUri = Uri.parse(info.AudioGuide.get(0));
+                                    mediaPlayer.setDataSource(getApplicationContext(), myUri);
+                                    mediaPlayer.prepare();
+
+                                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                        @Override
+                                        public void onCompletion(MediaPlayer mp) {
+                                            ((ImageView) v).setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                                            playing[0] = false;
+                                        }
+                                    });
+                                    //mediaPlayer.getDuration()
+
+                                    firstPlaying[0] = false;
+                                }
+                                mediaPlayer.start();
+                                playing[0] = true;
+                                ((ImageView) v).setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
+                            }
+                        } catch (IOException e) {
+                            //Toast.makeText(this,R.string.common_signin_button_text , Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }else{
+                playButton.setVisibility(View.GONE);
+            }
+
             ImageView close = view.findViewById(R.id.marker_close);
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    findViewById(R.id.sliderPagerWrapper).animate().alpha(0.0f);
-                    findViewById(R.id.sliderPagerWrapper).setVisibility(View.GONE);
+                    findViewById(R.id.marker_info_wrapper).animate().alpha(0.0f);
+                    findViewById(R.id.marker_info_wrapper).setVisibility(View.GONE);
+                }
+            });
+
+            Button getDirections = view.findViewById(R.id.get_directions);
+            getDirections.setText(Settings.labels.GetDirections);
+            getDirections.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if(info.Point != null && info.Point.size() > 0) {
+                        LatLng dest = new LatLng(info.Point.get(0).Coordinates.Lat, info.Point.get(0).Coordinates.Lng);
+                        if(origin != null) {
+                            DrawRoute(origin, dest);
+                            findViewById(R.id.marker_info_wrapper).animate().alpha(0.0f);
+                            findViewById(R.id.marker_info_wrapper).setVisibility(View.GONE);
+                        }
+                    }
                 }
             });
 
@@ -463,6 +535,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         List<LatLng> list = PolyUtil.decode(route.overview_polyline.points);
 
+
                         PolylineOptions options = new PolylineOptions();
 
                         if (list != null) {
@@ -471,7 +544,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
 
-                        mMap.addPolyline(options);
+                        line = mMap.addPolyline(options);
 
 
                         ExpandableListAdapter expandableListAdapter;

@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -17,6 +20,7 @@ import nsop.neds.cascais360.Entities.ResourceEntity;
 import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.OnBoardingActivity;
 import nsop.neds.cascais360.Settings.Settings;
+import nsop.neds.cascais360.SettingsActivity;
 
 
 public class ResourcesManager extends AsyncTask<String, Void, Resources> {
@@ -24,10 +28,12 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
     private LinearLayout mainContent;
     private Context context;
     private boolean redirect;
+    private boolean fromSettings;
 
-    public ResourcesManager(Context context, boolean redirect){
+    public ResourcesManager(Context context, boolean redirect, boolean fromSettings){
         this.context = context;
         this.redirect = redirect;
+        this.fromSettings = fromSettings;
     }
 
     @Override
@@ -81,6 +87,10 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
 
                 setSettings(resources);
 
+                if(this.fromSettings){
+                    context.startActivity(new Intent(context, SettingsActivity.class));
+                }
+
                 if(redirect) {
                     SessionManager sm = new SessionManager(context);
 
@@ -104,5 +114,6 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
         Settings.labels = r.Labels;
         Settings.labels = r.Labels;
         Settings.aboutApp = r.AboutApp;
+        Settings.menus = r.Menu;
     }
 }

@@ -98,4 +98,6 @@ public class Labels {
     public String Address;
     public String Geolocation;
     public String Parish;
+    public String Permissions;
+    public String Location;
 }

@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Task<InstanceIdResult> id = FirebaseInstanceId.getInstance().getInstanceId();
 
-        String token = FirebaseInstanceId.getInstance().getToken();
-
         new MenuManager(this, toolbar, menuFragment, null);
 
     }

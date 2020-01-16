@@ -79,7 +79,7 @@
             </LinearLayout>
 
 
-                <WebView
+                <TextView
                     android:id="@+id/marker_address"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -101,14 +101,21 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/play_media"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_play_arrow_black_24dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <WebView
+                        <TextView
                             android:id="@+id/marker_description"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -116,11 +123,19 @@
                             android:textColor="@color/colorBlack"
                             android:textSize="12dp"
                             android:layout_gravity="center_vertical" />
-                    </LinearLayout>
-
                 </ScrollView>
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:gravity="center">
+                <Button
+                    android:id="@+id/get_directions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Get directions"/>
+            </LinearLayout>
 
 
         </LinearLayout>
