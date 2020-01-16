@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -464,6 +465,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
     public void searchByText(String data){
         try {
+            View view = this.findViewById(android.R.id.content);
+
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
             new SearchManager(this, (LinearLayout) findViewById(R.id.search_result_text), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).execute(WebApiCalls.getSearchByText(data));
         }catch (Exception ex){
             //TODO: Noservice Activity
