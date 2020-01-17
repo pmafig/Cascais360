@@ -14,9 +14,9 @@ public class WebApiCalls {
         String rt;
 
         if(ssk != "" && userId != ""){
-            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"ssk\":\""+ ssk +"\", \"userid\":\""+ userId +"\" }", WebApiClient.SITE_KEY);
+            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"ssk\":\""+ ssk +"\", \"userid\":\""+ userId +"\", \"LangCode\":\"" + Settings.LangCode + "\" }", WebApiClient.SITE_KEY);
         }else{
-            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\"}", WebApiClient.SITE_KEY);
+            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         }
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
@@ -34,37 +34,37 @@ public class WebApiCalls {
     }
 
     public static String getAgenda(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageAgenda\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageAgenda\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getVisit(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageVisit\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageVisit\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getRoute(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageRoutes\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"pageRoutes\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getCategory(int id){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"categoryNodes\",\"Category\":"+ id +"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"categoryNodes\",\"Category\":"+ id +", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getSearch(String date){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"search\",\"DateEnd\":" + date + "}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"search\",\"DateEnd\":" + date + ", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getSearchByText(String data){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"search\",\"Title\":\"" + data + "\"}", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"search\",\"Title\":\"" + data + "\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
     public static String getSearchByMap(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"CoordLat\": 38.7011317, \"CoordLong\": -9.4315817, \"Radius\": 5000.01 }", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"LangCode\":\"" + Settings.LangCode + "\", \"CoordLat\": 38.7011317, \"CoordLong\": -9.4315817, \"Radius\": 5000.01 }", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 

@@ -81,6 +81,12 @@ public class MenuManager {
             }
         });
 
+        TextView infoCascais = menuFragment.findViewById(R.id.label_WeatherCascais);
+        infoCascais.setText(Settings.labels.WeatherCascais);
+
+        TextView today = menuFragment.findViewById(R.id.label_Today);
+        today.setText(Settings.labels.Today);
+
         menuFragment.findViewById(R.id.user_frame).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

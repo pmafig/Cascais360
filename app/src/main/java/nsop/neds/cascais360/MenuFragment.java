@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
+import nsop.neds.cascais360.Settings.Settings;
 
 
 /**
@@ -43,21 +46,13 @@ public class MenuFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
-        /*Button login = getView().findViewById(R.id.menu_button_login);
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        TextView infoCascais = view.findViewById(R.id.label_WeatherCascais);
+        infoCascais.setText(Settings.labels.WeatherCascais);
 
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_menu, new LoginFragment());
-                transaction.addToBackStack("login");
-                transaction.commit();
-            }
-        });*/
+        TextView today = view.findViewById(R.id.label_Today);
+        today.setText(Settings.labels.Today);
 
         return view;
     }

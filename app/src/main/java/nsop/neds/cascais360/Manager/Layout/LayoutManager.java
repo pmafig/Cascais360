@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.SettingInjectorService;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import nsop.neds.cascais360.DetailActivity;
 import nsop.neds.cascais360.Entities.Json.CategoryListDetail;
@@ -971,7 +973,7 @@ public class LayoutManager {
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(html, event.CustomHours), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(String.format(Settings.html, event.CustomHours), "text/html; charset=utf-8", "UTF-8");
 
                     dialog.show();
                 }
@@ -1013,7 +1015,7 @@ public class LayoutManager {
                     name.setText(point.Title);
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
-                    addess.loadData(String.format(html, point.Address), "text/html; charset=utf-8", "UTF-8");
+                    addess.loadData(String.format(Settings.html, point.Address), "text/html; charset=utf-8", "UTF-8");
 
                     TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
@@ -1036,11 +1038,12 @@ public class LayoutManager {
             euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView priceLabel = mainContent.findViewById(R.id.label_price);
             priceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            priceLabel.setText(Settings.labels.Price);
             WebView price = mainContent.findViewById(R.id.price);
 
             String _p = event.Price.Text.substring(event.Price.Text.indexOf("<p>"), event.Price.Text.indexOf("</p>")) + "</p>" ;
 
-            price.loadData(String.format(html, _p), "text/html; charset=utf-8", "UTF-8");
+            price.loadData(String.format(Settings.html, _p), "text/html; charset=utf-8", "UTF-8");
 
             Button eventTicket = mainContent.findViewById(R.id.event_ticket);
             eventTicket.setVisibility(event.OnlineTicket != null ? View.VISIBLE : View.GONE );
@@ -1061,7 +1064,7 @@ public class LayoutManager {
 
         if(event.Description != null) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(html, event.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(String.format(Settings.html, event.Description), "text/html; charset=utf-8", "UTF-8");
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
     }
@@ -1083,6 +1086,7 @@ public class LayoutManager {
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        descriptionTitle.setText(Settings.labels.Description);
 
         String dateInfo = place.SubTitle != null && place.SubTitle.size() > 0 ? place.SubTitle.get(0).Text : null;
         LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
@@ -1108,7 +1112,7 @@ public class LayoutManager {
 
                 if(place.OfficeHours.Text != null) {
                     WebView officeHours = mainContent.findViewById(R.id.place_date);
-                    officeHours.loadData(String.format(html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
+                    officeHours.loadData(String.format(Settings.html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
                     officeHours.setVisibility(View.VISIBLE);
                 }
             }
@@ -1144,7 +1148,7 @@ public class LayoutManager {
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(html, place.CustomHours), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(String.format(Settings.html, place.CustomHours), "text/html; charset=utf-8", "UTF-8");
 
                     dialog.show();
                 }
@@ -1186,7 +1190,7 @@ public class LayoutManager {
                     name.setText(point.Title);
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
-                    addess.loadData(String.format(html, point.Address), "text/html; charset=utf-8", "UTF-8");
+                    addess.loadData(String.format(Settings.html, point.Address), "text/html; charset=utf-8", "UTF-8");
 
                     TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
@@ -1209,11 +1213,12 @@ public class LayoutManager {
             euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView priceLabel = mainContent.findViewById(R.id.label_price);
             priceLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            priceLabel.setText(Settings.labels.Price);
             WebView price = mainContent.findViewById(R.id.price);
 
             String _p = place.Price.Text.substring(place.Price.Text.indexOf("<p>"), place.Price.Text.indexOf("</p>")) + "</p>" ;
 
-            price.loadData(String.format(html, _p), "text/html; charset=utf-8", "UTF-8");
+            price.loadData(String.format(Settings.html, _p), "text/html; charset=utf-8", "UTF-8");
 
             TextView morePriceLabel = mainContent.findViewById(R.id.label_more_price);
             morePriceLabel.setText(String.format("[+ %s]", Settings.labels.Info));
@@ -1229,7 +1234,7 @@ public class LayoutManager {
                     title.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(html, place.Price.Text), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(String.format(Settings.html, place.Price.Text), "text/html; charset=utf-8", "UTF-8");
 
                     dialog.show();
                 }
@@ -1256,7 +1261,7 @@ public class LayoutManager {
 
         if(place.Description != null) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(html, place.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(String.format(Settings.html, place.Description), "text/html; charset=utf-8", "UTF-8");
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
 
@@ -1421,7 +1426,7 @@ public class LayoutManager {
             description_frame.setBackground(null);
 
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(html, route.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(String.format(Settings.html, route.Description), "text/html; charset=utf-8", "UTF-8");
             description_frame.setVisibility(View.VISIBLE);
         }
     }
