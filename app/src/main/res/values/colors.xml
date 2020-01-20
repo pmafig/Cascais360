@@ -23,4 +23,6 @@
     <color name="colorInactive">#BEBEBE</color>
 
     <color name="searchBarColor">#DFE1DF</color>
+
+    <color name="ic_launcher_background">#000000</color>
 </resources>
