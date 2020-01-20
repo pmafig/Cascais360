@@ -1,5 +1,6 @@
 package nsop.neds.cascais360;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
@@ -20,6 +21,7 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -89,8 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LatLng origin;
 
-    private Polyline line;
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         map_point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.MapPoints), MapPointTypeList);
         point_list = new Gson().fromJson(getIntent().getStringExtra(Variables.Points), PointTypeList);
 
-        if(point_list.size() > 0) {
+        if (point_list.size() > 0) {
             destination = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
         }
 
@@ -162,13 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawInfoPoints(map_point_list);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                2000,
-                10, locationListenerGPS);
+
     }
 
     LocationListener locationListenerGPS=new LocationListener() {
@@ -217,20 +212,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             origin = new LatLng(location.getLatitude(), location.getLongitude());
+                            if(seeRoute) {
+                                DrawRoute(origin, destination);
+                            }
                         }
                     }
                 });
 
-        if(seeRoute) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
-                DrawRoute(origin, destination);
-            } else {
-                // Show rationale and request permission.
-                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
-            }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        2000,
+                        10, locationListenerGPS);
+        } else {
+            // Show rationale and request permission.
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
         }
-
 
         mMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
 
@@ -544,7 +541,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
 
-                        line = mMap.addPolyline(options);
+                        Polyline line = mMap.addPolyline(options);
 
 
                         ExpandableListAdapter expandableListAdapter;

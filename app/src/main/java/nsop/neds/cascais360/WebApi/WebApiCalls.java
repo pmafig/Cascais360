@@ -63,8 +63,8 @@ public class WebApiCalls {
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
-    public static String getSearchByMap(){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"LangCode\":\"" + Settings.LangCode + "\", \"CoordLat\": 38.7011317, \"CoordLong\": -9.4315817, \"Radius\": 5000.01 }", WebApiClient.SITE_KEY);
+    public static String getSearchByMap(String lat, String lng){
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"LangCode\":\"" + Settings.LangCode + "\", \"CoordLat\": "+ lat +", \"CoordLong\": "+ lng +", \"Radius\": 2000.01 }", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 

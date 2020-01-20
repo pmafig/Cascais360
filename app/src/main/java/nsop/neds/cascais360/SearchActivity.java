@@ -1,12 +1,17 @@
 package nsop.neds.cascais360;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,10 +30,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,6 +47,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -59,6 +68,8 @@ import nsop.neds.cascais360.WebApi.WebApiCalls;
 
 public class SearchActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener{
 
+    LocationManager locationManager;
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
     private Calendar calendar;
     private GoogleMap mGoogleMap;
     //private MyClusterManagerRenderer mClusterManagerRenderer;
@@ -67,6 +78,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     //private ClusterManager<ClusterMarker> mClusterManager;
 
     private Marker lastMarket;
+
+    private LatLng origin;
+
+    private int mapScale = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -478,11 +493,50 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
     public void searchByMap(){
         try{
-            new PinpointManager().execute(WebApiCalls.getSearchByMap());
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mGoogleMap.setMyLocationEnabled(true);
+            } else {
+                // Show rationale and request permission.
+                ActivityCompat.requestPermissions(SearchActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
+            }
+
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    2000,
+                    10, locationListenerGPS);
+
+            new PinpointManager().execute(WebApiCalls.getSearchByMap(String.valueOf(origin.latitude), String.valueOf(origin.longitude)));
+
         }catch (Exception ex){
+            String as = "";
             //TODO: Noservice Activity
         }
     }
+
+    LocationListener locationListenerGPS=new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            origin = new LatLng(location.getLatitude(), location.getLongitude());
+            //DrawRoute(origin, destination);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, mapScale));
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
 
     /*@Override
@@ -528,6 +582,19 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         //mGoogleMap.setOnMarkerClickListener(this);
         //mGoogleMap.setMyLocationEnabled(true);
 
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    origin = new LatLng(location.getLatitude(), location.getLongitude());
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, mapScale));
+                }
+            }
+        });
+
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -538,7 +605,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
-        //addMapMarkers();
+        addMapMarkers();
     }
 
     private void loading(){
@@ -579,20 +646,21 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             mClusterManager.cluster();*/
 
 
-            for(PinPointEntity p : Data.PinpointEvents.values()){
+            /*for(PinPointEntity p : Data.PinpointEvents.values()){
                 LatLng geopoint = new LatLng(p.Latitude(), p.Logitude());
                 Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(geopoint).title(p.Title()));
                 marker.setIcon(bitmapDescriptorFromVector(this, true));
                 marker.setTag(p);
             }
 
+            setCameraView();*/
             setCameraView();
         }
     }
 
     private void setCameraView(){
         LatLng cascais = new LatLng(38.7025943, -9.3966299);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cascais, 12));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cascais, mapScale));
     }
 
     @Override
@@ -694,6 +762,20 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         int nid = p.Nid();
         event.putExtra("nid", nid);
         this.startActivity(event);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+
+            if (permissions.length == 1 && permissions[0].startsWith(Manifest.permission.ACCESS_FINE_LOCATION) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mGoogleMap.setMyLocationEnabled(true);
+                //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, mapScale));
+            } else {
+                // Permission was denied. Display an error message.
+                setCameraView();
+            }
+        }
     }
 }
 
