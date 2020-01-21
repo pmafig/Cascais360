@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.SettingInjectorService;
 import android.net.Uri;
 import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -51,6 +52,7 @@ import nsop.neds.cascais360.Manager.ControlsManager.SliderTwoPageAdapter;
 import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.MapsActivity;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.SearchActivity;
 import nsop.neds.cascais360.Settings.Settings;
 
 public class LayoutManager {
@@ -151,6 +153,13 @@ public class LayoutManager {
             views.add(frame);
         }
 
+        viewPager.setAdapter(new SliderPageAdapter(views, context));
+
+        if(views.size() == 1){
+            block.findViewById(R.id.sliderdots_frame).setVisibility(View.GONE);
+            return block;
+        }
+
         final LinearLayout sliderdots = block.findViewById(R.id.sliderdots);
         final ImageView[] dots = new ImageView[slider_list.size()];
 
@@ -193,8 +202,6 @@ public class LayoutManager {
         }
 
         dots[0].setColorFilter(Color.parseColor(Settings.colors.YearColor));
-
-        viewPager.setAdapter(new SliderPageAdapter(views, context));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -902,8 +909,10 @@ public class LayoutManager {
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        //TODO setsize with resources value
+        descriptionTitle.setTextSize(16);
 
-        String dateInfo = event.SubTitle != null && event.SubTitle.size() > 0 ? event.SubTitle.get(0).Text : null;
+        String dateInfo = event.NextDates != null && event.NextDates.size() > 0 ? event.NextDates.get(0) : null;
         LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
         if(dateInfo != null) {
             ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
@@ -913,16 +922,23 @@ public class LayoutManager {
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
             TextView moreDateLabel = mainContent.findViewById(R.id.label_more_dates);
-            if(event.NextDates.size() > 0) {
+            if(event.NextDates.size() > 1) {
                 moreDateLabel.setText(String.format("[+ %s]", Settings.labels.Dates));
                 moreDateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
                 moreDateLabel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Dialog dialog = new Dialog(context);
+                        final Dialog dialog = new Dialog(context);
 
                         View dates = View.inflate(context, R.layout.block_event_more_dates, null);
                         LinearLayout wrapper = dates.findViewById(R.id.more_dates_content);
+
+                        dates.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
 
                         for (String d : event.NextDates) {
                             TextView date = new TextView(context);
@@ -944,7 +960,7 @@ public class LayoutManager {
             }
 
             TextView date = mainContent.findViewById(R.id.event_date);
-            date.setText(event.SubTitle.get(0).Text);
+            date.setText(event.NextDates.get(0));
             date.setVisibility(View.VISIBLE);
             date_frame.setVisibility(View.VISIBLE);
         }else{
@@ -967,8 +983,14 @@ public class LayoutManager {
             schedule_frame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new Dialog(context);
+                    final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_hours);
+                    dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
 
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
@@ -1002,7 +1024,7 @@ public class LayoutManager {
             locationFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new Dialog(context);
+                    final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_more_info);
 
                     ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -1010,6 +1032,26 @@ public class LayoutManager {
                     ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    ImageView map_detail = dialog.findViewById(R.id.map_detail);
+                    map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+                    map_detail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, SearchActivity.class);
+                            intent.putExtra(Variables.Type, Variables.Maps);
+                            intent.putExtra(Variables.Lat, point.Coordinates.Lat);
+                            intent.putExtra(Variables.Lng, point.Coordinates.Lng);
+                            context.startActivity(intent);
+                        }
+                    });
 
                     TextView name = (TextView) dialog.findViewById(R.id.more_info_name);
                     name.setText(point.Title);
@@ -1088,7 +1130,7 @@ public class LayoutManager {
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
         descriptionTitle.setText(Settings.labels.Description);
 
-        String dateInfo = place.SubTitle != null && place.SubTitle.size() > 0 ? place.SubTitle.get(0).Text : null;
+        String dateInfo = place.NextDates != null && place.NextDates.size() > 0 ? place.NextDates.get(0) : null;
         LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
         if(dateInfo != null) {
             ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
@@ -1142,8 +1184,15 @@ public class LayoutManager {
             schedule_frame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new Dialog(context);
+                    final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_hours);
+
+                    dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
 
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
@@ -1177,14 +1226,35 @@ public class LayoutManager {
             locationFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new Dialog(context);
+                    final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_more_info);
+
+                    dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
 
                     ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_name)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
                     ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    ImageView map_detail = dialog.findViewById(R.id.map_detail);
+                    map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+                    map_detail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, SearchActivity.class);
+                            intent.putExtra(Variables.Type, Variables.Maps);
+                            intent.putExtra(Variables.Lat, point.Coordinates.Lat);
+                            intent.putExtra(Variables.Lng, point.Coordinates.Lng);
+                            context.startActivity(intent);
+                        }
+                    });
+
 
                     TextView name = (TextView) dialog.findViewById(R.id.more_info_name);
                     name.setText(point.Title);
@@ -1226,8 +1296,15 @@ public class LayoutManager {
             morePriceLabel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Dialog dialog = new Dialog(context);
+                    final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_hours);
+
+                    dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
 
                     TextView title = dialog.findViewById(R.id.more_hours);
                     title.setText(Settings.labels.Price);
@@ -1346,6 +1423,7 @@ public class LayoutManager {
 
         TextView t_price = frame.findViewById(R.id.event_price_label);
         t_price.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        t_price.setText(Settings.labels.Free);
 
 
         final LinearLayout routeMaps = mainContent.findViewById(R.id.event_route_buttons);
@@ -1353,6 +1431,7 @@ public class LayoutManager {
         if(route.PointsMap.size() > 0){
             routeMaps.setVisibility(View.VISIBLE);
             Button seeMap = mainContent.findViewById(R.id.btn_route_seemap);
+            seeMap.setText(Settings.labels.SeeMap);
             Drawable border = context.getDrawable(R.drawable.see_map_border);
             border.setTint(Color.parseColor(Settings.colors.YearColor));
             seeMap.setBackground(border);
@@ -1383,6 +1462,7 @@ public class LayoutManager {
             });
 
             Button seeRoute = mainContent.findViewById(R.id.btn_route_route);
+            seeRoute.setText(Settings.labels.InitTrip);
             //seeRoute.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
             Drawable bg = context.getDrawable(R.drawable.see_map_bg);
             bg.setTint(Color.parseColor(Settings.colors.YearColor));

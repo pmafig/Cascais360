@@ -5,18 +5,30 @@
     android:layout_height="wrap_content"
     android:paddingBottom="15dp"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/more_dates_title"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="datas"
-        android:textAllCaps="true"
-        android:textSize="18dp"
-        android:paddingVertical="15dp"
-        android:paddingHorizontal="15dp"
-        android:background="@drawable/border_bottom"
-        android:textColor="@color/colorBlack"
-        android:fontFamily="@font/montserrat_regular"/>
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/more_dates_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="datas"
+            android:textAllCaps="true"
+            android:textSize="18dp"
+            android:paddingVertical="15dp"
+            android:paddingHorizontal="15dp"
+            android:background="@drawable/border_bottom"
+            android:textColor="@color/colorBlack"
+            android:fontFamily="@font/montserrat_regular"/>
+        <ImageView
+            android:id="@+id/close_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_close"
+            android:padding="10dp"
+            android:layout_gravity="right"/>
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/more_dates_content"
         android:layout_width="match_parent"

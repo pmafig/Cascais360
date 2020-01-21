@@ -2,31 +2,32 @@ package nsop.neds.cascais360.Manager;
 
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import nsop.neds.cascais360.Entities.PinPointEntity;
+import nsop.neds.cascais360.Entities.Json.MapMarker;
+import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Settings.Data;
 
 
-public class PinpointManager extends AsyncTask<String, Void, List<PinPointEntity>> {
+public class PinpointManager extends AsyncTask<String, Void, List<MapMarker>> {
 
     public PinpointManager(){
     }
 
     @Override
-    protected List<PinPointEntity> doInBackground(String... strings) {
+    protected List<MapMarker> doInBackground(String... strings) {
 
-        List<PinPointEntity> pinpointList = new ArrayList<>();
-
-        if(Data.PinpointEvents == null){
-            Data.PinpointEvents = new HashMap<>();
-        }
+        List<MapMarker> mapMarkers = null;
 
         try {
 
@@ -37,38 +38,29 @@ public class PinpointManager extends AsyncTask<String, Void, List<PinPointEntity
 
                 JSONArray jsonArray = responseData.getJSONArray("Data");
 
-                try {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject event = (JSONObject) jsonArray.get(i);
+                Type MapMarkerTypeList = new TypeToken<ArrayList<MapMarker>>(){}.getType();
+                mapMarkers = new Gson().fromJson(jsonArray.toString(), MapMarkerTypeList);
 
-                        int id = event.getInt("ID");
-                        String title = event.getString("Title");
-                        String image = event.getJSONArray("Images").get(0).toString();
-
-                        JSONObject coord = ((JSONObject) event.getJSONArray("Coordinates").get(0));
-
-                        Double lat = coord.getDouble("Lng");
-                        Double log = coord.getDouble("Lat");
-
-                        PinPointEntity p = new PinPointEntity(i + 1, id, title, image, lat, log);
-
-                        if (!Data.PinpointEvents.containsKey(id)) {
-                            Data.PinpointEvents.put(id, p);
-                        }
-                    }
-                } catch (JSONException je) {
-
+                if(Data.LocalMarkers == null){
+                    Data.LocalMarkers = new ArrayList<>();
                 }
+
+                for (MapMarker m: mapMarkers){
+                    if(!Data.LocalMarkers.contains(m)){
+                        Data.LocalMarkers.add(m);
+                    }
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return pinpointList;
+        return mapMarkers;
     }
 
     @Override
-    protected void onPostExecute(final List<PinPointEntity> eventDetail) {
+    protected void onPostExecute(final List<MapMarker> eventDetail) {
         super.onPostExecute(eventDetail);
     }
 }

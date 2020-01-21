@@ -162,10 +162,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.setAdapter(expandableListAdapter);
 
-        drawInfoPoints(map_point_list);
-
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
     }
 
     LocationListener locationListenerGPS=new LocationListener() {
@@ -202,108 +198,117 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setInfoWindowAdapter(this);
-        mMap.setOnInfoWindowClickListener(this);
+        try {
+            if (mMap != null) {
+                drawInfoPoints(map_point_list);
+                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+                mMap.setInfoWindowAdapter(this);
+                mMap.setOnInfoWindowClickListener(this);
 
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            origin = new LatLng(location.getLatitude(), location.getLongitude());
-                            if(seeRoute) {
-                                DrawRoute(origin, destination);
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    origin = new LatLng(location.getLatitude(), location.getLongitude());
+                                    if (seeRoute) {
+                                        DrawRoute(origin, destination);
+                                    }
+                                }
                             }
-                        }
+                        });
+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    mMap.setMyLocationEnabled(true);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                            2000,
+                            10, locationListenerGPS);
+                } else {
+                    // Show rationale and request permission.
+                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
+                }
+
+                mMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
+
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+                int i = 1;
+
+                for (Point p : point_list) {
+
+                    LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
+
+                    builder.include(_pinpoint);
+
+                    float sp = 20;
+                    int px = Math.round(sp * getResources().getDisplayMetrics().scaledDensity);
+
+                    Marker m = mMap.addMarker(new MarkerOptions().position(_pinpoint).icon(BitmapDescriptorFactory.defaultMarker(1)));
+
+                    PointMap pointMap = map_point_list.get(i - 1);
+                    pointMap.Index = i;
+                    m.setTag(pointMap);
+
+                    Bitmap bitmap = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+
+                    Paint paint = new Paint();
+                    paint.setColor(Color.parseColor(Settings.colors.YearColor));
+
+                    Paint text = new Paint();
+                    text.setColor(getResources().getColor(R.color.colorWhite));
+                    text.setTextSize(px / 2);
+
+                    float v = text.ascent() + text.descent();
+
+                    int xPos = canvas.getWidth() / 2;
+                    int yPos = (int) ((canvas.getHeight() / 2) - ((text.descent() + text.ascent()) / 2));
+
+                    canvas.drawCircle(xPos, xPos, xPos, paint);
+
+                    //TODO: mellhorar a forma como está a ser desenhado o número no circulo
+                    if (i > 9) {
+                        canvas.drawText(String.valueOf(i++), (xPos - (int) (px * 0.3)), yPos, text);
+                    } else {
+                        canvas.drawText(String.valueOf(i++), (xPos - (int) (px * 0.15)), yPos, text);
                     }
-                });
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        2000,
-                        10, locationListenerGPS);
-        } else {
-            // Show rationale and request permission.
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_LOCATION_REQUEST_CODE);
-        }
+                    BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
 
-        mMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
+                    m.setIcon(icon);
+                }
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                LatLngBounds bounds = builder.build();
 
-        int i = 1;
+                mMap.setLatLngBoundsForCameraTarget(builder.build());
 
-        for (Point p: point_list) {
+                int padding = 50; // offset from edges of the map in pixels
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-            LatLng _pinpoint = new LatLng(p.Coordinates.Lat, p.Coordinates.Lng);
+                if (seeRoute) {
 
-            builder.include(_pinpoint);
+                    LatLng _pinpoint = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
 
-            float sp = 20;
-            int px = Math.round(sp * getResources().getDisplayMetrics().scaledDensity);
+                    LatLng _pinpoint2 = new LatLng(point_list.get(1).Coordinates.Lat, point_list.get(1).Coordinates.Lng);
 
-            Marker m = mMap.addMarker(new MarkerOptions().position(_pinpoint).icon(BitmapDescriptorFactory.defaultMarker(1)));
-
-            PointMap pointMap = map_point_list.get(i-1);
-            pointMap.Index = i;
-            m.setTag(pointMap);
-
-            Bitmap bitmap = Bitmap.createBitmap( px, px, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-
-            Paint paint = new Paint();
-            paint.setColor(Color.parseColor(Settings.colors.YearColor));
-
-            Paint text = new Paint();
-            text.setColor(getResources().getColor(R.color.colorWhite));
-            text.setTextSize(px/2);
-
-            float v = text.ascent() + text.descent();
-
-            int xPos = canvas.getWidth() / 2;
-            int yPos = (int) ((canvas.getHeight() / 2) - ((text.descent() + text.ascent()) / 2)) ;
-
-            canvas.drawCircle(xPos,xPos,xPos, paint);
-
-            //TODO: mellhorar a forma como está a ser desenhado o número no circulo
-            if(i > 9) {
-                canvas.drawText(String.valueOf(i++), (xPos - (int)(px * 0.3)), yPos, text);
-            }else{
-                canvas.drawText(String.valueOf(i++), (xPos - (int)(px * 0.15)), yPos, text);
-            }
-
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
-
-            m.setIcon(icon);
-        }
-
-        LatLngBounds bounds = builder.build();
-
-        mMap.setLatLngBoundsForCameraTarget(builder.build());
-
-        int padding = 50; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-
-        if(seeRoute) {
-
-            LatLng _pinpoint = new LatLng(point_list.get(0).Coordinates.Lat, point_list.get(0).Coordinates.Lng);
-
-            LatLng _pinpoint2 = new LatLng(point_list.get(1).Coordinates.Lat, point_list.get(1).Coordinates.Lng);
-
-            //DrawRoute(_pinpoint, _pinpoint2);
-        }
+                    //DrawRoute(_pinpoint, _pinpoint2);
+                }
 
         /*polyline.setStartCap(new RoundCap());
         polyline.setEndCap(new RoundCap());
 
         polyline.setJointType(JointType.ROUND);*/
 
-        mMap.animateCamera(cu);
+                mMap.animateCamera(cu);
+            }
 
+        }catch (Exception ex){
+            String e = ex.getMessage();
+        }
     }
 
     @Override

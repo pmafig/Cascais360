@@ -64,7 +64,7 @@ public class WebApiCalls {
     }
 
     public static String getSearchByMap(String lat, String lng){
-        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"LangCode\":\"" + Settings.LangCode + "\", \"CoordLat\": "+ lat +", \"CoordLong\": "+ lng +", \"Radius\": 2000.01 }", WebApiClient.SITE_KEY);
+        String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"map\",\"Detail\":\"map\", \"LangCode\":\"" + Settings.LangCode + "\", \"CoordLat\": "+ lat +", \"CoordLong\": "+ lng +", \"Radius\": 1500.00 }", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 

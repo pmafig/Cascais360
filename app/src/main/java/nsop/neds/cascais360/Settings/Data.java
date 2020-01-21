@@ -5,15 +5,13 @@ import java.util.List;
 
 import nsop.neds.cascais360.Entities.DashboardEntity;
 import nsop.neds.cascais360.Entities.FrameEntity;
-import nsop.neds.cascais360.Entities.PinPointEntity;
+import nsop.neds.cascais360.Entities.Json.MapMarker;
 
 public class Data {
 
     public static DashboardEntity Dashboard;
 
     public static HashMap<String, HashMap<String, List<FrameEntity>>> CalendarEvents;
-
-    public static HashMap<Integer, PinPointEntity> PinpointEvents;
 
     public static String selected_day;
     public static String selected_month;
@@ -24,4 +22,6 @@ public class Data {
     public static int current_day;
     public static int current_month;
     public static int current_year;
+
+    public static List<MapMarker> LocalMarkers;
 }

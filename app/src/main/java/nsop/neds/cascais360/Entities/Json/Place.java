@@ -27,5 +27,5 @@ public class Place {
 
     public List<Tabs> Tabs;
 
-    public MoreInfo MoreInfo;
+    //public MoreInfo MoreInfo;
 }

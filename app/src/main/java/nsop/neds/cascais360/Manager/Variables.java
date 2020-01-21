@@ -31,4 +31,7 @@ public class Variables {
     public static String Points = "Points";
 
     public static String RequiredLogin = "requiredLogin";
+
+    public static String Lat = "lat";
+    public static String Lng = "lng";
 }

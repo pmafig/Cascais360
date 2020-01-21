@@ -224,8 +224,8 @@
                 android:visibility="gone">
                 <Button
                     android:id="@+id/btn_route_seemap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
                     android:layout_weight="0.45"
                     android:textColor="@color/colorBlack"
                     android:textSize="10dp"
@@ -233,13 +233,13 @@
                     android:text="Ver Mapa"
                     /> <!--android:background="@drawable/hit_border"-->
                 <Space
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"/>
                 <Button
                     android:id="@+id/btn_route_route"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
                     android:layout_weight="0.45"
                     android:text="Iniciar Percurso"
                     android:textColor="@color/colorWhite"
