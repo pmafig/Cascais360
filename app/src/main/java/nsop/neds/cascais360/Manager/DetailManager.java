@@ -1,27 +1,42 @@
 package nsop.neds.cascais360.Manager;
 
+import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Entities.Json.Dashboard;
 import nsop.neds.cascais360.Entities.Json.Detail;
 import nsop.neds.cascais360.Entities.Json.Event;
@@ -29,10 +44,17 @@ import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Place;
+import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.Settings.Settings;
+import nsop.neds.cascais360.WebApi.WebApiClient;
+import nsop.neds.cascais360.WebApi.WebApiMessages;
+import nsop.neds.cascais360.WebApi.WebApiMethods;
 
 public class DetailManager extends AsyncTask<String, Void, Detail> {
+
+    private static final int PERMISSIONS_REQUEST_WRITE_CALENDAR = 2;
 
     TextView title;
     RelativeLayout loading;
@@ -76,21 +98,86 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
     }
 
     @Override
-    protected void onPostExecute(Detail detail) {
+    protected void onPostExecute(final Detail detail) {
         super.onPostExecute(detail);
 
         try {
 
+            final SessionManager sm =new SessionManager(context);
+
+            int nid = 0;
+            String url = "";
+
+            final LinearLayout like = mainContent.findViewById(R.id.event_ac_heart);
+            final LinearLayout notification = mainContent.findViewById(R.id.event_ac_bell);
+            final LinearLayout share = mainContent.findViewById(R.id.event_ac_share);
+            final LinearLayout calendar = mainContent.findViewById(R.id.event_ac_calendar);
+            final int finalNid = nid;
+            final String finalUrl = url;
+
             if(detail.Events != null && detail.Events.size() > 0){
+                nid = detail.Events.get(0).ID;
+                url = detail.Events.get(0).WebURL;
+                calendar.setVisibility(View.VISIBLE);
                 this.title.setText(detail.Events.get(0).CategoryTheme);
                 LayoutManager.setEvent(context, mainContent, detail.Events.get(0));
             }if(detail.Places != null && detail.Places.size() > 0){
+                nid = detail.Places.get(0).ID;
+                url = detail.Places.get(0).WebURL;
                 this.title.setText(detail.Places.get(0).CategoryTheme);
                 LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
             }if(detail.Routes != null && detail.Routes.size() > 0){
+                nid = detail.Routes.get(0).ID;
+                url = detail.Routes.get(0).WebURL;
                 this.title.setText(detail.Routes.get(0).CategoryTheme);
                 LayoutManager.setRoute(context, mainContent, detail.Routes.get(0));
             }
+
+
+            like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!sm.asUserLoggedOn()){
+                        context.startActivity(new Intent(context, LoginActivity.class).putExtra("nid", finalNid));
+                    }else {
+                        setLike(finalNid);
+                    }
+                }
+            });
+
+            notification.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!sm.asUserLoggedOn()){
+                        context.startActivity(new Intent(context, LoginActivity.class).putExtra("nid", finalNid));
+                    }else {
+                        setNotification(finalNid);
+                    }
+                }
+            });
+
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "\n\n");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, finalUrl);
+                    context.startActivity(Intent.createChooser(sharingIntent,  "Title"));
+                }
+            });
+
+            calendar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        //requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                    }
+                    //addReminderInCalendar();
+                    //addevent(title, description, location, false,false, beginTime.getTimeInMillis(), endTime.getTimeInMillis());
+                }
+            });
+
 
             mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         } catch (Exception e) {
@@ -99,6 +186,91 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         }
 
         loading.setVisibility(View.GONE);
+    }
+
+
+    public void setLike(int nid){
+        AccountManager mAccountManager = AccountManager.get(this.context);
+        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
+        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, this.nid);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETLIKESTATUS), jsonRequest, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(context, "Lamentamos, não foi possível executar o seu pedido.", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                final ImageView like = mainContent.findViewById(R.id.event_ac_heart);
+
+                try {
+                    JSONObject response = new JSONObject(WebApiMessages.DecryptMessage(responseString));
+
+                    if(response != null) {
+                        JSONObject responseData = response.getJSONObject("ResponseData");
+
+                        if (responseData.getBoolean("IsSet")) {
+                            if (like.getColorFilter() != null) {
+                                like.setColorFilter(null);
+                            } else {
+                                like.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+                            }
+                        } else {
+                            like.setColorFilter(null);
+                        }
+                    }
+                }catch (Exception e){
+                    Toast.makeText(context, "Lamentamos, não foi possível executar o seu pedido.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    public void setNotification(int nid){
+        AccountManager mAccountManager = AccountManager.get(this.context);
+        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
+        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, this.nid);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETSUBSCRIPTION), jsonRequest, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(context, "Lamentamos, não foi possível executar o seu pedido.", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                final ImageView notification = mainContent.findViewById(R.id.event_ac_bell);
+
+                try {
+                    JSONObject response = new JSONObject(WebApiMessages.DecryptMessage(responseString));
+
+                    if(response != null) {
+                        JSONObject responseData = response.getJSONObject("ResponseData");
+
+                        if (responseData.getBoolean("IsSet")) {
+                            if (notification.getColorFilter() != null) {
+                                notification.setColorFilter(null);
+                            } else {
+                                notification.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+                            }
+                        } else {
+                            notification.setColorFilter(null);
+                        }
+                    }
+                }catch (Exception e){
+                    Toast.makeText(context, "Lamentamos, não foi possível executar o seu pedido.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
 }

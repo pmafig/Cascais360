@@ -24,4 +24,8 @@ public class Place {
     public Price Price;
 
     public ItHappensHere ItHappensHere;
+
+    public List<Tabs> Tabs;
+
+    public MoreInfo MoreInfo;
 }
