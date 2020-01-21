@@ -91,6 +91,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LatLng origin;
 
+    private Polyline line;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -519,6 +521,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
 
+                        if(line != null) {
+                            line.remove();
+                        }
+
                         Directions directions = new Gson().fromJson(responseString, Directions.class);
 
                         List<String> points = new ArrayList<>();
@@ -541,7 +547,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
 
-                        Polyline line = mMap.addPolyline(options);
+                        line = mMap.addPolyline(options);
 
 
                         ExpandableListAdapter expandableListAdapter;
@@ -557,6 +563,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         expandableListView.setAdapter(expandableListAdapter);
 
                     } catch (Exception ex) {
+
                     }
                 }
             });

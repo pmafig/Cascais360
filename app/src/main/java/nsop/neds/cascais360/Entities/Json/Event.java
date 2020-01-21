@@ -22,4 +22,7 @@ public class Event {
     public OfficeHours OfficeHours;
 
     public Price Price;
+
+    public List<Tabs> Tabs;
+    
 }

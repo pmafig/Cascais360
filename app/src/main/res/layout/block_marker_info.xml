@@ -96,12 +96,13 @@
                     android:text="38.78945º"
                     android:textColor="@color/colorBlack"
                     android:textSize="12dp"
-                    android:layout_marginVertical="10dp"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="10dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
                 <ImageView
                     android:id="@+id/play_media"
                     android:layout_width="wrap_content"
@@ -111,18 +112,17 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="150dp">
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
                         <TextView
                             android:id="@+id/marker_description"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Avenida Marginal n.º 10"
                             android:textColor="@color/colorBlack"
-                            android:textSize="12dp"
-                            android:layout_gravity="center_vertical" />
+                            android:textSize="12dp" />
                 </ScrollView>
             </LinearLayout>
             <LinearLayout
