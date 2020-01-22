@@ -1,9 +1,11 @@
 package nsop.neds.cascais360;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -62,6 +65,7 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Entities.Json.Coordinates;
 import nsop.neds.cascais360.Entities.Json.MapMarker;
 import nsop.neds.cascais360.Manager.CommonManager;
+import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.PinpointManager;
@@ -133,9 +137,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         painel_map.setVisibility(View.GONE);
 
         //OTHER BUTTONS
-        final Button search_button = findViewById(R.id.search_button);
-        LinearLayout search_button_wrapper = findViewById(R.id.search_button_wrapper);
-        search_button_wrapper.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        final ImageButton search_button = findViewById(R.id.search_button);
+        search_button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
 
 
         //MENU BUTTONS CLICK EVENTS
@@ -345,26 +348,16 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
             searchByMap();
         } else {
+            final ImageButton searchButton = findViewById(R.id.search_button);
 
-            final EditText search_text = findViewById(R.id.search_by_text);
-            search_text.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (search_text.getText().toString().startsWith("O quê?...")) {
-                        search_text.setText("");
-                    }
-                }
-            });
+            LinearLayout mainContent = findViewById(R.id.search_result_text);
 
+            View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
+            TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+            searchInfo.setText(Settings.labels.NoSearchYet);
 
-            final LinearLayout searchWrapper = findViewById(R.id.search_button_wrapper);
-            searchWrapper.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    searchByText();
-                }
-            });
-            final Button searchButton = findViewById(R.id.search_button);
+            mainContent.addView(searchInfoBlock);
+
             searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -375,9 +368,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void searchByText() {
+        findViewById(R.id.search_result_text).setVisibility(View.GONE);
         loading();
-
         EditText search_text = findViewById(R.id.search_by_text);
+        search_text.setHint(Settings.labels.What);
         String _t = search_text.getText().toString();
 
         if (!_t.isEmpty()) {
@@ -487,15 +481,22 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     public void searchByText(String data) {
+
+        LinearLayout mainContent = findViewById(R.id.search_result_text);
+
         try {
             View view = this.findViewById(android.R.id.content);
 
             InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-            new SearchManager(this, (LinearLayout) findViewById(R.id.search_result_text), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).execute(WebApiCalls.getSearchByText(data));
+            new SearchManager(this, mainContent, (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).execute(WebApiCalls.getSearchByText(data));
         } catch (Exception ex) {
-            //TODO: Noservice Activity
+            View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
+            TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+            searchInfo.setText(Settings.labels.NoSearchYet);
+
+            mainContent.addView(searchInfoBlock);
         }
     }
 
@@ -655,7 +656,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private void loading() {
         RelativeLayout loading = findViewById(R.id.loadingPanel);
-
         loading.setVisibility(View.VISIBLE);
         loading.bringToFront();
     }
@@ -782,35 +782,47 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     public View getInfoWindow(Marker marker) {
         try {
+
+            return null;
+
             /*View view = getLayoutInflater().inflate(R.layout.fragment_map_marker, null);
 
-            final PinPointEntity p = (PinPointEntity) marker.getTag();
+            final MapMarker p = (MapMarker) marker.getTag();
 
             TextView title = view.findViewById(R.id.frame_title);
 
-            title.setText(p.Title());
+            title.setText(p.Title);
 
-            ImageView img = view.findViewById(R.id.frame_image);
-            img.setImageBitmap(p.Image());
+            /*final ImageView img = view.findViewById(R.id.frame_image);
+            //img.setImageBitmap(p.Image());
+
+            DownloadImageAsync obj = new DownloadImageAsync() {
+                @Override
+                protected void onPostExecute(Bitmap bmp) {
+                    super.onPostExecute(bmp);
+                    img.setImageBitmap(bmp);
+                }
+            };
+            obj.execute(p.Images.get(0));
 
             img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = getBaseContext();
-                    Intent event = new Intent(context, EventActivity.class);
-                    int nid = p.Nid();
+                    Intent event = new Intent(context, DetailActivity.class);
+                    int nid = p.ID;
                     event.putExtra("nid", nid);
                     context.startActivity(event);
                 }
             });
 
             TextView navegationTitle = view.findViewById(R.id.frame_navegation);
-            navegationTitle.setTextColor(Color.parseColor(Settings.color));
+            navegationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
 
 
             return view;*/
-            return null;
+            //return null;
         } catch (Exception e) {
             return null;
         }
@@ -827,28 +839,26 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         View view = getLayoutInflater().inflate(R.layout.fragment_map_marker, null);
 
-        /*final PinPointEntity p = (PinPointEntity) marker.getTag();
+        final MapMarker m = (MapMarker) marker.getTag();
 
 
         TextView title = view.findViewById(R.id.frame_title);
-        title.setText(p.Title());
+        title.setText(m.Title);
 
-        ImageView img = view.findViewById(R.id.frame_image);
-        img.setImageBitmap(p.Image());*/
+        final ImageView img = view.findViewById(R.id.frame_image);
+        //img.setImageBitmap(m.Image());
+
+        DownloadImageAsync obj = new DownloadImageAsync() {
+            @Override
+            protected void onPostExecute(Bitmap bmp) {
+                super.onPostExecute(bmp);
+                img.setImageBitmap(bmp);
+            }
+        };
+        obj.execute(m.Images.get(0));
 
         //ImageView icon = view.findViewById(R.id.arrow_icon);
         //icon.setColorFilter(Color.parseColor(Settings.color));
-
-        /*img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context = getBaseContext();
-                Intent event = new Intent(context, EventActivity.class);
-                int nid = p.Nid();
-                event.putExtra("nid", nid);
-                context.startActivity(event);
-            }
-        });*/
 
         TextView navegationTitle = view.findViewById(R.id.frame_navegation);
         navegationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -856,6 +866,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         lastMarket = marker;
 
         return view;
+
+       //return null;
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, boolean setColor) {
@@ -873,9 +885,13 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     public void onInfoWindowClick(Marker marker) {
         Intent event = new Intent(this, DetailActivity.class);
-        /*PinPointEntity p = (PinPointEntity) marker.getTag();
-        int nid = p.Nid();
-        event.putExtra("nid", nid);*/
+        MapMarker p = (MapMarker) marker.getTag();
+        int nid = p.ID;
+        event.putExtra(Variables.Id, nid);
+
+        lastMarket.setIcon(bitmapDescriptorFromVector(getBaseContext(), true));
+        lastMarket = null;
+
         this.startActivity(event);
     }
 

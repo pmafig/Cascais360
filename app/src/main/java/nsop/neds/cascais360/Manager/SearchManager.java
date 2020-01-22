@@ -32,7 +32,9 @@ import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Search;
 import nsop.neds.cascais360.Entities.Json.SearchByDate;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
+import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.Settings.Data;
+import nsop.neds.cascais360.Settings.Settings;
 
 
 public class SearchManager extends AsyncTask<String, Void, Search> {
@@ -93,14 +95,28 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
         super.onPostExecute(search);
 
         if(render) {
+
             mainContent.removeAllViews();
 
             if(search != null) {
-                mainContent.addView(LayoutManager.setSearch(search, context));
+                if(search.Routes != null || search.Places != null || search.Events != null) {
+                    mainContent.addView(LayoutManager.setSearch(search, context));
+                }else{
+                    View searchInfoBlock = View.inflate(context, R.layout.block_search_info, null);
+                    TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+                    searchInfo.setText(Settings.labels.NoResultsFound);
+
+                    mainContent.addView(searchInfoBlock);
+                }
             }else{
-                //TODO não foram encontrados dados
+                View searchInfoBlock = View.inflate(context, R.layout.block_search_info, null);
+                TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+                searchInfo.setText(Settings.labels.NoResultsFound);
+
+                mainContent.addView(searchInfoBlock);
             }
 
+            mainContent.setVisibility(View.VISIBLE);
             loading.setVisibility(View.GONE);
         }
     }

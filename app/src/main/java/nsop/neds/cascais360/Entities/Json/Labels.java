@@ -88,6 +88,7 @@ public class Labels {
     public String Free;
     public String Continue;
     public String ResendSMS;
+    public String What;
     public String Yes;
     public String GetDirections;
     public String Map;

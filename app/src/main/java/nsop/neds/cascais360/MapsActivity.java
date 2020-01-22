@@ -303,7 +303,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         polyline.setJointType(JointType.ROUND);*/
 
-                mMap.animateCamera(cu);
+                mMap.moveCamera(cu);
+                //mMap.animateCamera(cu);
             }
 
         }catch (Exception ex){
