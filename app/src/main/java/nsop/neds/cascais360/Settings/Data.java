@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import nsop.neds.cascais360.Entities.DashboardEntity;
-import nsop.neds.cascais360.Entities.FrameEntity;
 import nsop.neds.cascais360.Entities.Json.MapMarker;
+import nsop.neds.cascais360.Entities.Json.Search;
 
 public class Data {
 
     public static DashboardEntity Dashboard;
 
-    public static HashMap<String, HashMap<String, List<FrameEntity>>> CalendarEvents;
+    public static HashMap<String, Search> CalendarEvents;
 
     public static String selected_day;
     public static String selected_month;

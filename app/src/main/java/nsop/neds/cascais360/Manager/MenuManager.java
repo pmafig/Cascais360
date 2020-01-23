@@ -22,6 +22,7 @@ import nsop.neds.cascais360.Entities.Json.Resources;
 import nsop.neds.cascais360.ListActivity;
 import nsop.neds.cascais360.LoginActivity;
 import nsop.neds.cascais360.MainActivity;
+import nsop.neds.cascais360.ProfileActivity;
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.SearchActivity;
 import nsop.neds.cascais360.Settings.Settings;
@@ -91,6 +92,7 @@ public class MenuManager {
             @Override
             public void onClick(View v) {
                 closeMenu();
+                context.startActivity(new Intent(context, ProfileActivity.class));
             }
         });
 

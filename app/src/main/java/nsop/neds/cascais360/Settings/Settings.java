@@ -29,8 +29,8 @@ public class Settings {
     public static String resourcesChecksum;
 
 
-    public static int selected_month;
-    public static String selected_day;
+    //public static int selected_month;
+    //public static String selected_day;
     public static TextView tv_selected_day;
 
     public static EventDetailEntity current_event;

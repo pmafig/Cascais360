@@ -44,10 +44,14 @@ import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Place;
+import nsop.neds.cascais360.Entities.Json.User;
 import nsop.neds.cascais360.LoginActivity;
+import nsop.neds.cascais360.MainActivity;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
 import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.RefreshTokenActivity;
 import nsop.neds.cascais360.Settings.Settings;
+import nsop.neds.cascais360.WebApi.ReportManager;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 import nsop.neds.cascais360.WebApi.WebApiMessages;
 import nsop.neds.cascais360.WebApi.WebApiMethods;
@@ -81,15 +85,31 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
                 JSONObject responseData = response.getJSONObject("ResponseData");
 
-                //final JSONObject jsonDetail = responseData.getJSONObject("ContentDetail");
+                JSONObject jsonObject = null;
 
-                final JSONObject jsonObject = responseData.getJSONObject("Data");
+                if(sm.isLoggedOn()) {
+                    User user = new Gson().fromJson(responseData.toString(), User.class);
 
-                String _s = jsonObject.toString();
-
-                Detail detail = new Gson().fromJson(_s, Detail.class);
-
-                return detail;
+                    if(user.InvalidSession){
+                        Intent intent = new Intent(context, RefreshTokenActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra(Variables.Id, this.nid);
+                        context.startActivity(intent);
+                    }else {
+                        final JSONObject jsonDetail = responseData.getJSONObject("ContentDetail");
+                        jsonObject = jsonDetail.getJSONObject("Data");
+                        String _s = jsonObject.toString();
+                        Detail detail = new Gson().fromJson(_s, Detail.class);
+                        detail.Like = user.Like;
+                        detail.Subscribed = user.Subscribed;
+                        return detail;
+                    }
+                }else{
+                    jsonObject = responseData.getJSONObject("Data");
+                    String _s = jsonObject.toString();
+                    Detail detail = new Gson().fromJson(_s, Detail.class);
+                    return detail;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,83 +123,93 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
         try {
 
-            final SessionManager sm =new SessionManager(context);
+            if(detail != null) {
 
-            int nid = 0;
-            String url = "";
+                final SessionManager sm = new SessionManager(context);
 
-            final LinearLayout like = mainContent.findViewById(R.id.event_ac_heart);
-            final LinearLayout notification = mainContent.findViewById(R.id.event_ac_bell);
-            final LinearLayout share = mainContent.findViewById(R.id.event_ac_share);
-            final LinearLayout calendar = mainContent.findViewById(R.id.event_ac_calendar);
-            final int finalNid = nid;
-            final String finalUrl = url;
+                int nid = 0;
+                String url = "";
 
-            if(detail.Events != null && detail.Events.size() > 0){
-                nid = detail.Events.get(0).ID;
-                url = detail.Events.get(0).WebURL;
-                calendar.setVisibility(View.VISIBLE);
-                this.title.setText(detail.Events.get(0).CategoryTheme);
-                LayoutManager.setEvent(context, mainContent, detail.Events.get(0));
-            }if(detail.Places != null && detail.Places.size() > 0){
-                nid = detail.Places.get(0).ID;
-                url = detail.Places.get(0).WebURL;
-                this.title.setText(detail.Places.get(0).CategoryTheme);
-                LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
-            }if(detail.Routes != null && detail.Routes.size() > 0){
-                nid = detail.Routes.get(0).ID;
-                url = detail.Routes.get(0).WebURL;
-                this.title.setText(detail.Routes.get(0).CategoryTheme);
-                LayoutManager.setRoute(context, mainContent, detail.Routes.get(0));
+                final LinearLayout like = mainContent.findViewById(R.id.event_ac_heart);
+                final LinearLayout notification = mainContent.findViewById(R.id.event_ac_bell);
+                final LinearLayout share = mainContent.findViewById(R.id.event_ac_share);
+                final LinearLayout calendar = mainContent.findViewById(R.id.event_ac_calendar);
+
+                if (detail.Events != null && detail.Events.size() > 0) {
+                    nid = detail.Events.get(0).ID;
+                    url = detail.Events.get(0).WebURL;
+                    calendar.setVisibility(View.VISIBLE);
+                    this.title.setText(detail.Events.get(0).CategoryTheme);
+                    LayoutManager.setEvent(context, mainContent, detail.Events.get(0), detail.Like, detail.Subscribed);
+                }
+                if (detail.Places != null && detail.Places.size() > 0) {
+                    nid = detail.Places.get(0).ID;
+                    url = detail.Places.get(0).WebURL;
+                    this.title.setText(detail.Places.get(0).CategoryTheme);
+                    LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
+                }
+                if (detail.Routes != null && detail.Routes.size() > 0) {
+                    nid = detail.Routes.get(0).ID;
+                    url = detail.Routes.get(0).WebURL;
+                    this.title.setText(detail.Routes.get(0).CategoryTheme);
+                    LayoutManager.setRoute(context, mainContent, detail.Routes.get(0));
+                }
+
+
+                final int finalNid = nid;
+                final String finalUrl = url;
+
+                like.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!sm.asUserLoggedOn()) {
+                            Intent intent = new Intent(context, LoginActivity.class);
+                            intent.putExtra(Variables.Id, finalNid);
+                            context.startActivity(intent);
+                        } else {
+                            setLike(finalNid);
+                        }
+                    }
+                });
+
+                notification.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!sm.asUserLoggedOn()) {
+                            Intent intent = new Intent(context, LoginActivity.class);
+                            intent.putExtra(Variables.Id, finalNid);
+                            context.startActivity(intent);
+                        } else {
+                            setNotification(finalNid);
+                        }
+                    }
+                });
+
+                share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        sharingIntent.setType("text/plain");
+                        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "\n\n");
+                        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, finalUrl);
+                        context.startActivity(Intent.createChooser(sharingIntent, "Title"));
+                    }
+                });
+
+                calendar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            //requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                        }
+                        //addReminderInCalendar();
+                        //addevent(title, description, location, false,false, beginTime.getTimeInMillis(), endTime.getTimeInMillis());
+                    }
+                });
+
+
+                mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }
-
-
-            like.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!sm.asUserLoggedOn()){
-                        context.startActivity(new Intent(context, LoginActivity.class).putExtra("nid", finalNid));
-                    }else {
-                        setLike(finalNid);
-                    }
-                }
-            });
-
-            notification.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!sm.asUserLoggedOn()){
-                        context.startActivity(new Intent(context, LoginActivity.class).putExtra("nid", finalNid));
-                    }else {
-                        setNotification(finalNid);
-                    }
-                }
-            });
-
-            share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "\n\n");
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, finalUrl);
-                    context.startActivity(Intent.createChooser(sharingIntent,  "Title"));
-                }
-            });
-
-            calendar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        //requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
-                    }
-                    //addReminderInCalendar();
-                    //addevent(title, description, location, false,false, beginTime.getTimeInMillis(), endTime.getTimeInMillis());
-                }
-            });
-
-
-            mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             //context.startActivity(new Intent(context, NoServiceActivity.class));
@@ -206,7 +236,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                final ImageView like = mainContent.findViewById(R.id.event_ac_heart);
+                final ImageView like = mainContent.findViewById(R.id.event_ac_heart_icon);
 
                 try {
                     JSONObject response = new JSONObject(WebApiMessages.DecryptMessage(responseString));
@@ -248,7 +278,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                final ImageView notification = mainContent.findViewById(R.id.event_ac_bell);
+                final ImageView notification = mainContent.findViewById(R.id.event_ac_bell_icon);
 
                 try {
                     JSONObject response = new JSONObject(WebApiMessages.DecryptMessage(responseString));

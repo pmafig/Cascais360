@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="gone">
-        <!--android:background="@color/colorSearchBlock"-->
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -68,13 +67,46 @@
                 android:layout_gravity="center"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorBlack">
+            <ImageView
+                android:id="@+id/painel_search_triangle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_triangle"
+                android:visibility="invisible"/>
+            <ImageView
+                android:id="@+id/painel_calendar_triangle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_triangle"
+                android:visibility="invisible"/>
+            <ImageView
+                android:id="@+id/painel_map_triangle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_triangle"
+                android:visibility="visible"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/searchBarColor">
+        </LinearLayout>
+
         <!--SearchActivity by text painel-->
         <LinearLayout
             android:id="@+id/painel_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -84,7 +116,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingVertical="15dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="15dp"
                     android:paddingHorizontal="10dp"
                     android:gravity="center">
                     <com.google.android.material.textfield.TextInputEditText
@@ -133,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
             <!--SearchActivity by calendar painel - month navigation-->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,6 +185,7 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_arrow"
                         android:rotation="180"
+                        android:padding="10dp"
                         android:layout_column="0"
                         android:layout_marginRight="5dp"/>
                     <Space
@@ -168,7 +202,8 @@
                         android:id="@+id/sliderMonth"
                         android:layout_width="150dp"
                         android:background="@color/searchBarColor"
-                        android:layout_height="25dp" />
+                        android:layout_height="25dp"
+                        android:layout_gravity="center"/>
                     <Space
                         android:layout_width="0dp"
                         android:layout_height="1dp"
@@ -179,7 +214,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_arrow"
-                        android:layout_marginLeft="5dp"/>
+                        android:layout_marginLeft="5dp"
+                        android:padding="10dp"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -187,7 +223,8 @@
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/searchBarColor">
+                android:background="@color/searchBarColor"
+                android:scrollbars="none">
                 <LinearLayout
                     android:id="@+id/sliderDays"
                     android:layout_width="wrap_content"

@@ -177,7 +177,7 @@ public class SessionManager {
 
     public void setFullDisclaimer(String json){ editor.putString(fulldisclaimer, json).commit(); }
 
-    public boolean isLoggedOn(Context context){
+    public boolean isLoggedOn(){
         AccountManager mAccountManager = AccountManager.get(context);
         Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 

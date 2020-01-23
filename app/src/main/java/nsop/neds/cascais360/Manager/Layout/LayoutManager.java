@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.SettingInjectorService;
 import android.net.Uri;
@@ -45,6 +46,7 @@ import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.Search;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
+import nsop.neds.cascais360.Entities.Json.User;
 import nsop.neds.cascais360.ListDetailActivity;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
@@ -892,7 +894,7 @@ public class LayoutManager {
         return frame_list;
     }
 
-    public static void setEvent(final Context context, LinearLayout mainContent, final Event event){
+    public static void setEvent(final Context context, LinearLayout mainContent, final Event event, boolean like, boolean subscribe){
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(event.Title);
 
@@ -906,6 +908,16 @@ public class LayoutManager {
             }
         };
         obj.execute(event.Images.get(0));
+
+        if(like){
+            ImageView likeButton = mainContent.findViewById(R.id.event_ac_heart_icon);
+            likeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
+
+        if(subscribe){
+            ImageView subscribeButton = mainContent.findViewById(R.id.event_ac_bell_icon);
+            subscribeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));

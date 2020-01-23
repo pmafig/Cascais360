@@ -50,28 +50,31 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
         render = false;
     }
 
-    public SearchManager(Context context, LinearLayout mainContent, RelativeLayout loading, LinearLayout daysPainel){
+    public SearchManager(Context context, LinearLayout mainContent, RelativeLayout loading){
         this.loading = loading;
         this.context = context;
         this.mainContent = mainContent;
-        this.daysPainel = daysPainel;
+
     }
 
     @Override
     protected Search doInBackground(String... strings) {
 
+        //return search by text
         if(strings.length == 1){
             return getSearchResult(strings[0]);
         }
 
+        //init cach
         if(Data.CalendarEvents == null){
             Data.CalendarEvents = new HashMap();
         }
 
+        //search by text
         try {
             JSONObject response = CommonManager.getResponseData(strings[0]);
 
-            if(response != null) {
+            if (response != null) {
                 JSONObject responseData = response.getJSONObject("ResponseData");
                 JSONArray jsonArray = responseData.getJSONArray("Data");
 
@@ -160,53 +163,33 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
     }
 
     public void drawMonthsEvents(String monthYear) {
-        HashMap<String, List<FrameEntity>> selectMonth = Data.CalendarEvents.get(monthYear);
-
-        String[] _monthYear = monthYear.split("\\_+");
-
-
-        if(_monthYear[0].length() == 1){
-            _monthYear[0] = "0" + _monthYear[0];
-        }
-
-        Data.selected_month = _monthYear[0];
-        Data.selected_year = _monthYear[1];
+        Search search = Data.CalendarEvents.get(monthYear);
 
         mainContent.removeAllViews();
 
-        Iterator<Map.Entry<String, List<FrameEntity>>> iterator = selectMonth.entrySet().iterator();
+        if(search != null) {
+            if(search.Routes != null || search.Places != null || search.Events != null) {
+                mainContent.addView(LayoutManager.setSearch(search, context));
+            }else{
+                View searchInfoBlock = View.inflate(context, R.layout.block_search_info, null);
+                TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+                searchInfo.setText(Settings.labels.NoResultsFound);
 
-
-
-        while(iterator.hasNext()){
-            Map.Entry<String, List<FrameEntity>> entry = iterator.next();
-
-            for (FrameEntity e : entry.getValue()) {
-                setSpotlightBlock(e);
+                mainContent.addView(searchInfoBlock);
             }
+        }else{
+            View searchInfoBlock = View.inflate(context, R.layout.block_search_info, null);
+            TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+            searchInfo.setText(Settings.labels.NoResultsFound);
+
+            mainContent.addView(searchInfoBlock);
         }
 
-        //Drawable bg = context.getDrawable(R.drawable.calendar_search_eventday);
-        //bg.setTint(Color.parseColor(Settings.color));
-
-        for(int d = 0; d < daysPainel.getChildCount(); d++) {
-            LinearLayout day = (LinearLayout) daysPainel.getChildAt(d);
-
-            String _d = ((TextView)day.getChildAt(0)).getText().toString();
-
-            if(_d.length() == 1){
-                _d = "0" + _d;
-            }
-
-            /*if(selectMonth.containsKey(_monthYear[1] + "/" + _monthYear[0] + "/" + _d)){
-                ((TextView)day.getChildAt(0)).setBackground(bg);
-            }*/
-        }
-
+        mainContent.setVisibility(View.VISIBLE);
         loading.setVisibility(View.GONE);
     }
 
-    public void drawDayEvents(String day) {
+    /*public void drawDayEvents(String day) {
 
         try {
             mainContent.removeAllViews();
@@ -227,7 +210,7 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
         }catch (Exception e){
             Log.e("DrawDayEvents", e.getMessage());
         }
-    }
+    }*/
 
     protected Search getSearchResult(String... strings) {
         try {

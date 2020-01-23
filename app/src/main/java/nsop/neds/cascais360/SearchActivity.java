@@ -55,14 +55,19 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Entities.Json.Coordinates;
+import nsop.neds.cascais360.Entities.Json.Labels;
 import nsop.neds.cascais360.Entities.Json.MapMarker;
 import nsop.neds.cascais360.Manager.CommonManager;
 import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
@@ -111,7 +116,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        new MenuManager(this, toolbar, menuFragment, null);
+        new MenuManager(this, toolbar, menuFragment, Settings.labels.IWantToSee);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -149,6 +154,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 menu_calendar.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_map.setColorFilter(getResources().getColor(R.color.colorWhite));
 
+                findViewById(R.id.painel_search_triangle).setVisibility(View.VISIBLE);
+                findViewById(R.id.painel_calendar_triangle).setVisibility(View.INVISIBLE);
+                findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
+
                 painel_search.setVisibility(View.VISIBLE);
                 painel_calendar.setVisibility(View.GONE);
                 painel_map.setVisibility(View.GONE);
@@ -158,11 +167,13 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         menu_calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loading();
-
                 menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_calendar.setColorFilter(Color.parseColor(Settings.colors.YearColor));
                 menu_map.setColorFilter(getResources().getColor(R.color.colorWhite));
+
+                findViewById(R.id.painel_search_triangle).setVisibility(View.INVISIBLE);
+                findViewById(R.id.painel_calendar_triangle).setVisibility(View.VISIBLE);
+                findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
 
                 painel_search.setVisibility(View.GONE);
                 painel_calendar.setVisibility(View.VISIBLE);
@@ -176,6 +187,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 int day = _c.getActualMaximum(Calendar.DAY_OF_MONTH);
 
                 _c1.set(year, month, day);
+
                 searchByCalendar(_c1);
             }
         });
@@ -187,6 +199,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_map.setColorFilter(Color.parseColor(Settings.colors.YearColor));
 
+                findViewById(R.id.painel_search_triangle).setVisibility(View.INVISIBLE);
+                findViewById(R.id.painel_calendar_triangle).setVisibility(View.INVISIBLE);
+                findViewById(R.id.painel_map_triangle).setVisibility(View.VISIBLE);
+
                 painel_search.setVisibility(View.GONE);
                 painel_calendar.setVisibility(View.GONE);
                 painel_map.setVisibility(View.VISIBLE);
@@ -196,12 +212,12 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         final ViewPager viewMonth = findViewById(R.id.sliderMonth);
 
-        viewMonth.setOnTouchListener(new View.OnTouchListener() {
+        /*viewMonth.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return true;
             }
-        });
+        });*/
 
         List<View> views = new ArrayList<>();
 
@@ -213,12 +229,19 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         final int[] m = {0};
 
-        String[] months = {"janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"};
+        List<String> months;
+
+        if(Settings.LangCode.startsWith("en")) {
+            DateFormatSymbols dfs = new DateFormatSymbols(Locale.ENGLISH);
+            months = Arrays.asList(dfs.getMonths());
+        }else {
+            months = Arrays.asList("janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro");
+        }
 
         final int currentYear = calendar.get(Calendar.YEAR);
         final int currentMonth = calendar.get(Calendar.MONTH);
 
-        Settings.selected_month = currentMonth;
+        //Settings.selected_month = currentMonth;
 
         int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         final int currentDay = calendar.get(Calendar.DATE);
@@ -230,9 +253,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         monthLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                loading();
-
                 viewMonth.setCurrentItem(--m[0]);
                 if (m[0] == 0) {
                     monthLeft.setVisibility(View.INVISIBLE);
@@ -242,11 +262,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 calendar.add(Calendar.MONTH, -1);
 
-                if (m[0] == 0) {
-                    setDaysByMonth(m[0], currentDay, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                } else {
-                    setDaysByMonth(m[0], 0, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                }
+                setDaysByMonth(m[0], m[0] == 0 ? currentDay : 1, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
                 Calendar _c1 = new GregorianCalendar();
 
@@ -266,7 +282,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         monthRigth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loading();
 
                 viewMonth.setCurrentItem(++m[0]);
                 if (m[0] > 0) {
@@ -277,11 +292,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 calendar.add(Calendar.MONTH, 1);
 
-                if (m[0] == 0) {
-                    setDaysByMonth(m[0], currentDay, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                } else {
-                    setDaysByMonth(m[0], 0, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                }
+                setDaysByMonth(m[0], m[0] == 0 ? currentDay : 1, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
 
                 Calendar _c1 = new GregorianCalendar();
 
@@ -295,10 +306,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
         //MONTHS OF CURRENT YEAR
-        for (int mt = currentMonth; mt < months.length; mt++) {
+        for (int mt = currentMonth; mt < months.size(); mt++) {
             View view = View.inflate(this, R.layout.search_calendar_month, null);
             TextView month = view.findViewById(R.id.search_month_title);
-            month.setText(months[mt] + " " + currentYear);
+            month.setText(months.get(mt) + " " + currentYear);
             views.add(view);
         }
 
@@ -306,10 +317,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         int nextYear = calendar.get(Calendar.YEAR) + 1;
 
         //MONTHS OF NEXT YEAR
-        for (int mt = 0; mt < months.length; mt++) {
+        for (int mt = 0; mt < months.size(); mt++) {
             View view = View.inflate(this, R.layout.search_calendar_month, null);
             TextView month = view.findViewById(R.id.search_month_title);
-            month.setText(months[mt] + " " + nextYear);
+            month.setText(months.get(mt) + " " + nextYear);
             views.add(view);
         }
 
@@ -323,6 +334,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             menu_calendar.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
             menu_map.setColorFilter(getResources().getColor(R.color.colorWhite));
+
+            findViewById(R.id.painel_search_triangle).setVisibility(View.INVISIBLE);
+            findViewById(R.id.painel_calendar_triangle).setVisibility(View.VISIBLE);
+            findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
 
             painel_calendar.setVisibility(View.VISIBLE);
             painel_search.setVisibility(View.GONE);
@@ -342,6 +357,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
             menu_map.setColorFilter(Color.parseColor(Settings.colors.YearColor));
 
+            findViewById(R.id.painel_search_triangle).setVisibility(View.INVISIBLE);
+            findViewById(R.id.painel_calendar_triangle).setVisibility(View.INVISIBLE);
+            findViewById(R.id.painel_map_triangle).setVisibility(View.VISIBLE);
+
             painel_map.setVisibility(View.VISIBLE);
             painel_calendar.setVisibility(View.GONE);
             painel_search.setVisibility(View.GONE);
@@ -355,6 +374,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
             TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
             searchInfo.setText(Settings.labels.NoSearchYet);
+
+            findViewById(R.id.painel_search_triangle).setVisibility(View.VISIBLE);
+            findViewById(R.id.painel_calendar_triangle).setVisibility(View.INVISIBLE);
+            findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
 
             mainContent.addView(searchInfoBlock);
 
@@ -392,33 +415,36 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
             viewDays.removeAllViews();
 
-            View all_v = View.inflate(this, R.layout.search_calendar_day, null);
+            final View all_v = View.inflate(this, R.layout.search_calendar_day, null);
             final TextView all_tx = all_v.findViewById(R.id.search_month_day);
-            all_tx.setText("Todos");
+            all_tx.setText(Settings.labels.All);
             all_tx.setTextColor(Color.parseColor(Settings.colors.YearColor));
+            Settings.tv_selected_day = all_tx;
+            all_v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Settings.tv_selected_day.setTextColor(getResources().getColor(R.color.colorBlack));
+                    Settings.tv_selected_day = all_tx;
+                    all_tx.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                }
+            });
+
             viewDays.addView(all_v);
 
-            for (int d = 1; d <= maxDay; d++) {
+            for (int d = currentDay; d <= maxDay; d++) {
                 View v = View.inflate(this, R.layout.search_calendar_day, null);
                 final TextView day = v.findViewById(R.id.search_month_day);
-
                 String _d = String.valueOf(d);
-
                 day.setText(_d);
 
-                if (d < currentDay) {
-                    day.setTextColor(Color.parseColor(Settings.colors.Gray3));
-                }
+                //if (d == currentDay && currentDay != 0) {
+                    //Drawable bg = getResources().getDrawable(R.drawable.calendar_search_currentday);
+                    //bg.setTint(Color.parseColor(Settings.colors.YearColor));
+                    //day.setBackground(bg);
+                //}
 
-                if (d == currentDay && currentDay != 0) {
-                    Drawable bg = getResources().getDrawable(R.drawable.calendar_search_currentday);
-                    bg.setTint(Color.parseColor(Settings.colors.YearColor));
-                    day.setBackground(bg);
-                }
+                viewDays.addView(v);
 
-                if (d >= currentDay) {
-                    viewDays.addView(v);
-                }
 
             /*if(Settings.selected_day != null && _d == Settings.selected_day && Settings.selected_month == currentMonth){
                 day.setTextColor(Color.parseColor(Settings.color));
@@ -432,24 +458,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 day.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Settings.tv_selected_day.setTextColor(getResources().getColor(R.color.colorBlack));
+                        Settings.tv_selected_day = day;
+                        day.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
-                        if (Settings.tv_selected_day != null) {
-                            Settings.tv_selected_day.setTextColor(getResources().getColor(R.color.colorWhite));
-                        }
-
-                        String _d = day.getText().toString();
-
-                        if (Settings.selected_day == _d && Settings.selected_month == Data.current_month) {
-                            Settings.selected_day = "";
-                        } else {
-                            Settings.selected_day = _d;
-                            Settings.tv_selected_day = day;
-                            day.setTextColor(Color.parseColor(Settings.colors.YearColor));
-                        }
-
-                        Settings.selected_month = currentMonth;
-
-                        searchByDay(_d);
+                        //searchByDay(_d);
                     }
                 });
             }
@@ -459,22 +472,18 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void searchByCalendar(Calendar date) {
-        try {
-            String monthYear = String.format("%d_%d", date.get(Calendar.MONTH) + 1, date.get(Calendar.YEAR));
+        String monthYear = String.format("%d_%d", date.get(Calendar.MONTH) + 1, date.get(Calendar.YEAR));
 
-            if (Data.CalendarEvents != null && Data.CalendarEvents.containsKey(monthYear)) {
-                new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).drawMonthsEvents(monthYear);//.drawMonthsEvents(monthYear);
-            } else {
-                new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).execute(WebApiCalls.getSearch(String.valueOf(date.getTimeInMillis() / 1000)), monthYear);
-            }
-        } catch (Exception ex) {
-            //TODO: Noservice Activity
+        if (Data.CalendarEvents != null && Data.CalendarEvents.containsKey(monthYear)) {
+            new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel)).drawMonthsEvents(monthYear);
+        } else {
+            new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getSearch(String.valueOf(date.getTimeInMillis() / 1000)), monthYear);
         }
     }
 
     public void searchByDay(String day) {
         try {
-            new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).drawDayEvents(day);
+            //new SearchManager(this, (LinearLayout) findViewById(R.id.search_calendar_result), (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).drawDayEvents(day);
         } catch (Exception ex) {
             //TODO: Noservice Activity
         }
@@ -490,7 +499,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-            new SearchManager(this, mainContent, (RelativeLayout) findViewById(R.id.loadingPanel), (LinearLayout) findViewById(R.id.sliderDays)).execute(WebApiCalls.getSearchByText(data));
+            new SearchManager(this, mainContent, (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getSearchByText(data));
         } catch (Exception ex) {
             View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
             TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);

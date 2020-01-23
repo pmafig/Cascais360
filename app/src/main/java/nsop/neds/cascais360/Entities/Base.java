@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 
 import java.io.IOException;
 
+import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
+
 public class Base {
     public Bitmap decodeImage(String highlightImage){
         try {

@@ -64,6 +64,7 @@
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp">
                         <ImageView
+                            android:id="@+id/event_ac_heart_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_heart"
@@ -87,9 +88,10 @@
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp">
                         <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_bell" />
+                            android:id="@+id/event_ac_bell_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_bell" />
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/event_ac_calendar"

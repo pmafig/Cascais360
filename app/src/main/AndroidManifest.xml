@@ -39,10 +39,19 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".RefreshTokenActivity"
+            android:launchMode="singleInstance"
+            android:noHistory="true" />
+        <activity
+            android:name=".ProfileActivity"
+            android:launchMode="singleTop"
+            android:noHistory="false"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".SearchActivity"
             android:launchMode="standard"
             android:noHistory="false"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
@@ -55,34 +64,34 @@
             android:name=".SettingsActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".AboutAppActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".EmailSentActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".DetailActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ListDetailActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ListActivity"
             android:launchMode="standard"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".RegisterActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".LoginActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".SplashActivity"
             android:noHistory="true"

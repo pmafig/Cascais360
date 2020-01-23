@@ -61,7 +61,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void CallEvent(int nid){
         SessionManager sm = new SessionManager(this);
-        if(sm.asUserLoggedOn()){
+        if(sm.isLoggedOn()){
             UserEntity user = AccountGeneral.getUser(this);
             new DetailManager((TextView)findViewById(R.id.toolbar_title), nid,this,(LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
                     .execute(WebApiCalls.getDetail(nid, user.getSsk(), user.getUserId()));

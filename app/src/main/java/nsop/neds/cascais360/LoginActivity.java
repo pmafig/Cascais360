@@ -272,9 +272,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void intentNavegation(){
+
         if(getIntent().hasExtra(Variables.Id)){
+
+            Intent intent = getIntent();
+            Bundle extras = intent.getExtras();
+            int nid = extras.getInt(Variables.Id);
+
             Intent event = new Intent(this, DetailActivity.class);
-            event.putExtra(Variables.Id, getIntent().getIntExtra(Variables.Id, 0));
+            event.putExtra(Variables.Id, nid);
             event.putExtra(Variables.RequiredLogin, true);
             event.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(event);

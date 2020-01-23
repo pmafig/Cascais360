@@ -40,6 +40,7 @@ public class Labels {
     public String Edit;
     public String NoSearchYet;
     public String NoResultsFound;
+    public String Notifications;
     public String PasswordRecovery;
     public String ForgotPassword;
     public String PutEmail;
@@ -89,6 +90,7 @@ public class Labels {
     public String Continue;
     public String ResendSMS;
     public String What;
+    public String All;
     public String Yes;
     public String GetDirections;
     public String Map;
@@ -101,4 +103,5 @@ public class Labels {
     public String Parish;
     public String Permissions;
     public String Location;
+    public String AccountSettings;
 }
