@@ -12,6 +12,7 @@ public class MapMarker extends Base {
     public List<SubTitle> SubTitle;
     public List<Coordinates> Coordinates;
     public List<String> Images;
+    public Bitmap Image;
 
     public Bitmap Image(){
         return decodeImage(Images.get(0));

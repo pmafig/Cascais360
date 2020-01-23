@@ -29,11 +29,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -700,7 +705,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                             boolean refreshMap = false;
 
-                            for (MapMarker m : mapMarkers) {
+                            for (final MapMarker m : mapMarkers) {
                                 boolean add = true;
                                 for(MapMarker mm : Data.LocalMarkers){
                                     if(m.ID == mm.ID){
@@ -710,6 +715,21 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                                 }
                                 if(add) {
                                     refreshMap = true;
+
+                                    Glide.with(SearchActivity.this)
+                                            .asBitmap()
+                                            .load(m.Images.get(0))
+                                            .into(new CustomTarget<Bitmap>() {
+                                                @Override
+                                                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                                    m.Image = resource;
+                                                }
+
+                                                @Override
+                                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                                }
+                                            });
+
                                     Data.LocalMarkers.add(m);
                                 }
                             }
@@ -754,7 +774,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void MapMarkers(){
-        for(MapMarker m : Data.LocalMarkers){
+        for(final MapMarker m : Data.LocalMarkers){
 
             Coordinates coordinates = m.Coordinates.get(0);
 
@@ -854,17 +874,22 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         TextView title = view.findViewById(R.id.frame_title);
         title.setText(m.Title);
 
-        final ImageView img = view.findViewById(R.id.frame_image);
+        if(m.Image != null) {
+            final ImageView img = view.findViewById(R.id.frame_image);
+            img.setImageBitmap(m.Image);
+        }
         //img.setImageBitmap(m.Image());
 
-        DownloadImageAsync obj = new DownloadImageAsync() {
+        /*DownloadImageAsync obj = new DownloadImageAsync() {
             @Override
             protected void onPostExecute(Bitmap bmp) {
                 super.onPostExecute(bmp);
                 img.setImageBitmap(bmp);
             }
         };
-        obj.execute(m.Images.get(0));
+        obj.execute(m.Images.get(0));*/
+
+        //Glide.with(this).load(m.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
         //ImageView icon = view.findViewById(R.id.arrow_icon);
         //icon.setColorFilter(Color.parseColor(Settings.color));
@@ -900,6 +925,16 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         lastMarket.setIcon(bitmapDescriptorFromVector(getBaseContext(), true));
         lastMarket = null;
+
+
+        /*this.infoButtonListener = new OnInfoWindowElemTouchListener(infoButton1, getResources().getDrawable(R.drawable.btn_bg), getResources().getDrawable(R.drawable.btn_bg)){
+            @Override
+            protected void onClickConfirmed(View v, Marker marker) {
+                // Here we can perform some action triggered after clicking the button
+                Toast.makeText(MainActivity.this, "click on button 1", Toast.LENGTH_SHORT).show();
+            }
+        };
+        this.infoButton1.setOnTouchListener(infoButtonListener);*/
 
         this.startActivity(event);
     }

@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
@@ -68,15 +69,7 @@ public class LayoutManager {
 
         final ImageView img = block.findViewById(R.id.image_highlight);
 
-        DownloadImageAsync obj = new DownloadImageAsync(){
-
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(b.Images.get(0));
+        Glide.with(context).load(b.Images.get(0)).into(img);
 
         img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +119,7 @@ public class LayoutManager {
 
             final ImageView img = frame.findViewById(R.id.frame_image);
 
-            DownloadImageAsync obj = new DownloadImageAsync(){
+            /*DownloadImageAsync obj = new DownloadImageAsync(){
 
                 @Override
                 protected void onPostExecute(Bitmap bmp) {
@@ -134,7 +127,9 @@ public class LayoutManager {
                     img.setImageBitmap(bmp);
                 }
             };
-            obj.execute(f.Images.get(0));
+            obj.execute(f.Images.get(0));*/
+
+            Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
             img.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -259,7 +254,7 @@ public class LayoutManager {
             frameTitle.setText(f.Title);
 
             final ImageView img = frame.findViewById(R.id.frame_image);
-            DownloadImageAsync obj = new DownloadImageAsync(){
+            /*DownloadImageAsync obj = new DownloadImageAsync(){
 
                 @Override
                 protected void onPostExecute(Bitmap bmp) {
@@ -267,7 +262,8 @@ public class LayoutManager {
                     img.setImageBitmap(bmp);
                 }
             };
-            obj.execute(f.Images.get(0));
+            obj.execute(f.Images.get(0));*/
+            Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
             if(f.ID > 0) {
                 img.setOnClickListener(new View.OnClickListener() {
@@ -613,7 +609,7 @@ public class LayoutManager {
             frameTitle.setText(f.Title);
 
             final ImageView img = frame.findViewById(R.id.frame_image);
-            DownloadImageAsync obj = new DownloadImageAsync(){
+            /*DownloadImageAsync obj = new DownloadImageAsync(){
 
                 @Override
                 protected void onPostExecute(Bitmap bmp) {
@@ -621,7 +617,9 @@ public class LayoutManager {
                     img.setImageBitmap(bmp);
                 }
             };
-            obj.execute(f.Images.get(0));
+            obj.execute(f.Images.get(0));*/
+
+            Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
             if(f.ID > 0) {
                 img.setOnClickListener(new View.OnClickListener() {
@@ -718,7 +716,7 @@ public class LayoutManager {
                 subTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                 final ImageView img = frame.findViewById(R.id.frame_image);
-                DownloadImageAsync obj = new DownloadImageAsync() {
+                /*DownloadImageAsync obj = new DownloadImageAsync() {
 
                     @Override
                     protected void onPostExecute(Bitmap bmp) {
@@ -726,7 +724,9 @@ public class LayoutManager {
                         img.setImageBitmap(bmp);
                     }
                 };
-                obj.execute(e.Images.get(0));
+                obj.execute(e.Images.get(0));*/
+
+                Glide.with(context).load(e.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
                 if (e.ID > 0) {
                     img.setOnClickListener(new View.OnClickListener() {
@@ -764,7 +764,7 @@ public class LayoutManager {
                 subTitle.setText(e.SubTitle.get(0).Text);
 
                 final ImageView img = frame.findViewById(R.id.frame_image);
-                DownloadImageAsync obj = new DownloadImageAsync() {
+                /*DownloadImageAsync obj = new DownloadImageAsync() {
 
                     @Override
                     protected void onPostExecute(Bitmap bmp) {
@@ -772,7 +772,9 @@ public class LayoutManager {
                         img.setImageBitmap(bmp);
                     }
                 };
-                obj.execute(e.Images.get(0));
+                obj.execute(e.Images.get(0));*/
+
+                Glide.with(context).load(e.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
                 if (e.ID > 0) {
                     img.setOnClickListener(new View.OnClickListener() {
@@ -806,7 +808,7 @@ public class LayoutManager {
                 frameTitle.setText(f.Title);
 
                 final ImageView img = frame.findViewById(R.id.frame_image);
-                DownloadImageAsync obj = new DownloadImageAsync(){
+                /*DownloadImageAsync obj = new DownloadImageAsync(){
 
                     @Override
                     protected void onPostExecute(Bitmap bmp) {
@@ -814,7 +816,9 @@ public class LayoutManager {
                         img.setImageBitmap(bmp);
                     }
                 };
-                obj.execute(f.Images.get(0));
+                obj.execute(f.Images.get(0));*/
+
+                Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
                 if(f.ID > 0) {
                     img.setOnClickListener(new View.OnClickListener() {
@@ -899,7 +903,7 @@ public class LayoutManager {
         title.setText(event.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        DownloadImageAsync obj = new DownloadImageAsync(){
+        /*DownloadImageAsync obj = new DownloadImageAsync(){
 
             @Override
             protected void onPostExecute(Bitmap bmp) {
@@ -907,7 +911,9 @@ public class LayoutManager {
                 img.setImageBitmap(bmp);
             }
         };
-        obj.execute(event.Images.get(0));
+        obj.execute(event.Images.get(0));*/
+
+        Glide.with(context).load(event.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
         if(like){
             ImageView likeButton = mainContent.findViewById(R.id.event_ac_heart_icon);
@@ -1128,7 +1134,7 @@ public class LayoutManager {
         title.setText(place.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        DownloadImageAsync obj = new DownloadImageAsync(){
+        /*DownloadImageAsync obj = new DownloadImageAsync(){
 
             @Override
             protected void onPostExecute(Bitmap bmp) {
@@ -1136,7 +1142,9 @@ public class LayoutManager {
                 img.setImageBitmap(bmp);
             }
         };
-        obj.execute(place.Images.get(0));
+        obj.execute(place.Images.get(0));*/
+
+        Glide.with(context).load(place.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -1370,7 +1378,7 @@ public class LayoutManager {
         title.setText(route.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        DownloadImageAsync obj = new DownloadImageAsync(){
+        /*DownloadImageAsync obj = new DownloadImageAsync(){
 
             @Override
             protected void onPostExecute(Bitmap bmp) {
@@ -1378,7 +1386,9 @@ public class LayoutManager {
                 img.setImageBitmap(bmp);
             }
         };
-        obj.execute(route.Images.get(0));
+        obj.execute(route.Images.get(0));*/
+
+        Glide.with(context).load(route.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
