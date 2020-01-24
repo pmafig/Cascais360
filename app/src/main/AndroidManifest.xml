@@ -85,6 +85,14 @@
             android:launchMode="standard"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".ChangePasswordActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".EditAccountActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".RegisterActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"/>

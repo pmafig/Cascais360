@@ -43,6 +43,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -88,7 +89,7 @@ import nsop.neds.cascais360.WebApi.WebApiCalls;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 import nsop.neds.cascais360.WebApi.WebApiMessages;
 
-public class SearchActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, GoogleMap.OnInfoWindowClickListener {
+public class SearchActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter, OnInfoWindowClickListener {
 
     LocationManager locationManager;
     private static final int MY_LOCATION_REQUEST_CODE = 1;
@@ -860,16 +861,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     public View getInfoContents(Marker marker) {
 
-        //marker.setIcon(bitmapDescriptorFromVector(this, false));
-
-        /*if(lastMarket !=  null){
-            lastMarket.setIcon(bitmapDescriptorFromVector(this, true));
-        }*/
-
         View view = getLayoutInflater().inflate(R.layout.fragment_map_marker, null);
 
-        final MapMarker m = (MapMarker) marker.getTag();
+        LinearLayout route = view.findViewById(R.id.map_marker_route);
 
+        final MapMarker m = (MapMarker) marker.getTag();
 
         TextView title = view.findViewById(R.id.frame_title);
         title.setText(m.Title);
@@ -878,21 +874,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             final ImageView img = view.findViewById(R.id.frame_image);
             img.setImageBitmap(m.Image);
         }
-        //img.setImageBitmap(m.Image());
-
-        /*DownloadImageAsync obj = new DownloadImageAsync() {
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(m.Images.get(0));*/
-
-        //Glide.with(this).load(m.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
-
-        //ImageView icon = view.findViewById(R.id.arrow_icon);
-        //icon.setColorFilter(Color.parseColor(Settings.color));
 
         TextView navegationTitle = view.findViewById(R.id.frame_navegation);
         navegationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -900,8 +881,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         lastMarket = marker;
 
         return view;
-
-       //return null;
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, boolean setColor) {

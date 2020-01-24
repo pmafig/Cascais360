@@ -104,4 +104,7 @@ public class Labels {
     public String Permissions;
     public String Location;
     public String AccountSettings;
+    public String LogoutSuccess = "Terminou a sessão com sucesso.";
+    public String ChangePasswordError = "Erro ao alterar palavra passe.";
+    public String AlertMessage = "Alerta";
 }

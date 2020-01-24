@@ -122,6 +122,7 @@ public class MenuManager {
                 closeMenu();
                 if(AccountGeneral.logout(context)){
                     setToolbarUserInfo();
+                    context.startActivity(new Intent(context, MainActivity.class));
                 }
             }
         });

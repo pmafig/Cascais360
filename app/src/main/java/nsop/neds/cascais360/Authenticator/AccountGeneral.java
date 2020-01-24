@@ -4,8 +4,10 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Build;
+import android.widget.Toast;
 
 import nsop.neds.cascais360.Entities.UserEntity;
+import nsop.neds.cascais360.Settings.Settings;
 
 public class AccountGeneral {
     public static final String ACCOUNT_TYPE = "com.MyCascais.authenticator";
@@ -34,6 +36,9 @@ public class AccountGeneral {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 mAccountManager.removeAccountExplicitly(availableAccounts[0]);
             }
+
+            Toast.makeText(context, Settings.labels.LogoutSuccess, Toast.LENGTH_LONG).show();
+
             return true;
         }else{
             return false;

@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -30,6 +31,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
+import nsop.neds.cascais360.Entities.Json.Labels;
 import nsop.neds.cascais360.Entities.Json.LoginUserData;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.cascais360.Manager.MenuManager;
@@ -160,34 +162,43 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postSuccess(String json){
-
         LoginUserData data = new Gson().fromJson(json, LoginUserData.class);
 
+        if(data.ReportList != null && data.ReportList.size() > 0){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(Settings.labels.AlertMessage);
+            builder.setMessage(data.ReportList.get(0).Description);
+            builder.show();
+        }else {
+            if (data.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
+                try {
+                    SessionManager sm = new SessionManager(this);
 
-        if(data.ResponseData.IsAuthenticated){ // ReportManager.isAuthenticated(json)
-            try {
-                SessionManager sm = new SessionManager(this);
+                    menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
+                    menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
+                    TextView name = menuFragment.findViewById(R.id.user_name);
+                    name.setText(data.ResponseData.DisplayName);
 
-                menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
-                menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
-                TextView name = menuFragment.findViewById(R.id.user_name);
-                name.setText(data.ResponseData.DisplayName);
+                    sm.setDisplayname(data.ResponseData.DisplayName);
+                    sm.setFullName(ReportManager.getFullName(json));
+                    sm.setEmail(ReportManager.getEmail(json));
 
-                sm.setDisplayname(data.ResponseData.DisplayName);
-                sm.setFullName(ReportManager.getFullName(json));
-                sm.setEmail(ReportManager.getEmail(json));
-                sm.setMobileNumber(ReportManager.getMobileNumber(json));
-                sm.setAddress(ReportManager.getAddress(json));
+                    if (data.ResponseData.PhoneContacts != null && data.ResponseData.PhoneContacts.size() > 0) {
+                        sm.setMobileNumber(data.ResponseData.PhoneContacts.get(0).Number);
+                    }
 
-                submit(data.ResponseData.SSK, data.ResponseData.UserID, data.ResponseData.RefreshToken);
-            }catch (Exception e){
-                AccountGeneral.logout(this);
-                intentNavegation();
+                    sm.setAddress(ReportManager.getAddress(json));
+
+                    submit(data.ResponseData.SSK, data.ResponseData.UserID, data.ResponseData.RefreshToken);
+                } catch (Exception e) {
+                    AccountGeneral.logout(this);
+                    intentNavegation();
+                }
+            } else {
+                /*AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertessageDialog);
+                alertMessage.setMessage(ReportManager.getReportList(json));
+                alertMessage.show();*/
             }
-        }else{
-            /*AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertessageDialog);
-            alertMessage.setMessage(ReportManager.getReportList(json));
-            alertMessage.show();*/
         }
     }
 
@@ -285,7 +296,7 @@ public class LoginActivity extends AppCompatActivity {
             event.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(event);
         }else {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, ProfileActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

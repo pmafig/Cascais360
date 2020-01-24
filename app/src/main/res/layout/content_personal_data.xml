@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:id="@+id/login_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/login_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="20dp"
+                android:gravity="left">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_usercircle" />
+                    <TextView
+                        android:id="@+id/welcome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:text="Dados pessoais"
+                        android:paddingHorizontal="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="@color/colorBlack"/>
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    >
+                    <!--
+                    android:layout_gravity="bottom"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingVertical="30dp">
+                        <TextView
+                            android:id="@+id/accountNameLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="10dp"
+                            android:text="Name"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountName"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:cursorVisible="true"
+                            android:paddingHorizontal="10dp"
+                            android:hint=""
+                            android:drawablePadding="11dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
+                            android:enabled="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingBottom="30dp">
+                        <TextView
+                            android:id="@+id/accountEmailLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="10dp"
+                            android:text="Email"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:cursorVisible="true"
+                            android:paddingHorizontal="10dp"
+                            android:hint=""
+                            android:drawablePadding="11dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
+                            android:enabled="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingBottom="30dp">
+                        <TextView
+                            android:id="@+id/accountAddressLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="10dp"
+                            android:text="Morada"/>
+                        <EditText
+                            android:id="@+id/accountAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:cursorVisible="true"
+                            android:paddingHorizontal="10dp"
+                            android:hint=""
+                            android:drawablePadding="11dp"
+                            android:lines="3"
+                            android:minLines="1"
+                            android:maxLines="4"
+                            android:inputType="text"
+                            android:enabled="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingBottom="30dp">
+                        <TextView
+                            android:id="@+id/accountPhoneLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="10dp"
+                            android:text="Telemóvel"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:cursorVisible="true"
+                            android:paddingHorizontal="10dp"
+                            android:hint=""
+                            android:drawablePadding="11dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
+                            android:enabled="false"/>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/editAccount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:paddingVertical="15dp"
+                        android:text="Editar"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="18dp" />
+
+                    <LinearLayout
+                        android:id="@+id/editAccountSubmitFrame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+                        <Button
+                            android:id="@+id/editAccountCancel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.45"
+                            android:layout_marginTop="20dp"
+                            android:paddingVertical="15dp"
+                            android:text="cancelar"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="18dp" />
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"/>
+                        <Button
+                            android:id="@+id/editAccountSubmit"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.45"
+                            android:layout_marginTop="20dp"
+                            android:paddingVertical="15dp"
+                            android:text="Alterar"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="18dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>
