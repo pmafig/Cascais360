@@ -1134,15 +1134,6 @@ public class LayoutManager {
         title.setText(place.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        /*DownloadImageAsync obj = new DownloadImageAsync(){
-
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(place.Images.get(0));*/
 
         Glide.with(context).load(place.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 

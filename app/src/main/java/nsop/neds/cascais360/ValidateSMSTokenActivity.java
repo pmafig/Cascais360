@@ -49,11 +49,10 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SessionManager sm = new SessionManager(getBaseContext());
-
                 if(sm.getNewAccount()){
-                    ValidateNewRegisterSmsToken();
-                }else {
                     ValidateSmsToken();
+                }else {
+                    ValidateNewRegisterSmsToken();
                 }
             }
         });

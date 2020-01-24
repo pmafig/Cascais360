@@ -8,10 +8,13 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,6 +38,31 @@ import nsop.neds.cascais360.WebApi.WebApiMessages;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private EditText newPassword;
+    private EditText rePassword;
+
+    private ImageView icon1;
+    private ImageView icon2;
+    private ImageView icon3;
+    private ImageView icon4;
+    private ImageView icon5;
+    private ImageView icon6;
+
+
+    private boolean valid_1;
+    private boolean valid_2;
+    private boolean valid_3;
+    private boolean valid_4;
+
+    private boolean valid1;
+    private boolean valid2;
+    private boolean valid3;
+    private boolean valid4;
+    private boolean valid5;
+    private boolean valid6;
+
+    private Button registerButton;
+
     LinearLayout menuFragment;
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
@@ -42,6 +70,31 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        icon1 = findViewById(R.id.rule_icon_1);
+        icon2 = findViewById(R.id.rule_icon_2);
+        icon3 = findViewById(R.id.rule_icon_3);
+        icon4 = findViewById(R.id.rule_icon_4);
+        icon5 = findViewById(R.id.rule_icon_5);
+        icon6 = findViewById(R.id.rule_icon_6);
+
+        TextView rule1 = findViewById(R.id.rule_1);
+        TextView rule2 = findViewById(R.id.rule_2);
+        TextView rule3 = findViewById(R.id.rule_3);
+        TextView rule4 = findViewById(R.id.rule_4);
+        TextView rule5 = findViewById(R.id.rule_5);
+        TextView rule6 = findViewById(R.id.rule_6);
+
+
+        rule1.setText(Settings.labels.PasswordRuleLength);
+        rule2.setText(Settings.labels.PasswordRuleUppercase);
+        rule3.setText(Settings.labels.PasswordRuleLowercase);
+        rule4.setText(Settings.labels.PasswordRuleNumber);
+        rule5.setText(Settings.labels.PasswordRuleSpecial);
+        rule6.setText(Settings.labels.PasswordMismatchMessage);
+
+        newPassword = findViewById(R.id.accountPassword);
+        rePassword = findViewById(R.id.accountRePassword);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
@@ -63,13 +116,86 @@ public class RegisterActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
 
-        Button registerButton = findViewById(R.id.createAccount);
-        registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        registerButton = findViewById(R.id.createAccount);
+        registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
+        //registerButton.setEnabled(false);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createAccount();
+            }
+        });
+
+        //
+        newPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(new InputValidatorManager().isValidPassword_digit(s.toString())){
+                    icon1.setImageResource(R.drawable.ic_validationmark);
+                    valid1 = true;
+                }else{
+                    icon1.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_lowerCase(s.toString())){
+                    icon2.setImageResource(R.drawable.ic_validationmark);
+                    valid2 = true;
+                }else{
+                    icon2.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_upperCase(s.toString())){
+                    icon3.setImageResource(R.drawable.ic_validationmark);
+                    valid3 = true;
+                }else{
+                    icon3.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_size(s.toString())){
+                    icon4.setImageResource(R.drawable.ic_validationmark);
+                    valid4 = true;
+                }else{
+                    icon4.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_specialCharacter(s.toString())){
+                    icon5.setImageResource(R.drawable.ic_validationmark);
+                    valid5 = true;
+                }else{
+                    icon5.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                enableButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        rePassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().equals(newPassword.getText().toString())){
+                    icon6.setImageResource(R.drawable.ic_validationmark);
+                    valid6 = true;
+                }else{
+                    icon6.setImageResource(R.drawable.ic_crossmark);
+                }
+                enableButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
     }
@@ -123,7 +249,7 @@ public class RegisterActivity extends AppCompatActivity {
             accountEmailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    accountEmailField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                    accountEmailField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorInactive)));
                 }
             });
             accountEmailField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorRed)));
@@ -136,7 +262,7 @@ public class RegisterActivity extends AppCompatActivity {
             accountNifField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    accountNifField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                    accountNifField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorInactive)));
                 }
             });
 
@@ -150,7 +276,7 @@ public class RegisterActivity extends AppCompatActivity {
             accountPhoneField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    accountPhoneField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                    accountPhoneField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorInactive)));
                 }
             });
             accountPhoneField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorRed)));
@@ -163,7 +289,7 @@ public class RegisterActivity extends AppCompatActivity {
             accountNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    accountNameField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorWhite)));
+                    accountNameField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorInactive)));
                 }
             });
             accountNameField.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorRed)));
@@ -235,5 +361,17 @@ public class RegisterActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private void enableButton(){
+
+        //TODO: Incorporar a validação do restantes textview valid_1 && valid_2 && valid_3 && valid_4 &
+        if(valid1 && valid2 && valid3 && valid4 && valid6){
+            registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+            registerButton.setEnabled(true);
+        }else{
+            registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
+            registerButton.setEnabled(false);
+        }
     }
 }

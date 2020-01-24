@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -55,6 +57,16 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private ImageView icon3;
     private ImageView icon4;
     private ImageView icon5;
+    private ImageView icon6;
+
+    private boolean valid1;
+    private boolean valid2;
+    private boolean valid3;
+    private boolean valid4;
+    private boolean valid5;
+    private boolean valid6;
+
+    private Button changePasswordButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +80,14 @@ public class ChangePasswordActivity extends AppCompatActivity {
         icon3 = findViewById(R.id.rule_icon_3);
         icon4 = findViewById(R.id.rule_icon_4);
         icon5 = findViewById(R.id.rule_icon_5);
+        icon6 = findViewById(R.id.rule_icon_6);
 
         TextView rule1 = findViewById(R.id.rule_1);
         TextView rule2 = findViewById(R.id.rule_2);
         TextView rule3 = findViewById(R.id.rule_3);
         TextView rule4 = findViewById(R.id.rule_4);
         TextView rule5 = findViewById(R.id.rule_5);
+        TextView rule6 = findViewById(R.id.rule_6);
 
         title.setText(Settings.labels.PasswordRecoveryNewPassword);
         rule1.setText(Settings.labels.PasswordRuleLength);
@@ -81,6 +95,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         rule3.setText(Settings.labels.PasswordRuleLowercase);
         rule4.setText(Settings.labels.PasswordRuleNumber);
         rule5.setText(Settings.labels.PasswordRuleSpecial);
+        rule6.setText(Settings.labels.PasswordMismatchMessage);
 
         olderPassword = findViewById(R.id.accountOlderPassword);
         newPassword = findViewById(R.id.accountPassword);
@@ -112,13 +127,85 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.MyProfile);
 
-        Button changePasswordButton = findViewById(R.id.changePasswordAccount);
-        changePasswordButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        changePasswordButton = findViewById(R.id.changePasswordAccount);
+        changePasswordButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
+        changePasswordButton.setEnabled(false);
 
         changePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changePasswordClick();
+            }
+        });
+
+        newPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(new InputValidatorManager().isValidPassword_digit(s.toString())){
+                    icon1.setImageResource(R.drawable.ic_validationmark);
+                    valid1 = true;
+                }else{
+                    icon1.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_lowerCase(s.toString())){
+                    icon2.setImageResource(R.drawable.ic_validationmark);
+                    valid2 = true;
+                }else{
+                    icon2.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_upperCase(s.toString())){
+                    icon3.setImageResource(R.drawable.ic_validationmark);
+                    valid3 = true;
+                }else{
+                    icon3.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_size(s.toString())){
+                    icon4.setImageResource(R.drawable.ic_validationmark);
+                    valid4 = true;
+                }else{
+                    icon4.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                if(new InputValidatorManager().isValidPassword_specialCharacter(s.toString())){
+                    icon5.setImageResource(R.drawable.ic_validationmark);
+                    valid5 = true;
+                }else{
+                    icon5.setImageResource(R.drawable.ic_crossmark);
+                }
+
+                enableButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        rePassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.toString().equals(newPassword.getText().toString())){
+                    icon6.setImageResource(R.drawable.ic_validationmark);
+                    valid6 = true;
+                }else{
+                    icon6.setImageResource(R.drawable.ic_crossmark);
+                }
+                enableButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
     }
@@ -173,16 +260,31 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     } else {
                         AlertDialog.Builder alertMessage = new AlertDialog.Builder(ChangePasswordActivity.this, R.style.AlertMessageDialog);
                         String message = ReportManager.getErrorReportList(json);
+
+                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(ChangePasswordActivity.this);
+                        builder.setTitle(Settings.labels.AlertMessage);
+
                         if (!message.isEmpty()) {
                             alertMessage.setMessage(message.trim());
                         } else {
                             alertMessage.setMessage(Settings.labels.ChangePasswordError);
                         }
+
                         alertMessage.show();
                     }
                 }
             }
         });
+    }
+
+    private void enableButton(){
+        if(valid1 && valid2 && valid3 && valid4 && valid6){
+            changePasswordButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+            changePasswordButton.setEnabled(true);
+        }else{
+            changePasswordButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
+            changePasswordButton.setEnabled(false);
+        }
     }
 
     @Override

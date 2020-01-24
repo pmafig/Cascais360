@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ValidateSMSTokenActivity">
 
-    <!--<android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorWhite">
+    <include layout="@layout/app_bar"/>
 
-        <include layout="@layout/quero_ver" />
-    </android.support.design.widget.AppBarLayout>-->
+    <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 
     <include layout="@layout/content_validate_smstoken" />
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

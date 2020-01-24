@@ -1,5 +1,7 @@
 package nsop.neds.cascais360;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -15,14 +17,25 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import cz.msebera.android.httpclient.Header;
+import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
+import nsop.neds.cascais360.Entities.UserEntity;
+import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.cascais360.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
@@ -33,6 +46,7 @@ import nsop.neds.cascais360.WebApi.ReportManager;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 import nsop.neds.cascais360.WebApi.WebApiMessages;
+import nsop.neds.cascais360.WebApi.WebApiMethods;
 
 public class EditAccountActivity extends AppCompatActivity {
 
@@ -66,6 +80,10 @@ public class EditAccountActivity extends AppCompatActivity {
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.MyProfile);
+
+        TextView title = findViewById(R.id.account_data_title);
+        title.setText(Settings.labels.PersonalData);
+        title.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
         Button editButton = findViewById(R.id.editAccount);
         editButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
@@ -107,6 +125,13 @@ public class EditAccountActivity extends AppCompatActivity {
                 cancelAccount();
             }
         });
+
+        editSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeAppContact();
+            }
+        });
     }
 
     private void editAccount(){
@@ -118,6 +143,8 @@ public class EditAccountActivity extends AppCompatActivity {
 
         findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
         findViewById(R.id.editAccount).setVisibility(View.GONE);
+
+
     }
 
     private void cancelAccount(){
@@ -253,5 +280,84 @@ public class EditAccountActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private void changeAppContact(){
+        UserEntity user = AccountGeneral.getUser(this);
+
+        EditText phoneContactField = findViewById(R.id.accountPhone);
+        final String phoneContact = phoneContactField.getText().toString();
+
+        String mobileNumber = new SessionManager(this).getMobileNumber();
+
+        boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
+
+        AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
+
+        if(mobileNumber == phoneContact){
+            alertMessage.setMessage("O número de telemóvel inserido é igual ao registado.");
+            alertMessage.show();
+        }else if(!validPhoneNumber){
+            alertMessage.setMessage("O número de telemóvel inserido inválido.");
+            alertMessage.show();
+        }else {
+
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+
+            progressDialog.setMessage("Alterando telemóvel...");
+            progressDialog.show();
+
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\"}", user.getSsk(), user.getUserId(), "+351", phoneContact);
+
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiMethods.UPDATEMOBILEPHONECONTACT), jsonRequest, true, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    System.out.println(responseString);
+                    progressDialog.dismiss();
+                    try {
+                        AlertDialog.Builder alertMessage = new AlertDialog.Builder(getBaseContext(), R.style.AlertMessageDialog);
+                        alertMessage.setMessage("Lamentamos, ocorreu um erro com o seu pedido.");
+                        alertMessage.show();
+                    } catch (Exception e) {
+                        //clearAccount();
+                    }
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                    AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
+                    appSignatureHelper.getAppSignatures();
+
+                    progressDialog.dismiss();
+
+                    String json = WebApiMessages.DecryptMessage(response);
+
+                    SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
+
+                    Task<Void> task = client.startSmsRetriever();
+
+                    new SessionManager(getBaseContext()).setMobileNumber(phoneContact);
+
+                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            //String test = "ok";
+                            //getSupportFragmentManager().beginTransaction().replace(R.id.container, RecoverPhoneCodeFragment.newInstance()).commitNow();
+                            //finishAndRemoveTask();
+                            //Toast.makeText(AccountActivity.this, String.format(getResources().getString(R.string.info_message_sms_codevalidation), phoneContact), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    task.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //String test = "ok";
+                            //Toast.makeText(AccountActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
     }
 }

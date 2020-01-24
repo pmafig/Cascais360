@@ -39,6 +39,10 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".ValidateSMSTokenActivity"
+            android:launchMode="singleInstance"
+            android:noHistory="true" />
+        <activity
             android:name=".RefreshTokenActivity"
             android:launchMode="singleInstance"
             android:noHistory="true" />

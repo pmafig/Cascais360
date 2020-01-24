@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="30dp">
+            android:paddingHorizontal="30dp"
+            android:paddingBottom="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountEmail"
@@ -106,47 +107,116 @@
                 android:inputType="textPassword"
                 android:background="@drawable/mycascais_edittext"/>
 
-            <!--<LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="20dp"
+                android:paddingVertical="15dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/pass_contains_size_img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Entre 9 e 32 caracteres"
-                    android:textSize="15dp" />
 
-                <TextView
-                    android:id="@+id/pass_contains_uppercase_img"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Uma letra maiúscula"
-                    android:textSize="15dp" />
-
-                <TextView
-                    android:id="@+id/pass_contains_lowercase_img"
-                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark"/>
+                    <TextView
+                        android:id="@+id/rule_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Entre 9 e 32 caracteres"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Uma letra minúscula"
-                    android:textSize="15dp" />
-                <TextView
-                    android:id="@+id/pass_contains_number_img"
-                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark"/>
+                    <TextView
+                        android:id="@+id/rule_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Uma letra maiúscula"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Um número"
-                    android:textSize="15dp" />
-                <TextView
-                    android:id="@+id/pass_contains_specialchar_img"
-                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark"/>
+                    <TextView
+                        android:id="@+id/rule_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Uma letra minúscula"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Um caractere especial (opcional)"
-                    android:textSize="15dp" />
-            </LinearLayout>-->
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark" />
+                    <TextView
+                        android:id="@+id/rule_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Um número"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark" />
+                    <TextView
+                        android:id="@+id/rule_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Um caractere especial (opcional)"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="30dp">
+                    <ImageView
+                        android:id="@+id/rule_icon_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_crossmark" />
+                    <TextView
+                        android:id="@+id/rule_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A passwords devem coincidir."
+                        android:textSize="15dp" />
+                </LinearLayout>
+            </LinearLayout>
 
 
             <LinearLayout
