@@ -2,28 +2,20 @@ package nsop.neds.cascais360;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.net.Uri;
-import android.os.Binder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -31,8 +23,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
-import nsop.neds.cascais360.Entities.Json.Labels;
-import nsop.neds.cascais360.Entities.Json.LoginUserData;
+import nsop.neds.cascais360.Entities.Json.Response;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
@@ -162,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postSuccess(String json){
-        LoginUserData data = new Gson().fromJson(json, LoginUserData.class);
+        Response data = new Gson().fromJson(json, Response.class);
 
         if(data.ReportList != null && data.ReportList.size() > 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

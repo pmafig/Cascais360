@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.se.omapi.Session;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,11 +30,17 @@ import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
+import nsop.neds.cascais360.Entities.Json.Response;
 import nsop.neds.cascais360.Entities.UserEntity;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.cascais360.Manager.ControlsManager.InputValidatorManager;
@@ -41,6 +48,7 @@ import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
 import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.Manager.WeatherManager;
+import nsop.neds.cascais360.Settings.Data;
 import nsop.neds.cascais360.Settings.Settings;
 import nsop.neds.cascais360.WebApi.ReportManager;
 import nsop.neds.cascais360.WebApi.WebApiCalls;
@@ -132,6 +140,8 @@ public class EditAccountActivity extends AppCompatActivity {
                 changeAppContact();
             }
         });
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void editAccount(){
@@ -331,7 +341,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
                     progressDialog.dismiss();
 
-                    String json = WebApiMessages.DecryptMessage(response);
+                    final String json = WebApiMessages.DecryptMessage(response);
 
                     SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
 
@@ -346,16 +356,35 @@ public class EditAccountActivity extends AppCompatActivity {
                             //getSupportFragmentManager().beginTransaction().replace(R.id.container, RecoverPhoneCodeFragment.newInstance()).commitNow();
                             //finishAndRemoveTask();
                             //Toast.makeText(AccountActivity.this, String.format(getResources().getString(R.string.info_message_sms_codevalidation), phoneContact), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            Data.SmsValidationContext = Data.ValidationContext.changeContact;
 
-                    task.addOnFailureListener(new OnFailureListener() {
+                            Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
+                            try {
+                                Response response =  new Gson().fromJson(json, Response.class);
+
+                                if(response.ResponseData.InvalidaSession){
+
+                                }
+                            }catch (Exception ex){
+                                try{
+                                JSONObject data = new JSONObject(json);
+                                String smsCode = data.getString("ResponseData");
+                                intent.putExtra(Variables.ResponseSMSToken, smsCode);
+                                }catch (JSONException jex){
+
+                                }
+                            }
+
+                            startActivity(intent);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             //String test = "ok";
                             //Toast.makeText(AccountActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
                         }
                     });
+
                 }
             });
         }

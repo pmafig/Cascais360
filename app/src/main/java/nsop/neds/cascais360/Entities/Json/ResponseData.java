@@ -20,4 +20,6 @@ public class ResponseData {
     public String UserID;
     public String DisplayName;
     public String DisplayValidation;
+
+    public boolean InvalidaSession;
 }

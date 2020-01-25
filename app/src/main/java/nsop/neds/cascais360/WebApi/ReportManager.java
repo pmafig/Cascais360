@@ -111,7 +111,7 @@ public class ReportManager {
         return getVariable(json, "SSK");
     }
 
-    public static boolean newAccountSuccess(String json){
+    public static boolean IsValid(String json){
         return Boolean.valueOf(getVariable(json, "IsValid"));
     }
 

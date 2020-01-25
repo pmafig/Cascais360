@@ -18,6 +18,7 @@ public class Variables {
     public static final String Calendar = "calendar";
     public static final String Maps = "maps";
 
+    public static final String ResponseSMSToken = "responsesmstoken";
     public static final String SMSToken = "smstoken";
 
     public static final String Email = "email";

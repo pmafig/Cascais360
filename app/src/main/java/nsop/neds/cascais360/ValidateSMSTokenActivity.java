@@ -2,6 +2,7 @@ package nsop.neds.cascais360;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,13 +16,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.cascais360.Authenticator.AccountGeneral;
+import nsop.neds.cascais360.Encrypt.MessageEncryption;
 import nsop.neds.cascais360.Manager.SessionManager;
 import nsop.neds.cascais360.Manager.Variables;
+import nsop.neds.cascais360.Settings.Data;
 import nsop.neds.cascais360.Settings.Settings;
+import nsop.neds.cascais360.WebApi.ReportManager;
 import nsop.neds.cascais360.WebApi.WebApiClient;
 
 public class ValidateSMSTokenActivity extends AppCompatActivity {
@@ -48,11 +54,14 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SessionManager sm = new SessionManager(getBaseContext());
-                if(sm.getNewAccount()){
-                    ValidateSmsToken();
-                }else {
-                    ValidateNewRegisterSmsToken();
+
+                switch (Data.SmsValidationContext){
+                    case changeContact:
+                        ValidateSmsToken();
+                            break;
+                    case newAccount:
+                        ValidateNewRegisterSmsToken();
+                        break;
                 }
             }
         });
@@ -95,15 +104,37 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
+                //TODO neste momento não é possivel fazer esta operação - message
                 //startActivity(new Intent(SmsTokenValidationActivity.this, ErrorActivity.class));
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                String json = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, response.replace('"', ' ').trim());
+                System.out.println(json);
+
+                String message = ReportManager.getErrorReportList(json);
+
                 progressDialog.dismiss();
-                //TODO string here
-                //Toast.makeText(getBaseContext(), getResources().getString(R.string.info_message_sms_changePhoneNumber_success), Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class));
+
+                if(ReportManager.IsValid(json)){
+
+                    Toast.makeText(getBaseContext(), Settings.labels.ContactChanged, Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(ValidateSMSTokenActivity.this, EditAccountActivity.class));
+                }else{
+                    AlertDialog.Builder alertMessage = new AlertDialog.Builder(ValidateSMSTokenActivity.this, R.style.AlertMessageDialog);
+
+                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(ValidateSMSTokenActivity.this);
+                    builder.setTitle(Settings.labels.AlertMessage);
+
+                    if (!message.isEmpty()) {
+                        alertMessage.setMessage(message.trim());
+                    } else {
+                        alertMessage.setMessage(Settings.labels.ChangePasswordError);
+                    }
+                    alertMessage.show();
+                }
             }
         });
     }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,7 +74,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
-        TextView title = findViewById(R.id.title);
+        TextView title = findViewById(R.id.account_changepassword_title);
 
         icon1 = findViewById(R.id.rule_icon_1);
         icon2 = findViewById(R.id.rule_icon_2);
@@ -82,12 +83,15 @@ public class ChangePasswordActivity extends AppCompatActivity {
         icon5 = findViewById(R.id.rule_icon_5);
         icon6 = findViewById(R.id.rule_icon_6);
 
+
         TextView rule1 = findViewById(R.id.rule_1);
         TextView rule2 = findViewById(R.id.rule_2);
         TextView rule3 = findViewById(R.id.rule_3);
         TextView rule4 = findViewById(R.id.rule_4);
         TextView rule5 = findViewById(R.id.rule_5);
         TextView rule6 = findViewById(R.id.rule_6);
+
+        title.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
         title.setText(Settings.labels.PasswordRecoveryNewPassword);
         rule1.setText(Settings.labels.PasswordRuleLength);
@@ -208,6 +212,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void changePasswordClick(){

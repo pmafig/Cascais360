@@ -24,4 +24,15 @@ public class Data {
     public static int current_year;
 
     public static List<MapMarker> LocalMarkers;
+
+    public static ValidationContext SmsValidationContext;
+
+    public enum ValidationContext{
+        none,
+        changeContact,
+        newAccount
+
+    }
+
+
 }

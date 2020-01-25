@@ -107,4 +107,5 @@ public class Labels {
     public String LogoutSuccess = "Terminou a sessão com sucesso.";
     public String ChangePasswordError = "Erro ao alterar palavra passe.";
     public String AlertMessage = "Alerta";
+    public String ContactChanged = "Novo contacto atualizado com sucesso.";
 }
