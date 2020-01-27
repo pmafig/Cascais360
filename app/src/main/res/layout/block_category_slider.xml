@@ -14,8 +14,8 @@
         android:gravity="center"
         android:textColor="@color/colorBlack"
         android:fontFamily="@font/montserrat_bold"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginTop="25sp"
+        android:layout_marginBottom="10sp"/>
 
 
     <!--<ViewFlipper
@@ -42,14 +42,14 @@
         android:background="@drawable/border_top"
         android:gravity="bottom|center"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="25dp">
 
         <ImageView
             android:id="@+id/sliderdots_left_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="35dp"
-            android:paddingTop="15dp"
+            android:paddingTop="10dp"
             android:rotation="180"
             android:src="@drawable/ic_arrow" />
 
@@ -58,14 +58,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingVertical="20dp"></LinearLayout>
+            android:paddingVertical="5dp"></LinearLayout>
 
         <ImageView
             android:id="@+id/sliderdots_right_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="35dp"
-            android:paddingBottom="15dp"
+            android:paddingBottom="10dp"
             android:src="@drawable/ic_arrow" />
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package nsop.neds.cascais360;
 
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 
@@ -22,8 +23,6 @@ public class AboutAppActivity extends AppCompatActivity {
 
         WebView about = findViewById(R.id.about_app);
 
-
-
         about.loadData(CommonManager.WebViewFormatRegular(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -31,6 +30,16 @@ public class AboutAppActivity extends AppCompatActivity {
         new MenuManager(this, toolbar, menuFragment, Settings.labels.AboutApp);
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
+
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
 }

@@ -125,6 +125,16 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.IWantToSee);
 
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

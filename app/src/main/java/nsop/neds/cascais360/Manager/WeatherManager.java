@@ -60,7 +60,8 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
 
             try {
                 Drawable icon = context.getDrawable(context.getResources().getIdentifier(weather.getIcon(), "drawable", context.getPackageName()));
-                iconTemp.setImageDrawable(icon);
+                iconTemp.setBackground(icon);
+                //setImageDrawable(icon);
             } catch (URISyntaxException e) {
                 iconTemp.setVisibility(View.GONE);
             }

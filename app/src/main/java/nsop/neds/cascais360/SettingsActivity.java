@@ -77,6 +77,16 @@ public class SettingsActivity extends AppCompatActivity implements ActivityCompa
         location.setText(Settings.labels.Location);
         calendar.setText(Settings.labels.Calendar);
 
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         Spinner spinner = findViewById(R.id.lang_code);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.lang_code_array, android.R.layout.simple_spinner_item);

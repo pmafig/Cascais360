@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
@@ -71,7 +72,7 @@ public class LayoutManager {
 
         Glide.with(context).load(b.Images.get(0)).into(img);
 
-        img.setOnClickListener(new View.OnClickListener() {
+        frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -119,19 +120,11 @@ public class LayoutManager {
 
             final ImageView img = frame.findViewById(R.id.frame_image);
 
-            /*DownloadImageAsync obj = new DownloadImageAsync(){
-
-                @Override
-                protected void onPostExecute(Bitmap bmp) {
-                    super.onPostExecute(bmp);
-                    img.setImageBitmap(bmp);
-                }
-            };
-            obj.execute(f.Images.get(0));*/
-
             Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
-            img.setOnClickListener(new View.OnClickListener() {
+            CardView clicableFrame = frame.findViewById(R.id.frame);
+
+            clicableFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -254,19 +247,13 @@ public class LayoutManager {
             frameTitle.setText(f.Title);
 
             final ImageView img = frame.findViewById(R.id.frame_image);
-            /*DownloadImageAsync obj = new DownloadImageAsync(){
 
-                @Override
-                protected void onPostExecute(Bitmap bmp) {
-                    super.onPostExecute(bmp);
-                    img.setImageBitmap(bmp);
-                }
-            };
-            obj.execute(f.Images.get(0));*/
+            CardView cardView = frame.findViewById(R.id.frame);
+
             Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
             if(f.ID > 0) {
-                img.setOnClickListener(new View.OnClickListener() {
+                cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -357,7 +344,7 @@ public class LayoutManager {
 
         for(int c = 0; c < node_list.size(); c++){
 
-            Node n = node_list.get(c);
+            final Node n = node_list.get(c);
 
             View category = View.inflate(context, R.layout.block_category_list, null);
 
@@ -373,10 +360,23 @@ public class LayoutManager {
                 category.setBackground(context.getDrawable(R.drawable.border_right));
             }
 
+            LinearLayout categoryFrame = category.findViewById(R.id.category_title);
+
+            categoryFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ListDetailActivity.class);
+                    intent.putExtra(Variables.Title, n.Category.Description);
+                    intent.putExtra(Variables.Id, n.Category.ID);
+                    context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                }
+            });
+
             for(int i = 0; i < n.Nodes.size(); i++){
                 View category_item = View.inflate(context, R.layout.block_category_list_item, null);
 
-                InfoBlock info = n.Nodes.get(i);
+                final InfoBlock info = n.Nodes.get(i);
 
                 TextView t = category_item.findViewById(R.id.list_item_title);
                 TextView st = category_item.findViewById(R.id.list_item_date);
@@ -387,6 +387,17 @@ public class LayoutManager {
                 t.setText(info.Title);
 
                 category_list.addView(category_item);
+
+                LinearLayout itemFrame = category_item.findViewById(R.id.list_item);
+                itemFrame.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent event = new Intent(context, DetailActivity.class);
+                        event.putExtra(Variables.Id, info.ID);
+                        context.startActivity(event);
+                        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+                });
             }
 
             views.add(category);
@@ -396,7 +407,7 @@ public class LayoutManager {
         SliderTwoPageAdapter pageAdapter = new SliderTwoPageAdapter(views);
         viewPager.setAdapter(pageAdapter);
 
-        final int total_dots =  node_list.size()/2 + (node_list.size() % 2 > 0 ? 1 : 0) + 1;
+        final int total_dots =  pageAdapter.getCount() /2 + (pageAdapter.getCount() % 2 > 0 ? 1 : 0) + 1;
 
         final LinearLayout sliderdots = category_block.findViewById(R.id.sliderdots);
         final ImageView[] dots = new ImageView[total_dots];
@@ -449,8 +460,7 @@ public class LayoutManager {
 
             @Override
             public void onPageSelected(int i) {
-
-                i = i > 0 ? i / 2 + 1 : 0;
+                i = i != 0 ? i / 2 + 1 : 0;
 
                 if(i == 0){
                     leftArrow.setColorFilter(Color.parseColor(Settings.colors.Gray1));
