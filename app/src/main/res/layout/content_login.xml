@@ -108,6 +108,7 @@
                     <!--Politica de privacidade - cor do ano-->
 
                     <LinearLayout
+                        android:id="@+id/terms_conditions_frame"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 
 import org.json.JSONObject;
 
@@ -14,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -106,11 +109,106 @@ public class CommonManager {
         //context.startActivity(new Intent(context, NoServiceActivity.class));
     }
 
-    public static String WebViewFormat(String content){
-        String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} a{ color:%s; }</style><body>%s</body>";
+    public static String WebViewFormatRegular(String content){
 
-        String h = String.format(html, Settings.colors.YearColor, content);
+        String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                "<head>\n" +
+                "<title>WebView9</title>\n" +
+                "<meta forua=\"true\" http-equiv=\"Cache-Control\" content=\"max-age=0\"/>\n" +
+                "<style type=\"text/css\">\n" +
+                "   @font-face {\n" +
+                "      font-family: 'Font';\n" +
+                "      src:url(\"file:///android_asset/montserrat_regular.otf\")\n" +
+                "   }\n" +
+                "   body {\n" +
+                "      font-family: 'Font';\n" +
+                //"      font-size: medium;\n" +
+                "      text-align: justify;\n" +
+                "      margin: 0;\n" +
+                "      color:#333\n" +
+                "   }\n" +
+                "   a {\n" +
+                "      font-family: 'Font';\n" +
+                "      color:"+ Settings.colors.YearColor +"\n" +
+                "   }\n" +
+                "</style>\n" +
+                "</head>\n" +
+                //"<body style=\"background-color:#212121\">\n" +
+                "<body>\n" +
+                content +
+                "</body>\n" +
+                "</html>";
 
-        return String.format("<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";}</style><body>%s</body>", content);
+        try {
+            return android.util.Base64.encodeToString(html.getBytes("UTF-8"), android.util.Base64.DEFAULT);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String WebViewFormatLight(String content, DisplayMetrics scaledDensity){
+
+        float sp = 14;
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, scaledDensity);
+
+        String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                "<head>\n" +
+                "<title>WebView9</title>\n" +
+                "<meta forua=\"true\" http-equiv=\"Cache-Control\" content=\"max-age=0\"/>\n" +
+                "<style type=\"text/css\">\n" +
+                "   @font-face {\n" +
+                "      font-family: 'Font';\n" +
+                "      src:url(\"file:///android_asset/fonts/montserrat_light.otf\")\n" +
+                "   }\n" +
+                "   body {\n" +
+                "      font-family: 'Verdane';\n" +
+                "      font-size:"+ 14  +"px;\n" +
+                "      text-align: justify;\n" +
+                "      margin: 0;\n" +
+                "      color:#808080\n" +
+                "   }\n" +
+               /* "   p {\n" +
+                "      font-family: 'Arial';\n" +
+                "   }\n" +*/
+                "   a {\n" +
+                "      font-family: 'Font';\n" +
+                "      color:"+ Settings.colors.YearColor +"\n" +
+                "   }\n" +
+                "</style>\n" +
+                "</head>\n" +
+                //"<body style=\"background-color:#212121\">\n" +
+                "<body>\n" +
+                content +
+                "</body>\n" +
+                "</html>";
+
+        try {
+            return android.util.Base64.encodeToString(html.getBytes("UTF-8"), android.util.Base64.DEFAULT);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+
+        //return String.format("<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";}</style><body>%s</body>", content);
+    }
+
+    public static String MimeType(){
+        return "text/html; charset=utf-8";
+    }
+
+    public static String Encoding(){
+
+        return "base64";
+
+        //return "UTF-8";
+    }
+
+    public static String ReturnFirstPrice(String price){
+        try {
+            return price.substring(price.indexOf("<p>"), price.indexOf("</p>")) + "</p>";
+        }catch (Exception e){
+            return price;
+        }
     }
 }

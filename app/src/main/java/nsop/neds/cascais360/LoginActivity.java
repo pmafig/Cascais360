@@ -2,11 +2,14 @@ package nsop.neds.cascais360;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -25,6 +28,7 @@ import nsop.neds.cascais360.Authenticator.AccountGeneral;
 import nsop.neds.cascais360.Encrypt.MessageEncryption;
 import nsop.neds.cascais360.Entities.Json.Response;
 import nsop.neds.cascais360.Manager.Broadcast.AppSignatureHelper;
+import nsop.neds.cascais360.Manager.CommonManager;
 import nsop.neds.cascais360.Manager.MenuManager;
 import nsop.neds.cascais360.Manager.SessionManager;
 import nsop.neds.cascais360.Manager.Variables;
@@ -72,12 +76,16 @@ public class LoginActivity extends AppCompatActivity {
         TextView recover = findViewById(R.id.recover);
         TextView register = findViewById(R.id.register);
 
+        LinearLayout frame = findViewById(R.id.terms_conditions_frame);
+
         TextView terms = findViewById(R.id.terms_conditions);
         TextView privacy = findViewById(R.id.privacy_manifest);
 
         terms.setTextColor(Color.parseColor(Settings.colors.YearColor));
         privacy.setTextColor(Color.parseColor(Settings.colors.YearColor));
         logon.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        recover.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        register.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
         logon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +112,31 @@ public class LoginActivity extends AppCompatActivity {
         if (mAuthTokenType == null)
             mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
 
+
+        frame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(LoginActivity.this);
+
+                dialog.setContentView( R.layout.block_terms_condition_info);
+                TextView title = dialog.findViewById(R.id.terms_title);
+                title.setText(Settings.labels.TermsAndConditions);
+
+                WebView about = dialog.findViewById(R.id.more_info_address);
+                about.loadData(CommonManager.WebViewFormatRegular(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+
+                dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     private void submit(){

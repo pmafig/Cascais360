@@ -38,15 +38,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_light"
             android:text="Nome"/>
         <TextView
             android:id="@+id/more_info_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"/>
         <TextView
             android:id="@+id/more_info_label_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"
             android:layout_marginTop="15dp"
             android:text="Address"/>
         <WebView
@@ -58,16 +61,19 @@
             android:id="@+id/more_info_label_town"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"
             android:layout_marginTop="15dp"
             android:text="Freguesia"/>
         <TextView
             android:id="@+id/more_info_town"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"/>
         <TextView
             android:id="@+id/more_info_label_geo_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"
             android:layout_marginTop="15dp"
             android:text="Geo"/>
 
@@ -81,7 +87,8 @@
                 <TextView
                     android:id="@+id/more_info_geo_location"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_light"/>
                 <ImageView
                     android:id="@+id/map_detail"
                     android:layout_width="wrap_content"

@@ -5,14 +5,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.SettingInjectorService;
 import android.net.Uri;
 import android.os.Vibrator;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -20,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
@@ -32,7 +27,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import nsop.neds.cascais360.DetailActivity;
 import nsop.neds.cascais360.Entities.Json.CategoryListDetail;
@@ -47,9 +41,8 @@ import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.Search;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
-import nsop.neds.cascais360.Entities.Json.User;
 import nsop.neds.cascais360.ListDetailActivity;
-import nsop.neds.cascais360.Manager.ControlsManager.DownloadImageAsync;
+import nsop.neds.cascais360.Manager.CommonManager;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderPageAdapter;
 import nsop.neds.cascais360.Manager.ControlsManager.SliderTwoPageAdapter;
 import nsop.neds.cascais360.Manager.Variables;
@@ -59,8 +52,6 @@ import nsop.neds.cascais360.SearchActivity;
 import nsop.neds.cascais360.Settings.Settings;
 
 public class LayoutManager {
-
-    private static String html = "<style>body{ margin:0; padding:0;} p{font-family:\"montserrat_light\";} }</style><body>%s</body>";
 
     public static View setHighLightBlock(final HighLight b, final Context context){
         View block = View.inflate(context, R.layout.block_highlight, null);
@@ -270,7 +261,7 @@ public class LayoutManager {
                     @Override
                     public void onClick(View v) {
                         Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                        vibe.vibrate(100);
+                        vibe.vibrate(10);
 
                         //ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
                         Intent event = new Intent(context, DetailActivity.class);
@@ -598,7 +589,13 @@ public class LayoutManager {
         View frame_list = View.inflate(context, R.layout.block_frame_list, null);
 
         TextView layout_title = frame_list.findViewById(R.id.spotlight_block_title);
-        layout_title.setText(title);
+
+        if(title != null) {
+            layout_title.setText(title);
+            layout_title.setVisibility(View.VISIBLE);
+        }else{
+            layout_title.setVisibility(View.GONE);
+        }
 
         LinearLayout views_wrapper = frame_list.findViewById(R.id.spotlight_block_views);
 
@@ -609,15 +606,6 @@ public class LayoutManager {
             frameTitle.setText(f.Title);
 
             final ImageView img = frame.findViewById(R.id.frame_image);
-            /*DownloadImageAsync obj = new DownloadImageAsync(){
-
-                @Override
-                protected void onPostExecute(Bitmap bmp) {
-                    super.onPostExecute(bmp);
-                    img.setImageBitmap(bmp);
-                }
-            };
-            obj.execute(f.Images.get(0));*/
 
             Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
@@ -632,6 +620,7 @@ public class LayoutManager {
                         int id = f.ID;
                         event.putExtra(Variables.Id, id);
                         context.startActivity(event);
+                        ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
             }
@@ -903,15 +892,6 @@ public class LayoutManager {
         title.setText(event.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        /*DownloadImageAsync obj = new DownloadImageAsync(){
-
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(event.Images.get(0));*/
 
         Glide.with(context).load(event.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
 
@@ -1013,7 +993,7 @@ public class LayoutManager {
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(Settings.html, event.CustomHours), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(CommonManager.WebViewFormatRegular(event.CustomHours), CommonManager.MimeType(), CommonManager.Encoding());
 
                     dialog.show();
                 }
@@ -1045,11 +1025,23 @@ public class LayoutManager {
                     final Dialog dialog = new Dialog(context);
                     dialog.setContentView(R.layout.block_event_more_info);
 
-                    ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_name)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    TextView local_label = dialog.findViewById(R.id.more_info_title);
+                    TextView name_label = dialog.findViewById(R.id.more_info_label_name);
+                    TextView address_label = dialog.findViewById(R.id.more_info_label_address);
+                    TextView town_label = dialog.findViewById(R.id.more_info_label_town);
+                    TextView location_label = dialog.findViewById(R.id.more_info_label_geo_location);
+
+                    local_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    name_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    address_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    town_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    location_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    local_label.setText(Settings.labels.Place);
+                    name_label.setText(Settings.labels.Name);
+                    address_label.setText(Settings.labels.Address);
+                    town_label.setText(Settings.labels.Parish);
+                    location_label.setText(Settings.labels.Geolocation);
 
                     dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1075,7 +1067,8 @@ public class LayoutManager {
                     name.setText(point.Title);
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
-                    addess.loadData(String.format(Settings.html, point.Address), "text/html; charset=utf-8", "UTF-8");
+
+                    addess.loadData(CommonManager.WebViewFormatLight(point.Address, context.getResources().getDisplayMetrics()), CommonManager.MimeType(), CommonManager.Encoding());
 
                     TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
@@ -1124,7 +1117,7 @@ public class LayoutManager {
 
         if(event.Description != null) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(Settings.html, event.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(CommonManager.WebViewFormatRegular(event.Description), CommonManager.MimeType(), CommonManager.Encoding());
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
     }
@@ -1149,32 +1142,32 @@ public class LayoutManager {
             TextView dateLabel = mainContent.findViewById(R.id.date_label);
             dateLabel.setText(Settings.labels.Date);
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        }else{
+            date_frame.setVisibility(View.GONE);
+        }
 
-            if(place.OfficeHours != null) {
-                if(place.OfficeHours.StatusLabel != null) {
-                    TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
-                    officeHoursLabel.setText(place.OfficeHours.StatusLabel);
-                    officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
+        if(place.OfficeHours != null) {
+            if(place.OfficeHours.StatusLabel != null) {
+                TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
+                officeHoursLabel.setText(place.OfficeHours.StatusLabel);
+                officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
 
-                    Drawable border = context.getDrawable(R.drawable.office_hours);
-                    border.setTint(Color.parseColor(Settings.colors.YearColor));
-                    officeHoursLabel.setBackground(border);
+                Drawable border = context.getDrawable(R.drawable.office_hours);
+                border.setTint(Color.parseColor(Settings.colors.YearColor));
+                officeHoursLabel.setBackground(border);
 
-                    officeHoursLabel.setVisibility(View.VISIBLE);
-                }
-
-                if(place.OfficeHours.Text != null) {
-                    WebView officeHours = mainContent.findViewById(R.id.place_date);
-                    officeHours.loadData(String.format(Settings.html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
-                    officeHours.setVisibility(View.VISIBLE);
-                }
+                officeHoursLabel.setVisibility(View.VISIBLE);
             }
 
-            if((place.OfficeHours.Text != null) || (place.OfficeHours.StatusLabel != null)) {
-                date_frame.setVisibility(View.VISIBLE);
-            }else{
-                date_frame.setVisibility(View.GONE);
+            if(place.OfficeHours.Text != null) {
+                WebView officeHours = mainContent.findViewById(R.id.place_date);
+                officeHours.loadData(String.format(Settings.html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
+                officeHours.setVisibility(View.VISIBLE);
             }
+        }
+
+        if((place.OfficeHours.Text != null) || (place.OfficeHours.StatusLabel != null)) {
+            date_frame.setVisibility(View.VISIBLE);
         }else{
             date_frame.setVisibility(View.GONE);
         }
@@ -1247,11 +1240,23 @@ public class LayoutManager {
                         }
                     });
 
-                    ((TextView) dialog.findViewById(R.id.more_info_title)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_name)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_address)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_town)).setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    ((TextView) dialog.findViewById(R.id.more_info_label_geo_location)).setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    TextView local_label = dialog.findViewById(R.id.more_info_title);
+                    TextView name_label = dialog.findViewById(R.id.more_info_label_name);
+                    TextView address_label = dialog.findViewById(R.id.more_info_label_address);
+                    TextView town_label = dialog.findViewById(R.id.more_info_label_town);
+                    TextView location_label = dialog.findViewById(R.id.more_info_label_geo_location);
+
+                    local_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    name_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    address_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    town_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    location_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+                    local_label.setText(Settings.labels.Place);
+                    name_label.setText(Settings.labels.Name);
+                    address_label.setText(Settings.labels.Address);
+                    town_label.setText(Settings.labels.Parish);
+                    location_label.setText(Settings.labels.Geolocation);
 
                     ImageView map_detail = dialog.findViewById(R.id.map_detail);
                     map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
@@ -1271,12 +1276,12 @@ public class LayoutManager {
                     name.setText(point.Title);
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
-                    addess.loadData(String.format(Settings.html, point.Address), "text/html; charset=utf-8", "UTF-8");
+                    addess.loadData(CommonManager.WebViewFormatLight(point.Address, context.getResources().getDisplayMetrics()), CommonManager.MimeType(), CommonManager.Encoding());
 
-                    TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
+                    TextView town = dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
 
-                    TextView location = (TextView) dialog.findViewById(R.id.more_info_geo_location);
+                    TextView location = dialog.findViewById(R.id.more_info_geo_location);
                     location.setText(String.format("%s, %s", point.Coordinates.Lat, point.Coordinates.Lng));
 
                     dialog.show();
@@ -1289,7 +1294,7 @@ public class LayoutManager {
 
         LinearLayout price_frame = mainContent.findViewById(R.id.event_price_wrapper);
 
-        if(place.Price.Text != null) {
+        if(place.Price.Text != null && !place.Price.Text.trim().equals("")) {
             ImageView euroIcon = mainContent.findViewById(R.id.euro_icon);
             euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView priceLabel = mainContent.findViewById(R.id.label_price);
@@ -1297,9 +1302,9 @@ public class LayoutManager {
             priceLabel.setText(Settings.labels.Price);
             WebView price = mainContent.findViewById(R.id.price);
 
-            String _p = place.Price.Text.substring(place.Price.Text.indexOf("<p>"), place.Price.Text.indexOf("</p>")) + "</p>" ;
+            String _p = CommonManager.ReturnFirstPrice(place.Price.Text);
 
-            price.loadData(String.format(Settings.html, _p), "text/html; charset=utf-8", "UTF-8");
+            price.loadData(CommonManager.WebViewFormatRegular(_p), CommonManager.MimeType(), CommonManager.Encoding());
 
             TextView morePriceLabel = mainContent.findViewById(R.id.label_more_price);
             morePriceLabel.setText(String.format("[+ %s]", Settings.labels.Info));
@@ -1322,7 +1327,7 @@ public class LayoutManager {
                     title.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(Settings.html, place.Price.Text), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(CommonManager.WebViewFormatRegular(place.Price.Text), CommonManager.MimeType(), CommonManager.Encoding());
 
                     dialog.show();
                 }
@@ -1347,16 +1352,14 @@ public class LayoutManager {
             price_frame.setVisibility(View.VISIBLE);
         }
 
-        if(place.Description != null) {
+        if(place.Description != null && !place.Description.trim().equals("")) {
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(Settings.html, place.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(CommonManager.WebViewFormatRegular(place.Description), CommonManager.MimeType(), CommonManager.Encoding());
             mainContent.findViewById(R.id.event_description_wrapper).setVisibility(View.VISIBLE);
         }
 
         if(place.ItHappensHere != null){
-
             LinearLayout here = mainContent.findViewById(R.id.detail_it_happens_here);
-
             JsonArray jsonObjectType5 = new Gson().toJsonTree(place.ItHappensHere.Contents).getAsJsonArray();
             Type NodeTypeList = new TypeToken<ArrayList<InfoBlock>>(){}.getType();
             List<InfoBlock> node_list = new Gson().fromJson(jsonObjectType5.toString(), NodeTypeList);

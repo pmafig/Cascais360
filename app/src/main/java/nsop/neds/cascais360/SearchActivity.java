@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -173,6 +174,9 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         menu_calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                hideKeyboard();
+
                 menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_calendar.setColorFilter(Color.parseColor(Settings.colors.YearColor));
                 menu_map.setColorFilter(getResources().getColor(R.color.colorWhite));
@@ -195,12 +199,17 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 _c1.set(year, month, day);
 
                 searchByCalendar(_c1);
+
+
             }
         });
 
         menu_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                hideKeyboard();
+
                 menu_calendar.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_search.setColorFilter(getResources().getColor(R.color.colorWhite));
                 menu_map.setColorFilter(Color.parseColor(Settings.colors.YearColor));
@@ -212,6 +221,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 painel_search.setVisibility(View.GONE);
                 painel_calendar.setVisibility(View.GONE);
                 painel_map.setVisibility(View.VISIBLE);
+
+
             }
         });
 
@@ -373,27 +384,27 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
             searchByMap();
         } else {
-            final ImageButton searchButton = findViewById(R.id.search_button);
-
-            LinearLayout mainContent = findViewById(R.id.search_result_text);
-
-            View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
-            TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
-            searchInfo.setText(Settings.labels.NoSearchYet);
-
             findViewById(R.id.painel_search_triangle).setVisibility(View.VISIBLE);
             findViewById(R.id.painel_calendar_triangle).setVisibility(View.INVISIBLE);
             findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
-
-            mainContent.addView(searchInfoBlock);
-
-            searchButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    searchByText();
-                }
-            });
         }
+
+        final ImageButton searchButton = findViewById(R.id.search_button);
+
+        LinearLayout mainContent = findViewById(R.id.search_result_text);
+
+        View searchInfoBlock = View.inflate(this, R.layout.block_search_info, null);
+        TextView searchInfo = searchInfoBlock.findViewById(R.id.search_result_text_info);
+        searchInfo.setText(Settings.labels.NoSearchYet);
+
+        mainContent.addView(searchInfoBlock);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchByText();
+            }
+        });
     }
 
     private void searchByText() {
@@ -933,6 +944,17 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListenerGPS);
             }
         }
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = this.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
 

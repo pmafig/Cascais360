@@ -81,6 +81,8 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        //TODO Validar se o utilizador está logado
+
     }
 
 
