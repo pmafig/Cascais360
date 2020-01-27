@@ -1,9 +1,13 @@
 package nsop.neds.cascais360.Settings;
 
+import android.widget.TextView;
+
 import java.util.HashMap;
 import java.util.List;
 
 import nsop.neds.cascais360.Entities.DashboardEntity;
+import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
+import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.MapMarker;
 import nsop.neds.cascais360.Entities.Json.Search;
 
@@ -34,5 +38,8 @@ public class Data {
 
     }
 
+    public static List<InfoEventBlock> CurrentCategoryList;
+
+    public static TextView CurrentCategorySortOption;
 
 }

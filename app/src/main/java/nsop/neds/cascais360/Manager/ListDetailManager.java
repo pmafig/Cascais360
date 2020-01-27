@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toolbar;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -28,17 +29,21 @@ import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Manager.Layout.LayoutManager;
+import nsop.neds.cascais360.R;
+import nsop.neds.cascais360.Settings.Data;
 
 public class ListDetailManager extends AsyncTask<String, Void, List<LayoutBlock>> {
 
     RelativeLayout loading;
     LinearLayout mainContent;
     Context context;
+    androidx.appcompat.widget.Toolbar sortList;
 
-    public ListDetailManager(Context context, LinearLayout mainContent, RelativeLayout loading){
+    public ListDetailManager(Context context, androidx.appcompat.widget.Toolbar sortList, LinearLayout mainContent, RelativeLayout loading){
         this.loading = loading;
         this.context = context;
         this.mainContent = mainContent;
+        this.sortList = sortList;
     }
 
     @Override
@@ -88,16 +93,12 @@ public class ListDetailManager extends AsyncTask<String, Void, List<LayoutBlock>
         super.onPostExecute(blockList);
 
         try {
+
+            LinearLayout sortingList = (LinearLayout) sortList.findViewById(R.id.list_sorting);
+
             mainContent.removeAllViews();
 
-            /*Collections.sort(blockList, new Comparator<LayoutBlock>() {
-                @Override
-                public int compare(LayoutBlock o1, LayoutBlock o2) {
-                    return o1.Weight < o2.Weight ? -1
-                            : o1.Weight > o2.Weight ? 1
-                            : 0;
-                }
-            });*/
+            sortingList.removeAllViews();
 
             for (LayoutBlock b : blockList) {
 
@@ -106,15 +107,18 @@ public class ListDetailManager extends AsyncTask<String, Void, List<LayoutBlock>
                         JsonArray jsonObjectType7 = new Gson().toJsonTree(b.Contents).getAsJsonArray();
                         CategoryListDetail detail = new Gson().fromJson(jsonObjectType7.get(0).toString(), CategoryListDetail.class);
                         mainContent.addView(LayoutManager.setCategoryListDetailBlock(b.Title, detail, context));
+                        LayoutManager.setCategoryListSortBlock(detail, sortingList, context);
                         break;
                 }
             }
 
             loading.setVisibility(View.GONE);
+            sortList.setVisibility(View.VISIBLE);
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
             //context.startActivity(new Intent(context, NoServiceActivity.class));
         }
     }
+
 }

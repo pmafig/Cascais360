@@ -7,16 +7,20 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +30,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import nsop.neds.cascais360.DetailActivity;
@@ -34,12 +40,14 @@ import nsop.neds.cascais360.Entities.Json.Event;
 import nsop.neds.cascais360.Entities.Json.HighLight;
 import nsop.neds.cascais360.Entities.Json.InfoBlock;
 import nsop.neds.cascais360.Entities.Json.InfoEventBlock;
+import nsop.neds.cascais360.Entities.Json.LayoutBlock;
 import nsop.neds.cascais360.Entities.Json.Node;
 import nsop.neds.cascais360.Entities.Json.Place;
 import nsop.neds.cascais360.Entities.Json.Point;
 import nsop.neds.cascais360.Entities.Json.PointMap;
 import nsop.neds.cascais360.Entities.Json.Route;
 import nsop.neds.cascais360.Entities.Json.Search;
+import nsop.neds.cascais360.Entities.Json.Sorting;
 import nsop.neds.cascais360.Entities.Json.SubTitle;
 import nsop.neds.cascais360.ListDetailActivity;
 import nsop.neds.cascais360.Manager.CommonManager;
@@ -49,6 +57,7 @@ import nsop.neds.cascais360.Manager.Variables;
 import nsop.neds.cascais360.MapsActivity;
 import nsop.neds.cascais360.R;
 import nsop.neds.cascais360.SearchActivity;
+import nsop.neds.cascais360.Settings.Data;
 import nsop.neds.cascais360.Settings.Settings;
 
 public class LayoutManager {
@@ -597,6 +606,8 @@ public class LayoutManager {
             layout_title.setVisibility(View.GONE);
         }
 
+        Data.CurrentCategoryList = categoryListDetail.Nodes;
+
         LinearLayout views_wrapper = frame_list.findViewById(R.id.spotlight_block_views);
 
         for (final InfoEventBlock f: categoryListDetail.Nodes) {
@@ -682,6 +693,193 @@ public class LayoutManager {
         }
 
         return frame_list;
+    }
+
+    public static void setCategoryListSortBlock(final CategoryListDetail categoryListDetail, LinearLayout sortList, final Context context){
+        sortList.removeAllViews();
+
+        for (final Sorting s: categoryListDetail.Sorting) {
+            View frame = View.inflate(context, R.layout.block_sort_option, null);
+
+            final TextView sort = frame.findViewById(R.id.sort_title);
+            sort.setText(s.Description);
+            sort.setTextColor(Color.parseColor(Settings.colors.Gray3));
+
+            sort.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(Data.CurrentCategorySortOption != null) {
+                        //Data.CurrentCategorySortOption.setTypeface(Data.CurrentCategorySortOption.getTypeface(), Typeface.NORMAL);
+                        Data.CurrentCategorySortOption.setTextColor(Color.parseColor(Settings.colors.Gray3));
+                    }
+
+                    //sort.setTypeface(sort.getTypeface(), Typeface.BOLD);
+                    sort.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    Data.CurrentCategorySortOption = sort;
+                    sortCategoryListSortBlock(context, s.Key);
+                }
+            });
+
+            sortList.addView(frame);
+        }
+    }
+
+    public static void sortCategoryListSortBlock(final Context context, String sort) {
+        try {
+
+            LinearLayout mainContent = ((Activity) context).findViewById(R.id.main_content);
+            mainContent.removeAllViews();
+
+            List<InfoEventBlock> list =  Data.CurrentCategoryList;
+
+            if(sort.contentEquals("Date")) {
+                //sortList
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+                        return o1.Date < o2.Date ? -1
+                                : o1.Date > o2.Date ? 1
+                                : 0;
+                    }
+                });
+            }else if(sort.contentEquals("Price")){
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+
+                        float p1;
+                        float p2;
+
+                        if(!o1.Price.equals("") && !o2.Price.equals("")){
+                            p1 = Float.valueOf(o1.Price);
+                            p2 = Float.valueOf(o2.Price);
+                            return p1 < p2 ? -1 : p1 > p2 ? 1 : 0;
+                        }
+                        return 1;
+                    }
+                });
+            }else if(sort.contentEquals("Local")){
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+                        return o1.Local.compareTo(o2.Local);
+                    }
+                });
+            }else if(sort.contentEquals("Difficulty")){
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+                        return o1.Difficulty < o2.Difficulty ? -1
+                                : o1.Difficulty > o2.Difficulty ? 1
+                                : 0;
+                    }
+                });
+            }else if(sort.contentEquals("Distance")){
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+                        return o1.Distance < o2.Distance ? -1
+                                : o1.Distance > o2.Distance ? 1
+                                : 0;
+                    }
+                });
+            }else{
+                Collections.sort(list, new Comparator<InfoEventBlock>() {
+                    @Override
+                    public int compare(InfoEventBlock o1, InfoEventBlock o2) {
+                        return o1.Title.compareTo(o2.Title);
+                    }
+                });
+            }
+
+            for (final InfoEventBlock f: list) {
+                View frame = View.inflate(context, R.layout.block_frame, null);
+
+                TextView frameTitle = frame.findViewById(R.id.frame_title);
+                frameTitle.setText(f.Title);
+
+                final ImageView img = frame.findViewById(R.id.frame_image);
+
+                Glide.with(context).load(f.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
+
+                if(f.ID > 0) {
+                    img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                            vibe.vibrate(100);
+
+                            Intent event = new Intent(context, DetailActivity.class);
+                            int id = f.ID;
+                            event.putExtra(Variables.Id, id);
+                            context.startActivity(event);
+                            ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    });
+                }
+
+                TextView frameDate = frame.findViewById(R.id.frame_date);
+                LinearLayout routeInfo = frame.findViewById(R.id.route_briefing);
+
+                if(f.SubTitle.size() > 1){
+                    routeInfo.setVisibility(View.VISIBLE);
+                    frameDate.setVisibility(View.GONE);
+
+                    for (SubTitle st: f.SubTitle) {
+
+                        if(st.Icon != null) {
+                            switch (st.Icon) {
+                                case "Hike":
+                                    LinearLayout w_distance = frame.findViewById(R.id.event_distance_icon_wrapper);
+                                    ImageView distance_icon = frame.findViewById(R.id.event_distance_icon);
+                                    distance_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_distance.setVisibility(View.VISIBLE);
+
+                                    TextView t_distance = frame.findViewById(R.id.event_route_distance);
+                                    t_distance.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_distance.setText(st.Text);
+                                    break;
+                                case "Level":
+                                    LinearLayout w_level = frame.findViewById(R.id.event_difficulty_icon_wrapper);
+                                    ImageView level_icon = frame.findViewById(R.id.event_difficulty_icon);
+                                    level_icon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
+                                    w_level.setVisibility(View.VISIBLE);
+
+
+                                    TextView t_level = frame.findViewById(R.id.event_route_difficulty);
+                                    t_level.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    t_level.setText(st.Text);
+                                    break;
+                            }
+                        }
+                    }
+
+                }else {
+                    frameDate.setVisibility(View.VISIBLE);
+                    routeInfo.setVisibility(View.GONE);
+
+                    frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                    frameDate.setText(f.SubTitle.get(0).Text);
+                }
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                int px = Math.round(Settings.spotLightBottomMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+                layoutParams.setMargins(0, 0, 0, px);
+
+                mainContent.addView(frame, layoutParams);
+
+                ScrollView scroll = ((Activity)context).findViewById(R.id.main_content_scroll);
+                scroll.fullScroll(ScrollView.FOCUS_UP);
+            }
+
+        } catch (Exception e) {
+            Log.e("Error", e.getMessage());
+        }
     }
 
     public static View setSearch(final Search search, final Context context){

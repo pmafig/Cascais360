@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
         android:id="@+id/login_frame"
@@ -102,6 +103,28 @@
                         android:background="@drawable/mycascais_edittext"
                         android:focusable="true"
                         android:focusableInTouchMode="true"/>
+
+                    <!--<com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/etPasswordLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:passwordToggleEnabled="true"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountPassword"
+                            android:textColorHint="@color/colorWhite"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:drawablePadding="11dp"
+                            android:hint="@string/mycascais_password"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:drawableStart="@drawable/ic_lock"
+                            android:background="@drawable/mycascais_edittext"
+                            android:inputType="textPassword"/>
+                    </com.google.android.material.textfield.TextInputLayout>-->
 
                     <!--Termos e condições - cor do ano-->
 

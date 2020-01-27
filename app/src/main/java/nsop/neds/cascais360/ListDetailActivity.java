@@ -31,10 +31,9 @@ public class ListDetailActivity extends AppCompatActivity {
         progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.MULTIPLY);
 
         final Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
 
-        int id = intent.getIntExtra(Variables.Id, 0);
-
-        new ListDetailManager(this, (LinearLayout) findViewById(R.id.main_content), (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getCategory(id));
+        int id = bundle.getInt(Variables.Id, 0);
 
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -53,6 +52,9 @@ public class ListDetailActivity extends AppCompatActivity {
         new MenuManager(this, toolbar, menuFragment, intent.getStringExtra(Variables.Title));
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
+
+        new ListDetailManager(this, (androidx.appcompat.widget.Toolbar) findViewById(R.id.sorting_list), (LinearLayout) findViewById(R.id.main_content), (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getCategory(id));
+
     }
 
     @Override

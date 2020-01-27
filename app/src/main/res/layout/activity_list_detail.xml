@@ -10,6 +10,57 @@
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/sorting_list"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <FrameLayout
+                android:id="@+id/menu_button_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true">
+                <LinearLayout
+                    android:id="@+id/list_sorting"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="right">
+                </LinearLayout>
+            </FrameLayout>
+            <LinearLayout
+                android:id="@+id/menu_back_frame"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:paddingRight="10dp">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_left_black"/>
+                <TextView
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:textSize="12sp"
+                    android:text="voltar"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
     <RelativeLayout
         android:id="@+id/loadingPanel"
         android:layout_width="match_parent"
@@ -25,6 +76,7 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/main_content_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none">
