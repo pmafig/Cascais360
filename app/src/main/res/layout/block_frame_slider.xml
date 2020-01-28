@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <nsop.neds.cascais360.HeightWrappingViewPager
+            <nsop.neds.mycascais.HeightWrappingViewPager
                 android:id="@+id/sliderPager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -49,10 +49,10 @@
                 android:id="@+id/sliderdots_left_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow"
-                android:paddingTop="10dp"
                 android:paddingHorizontal="35dp"
-                android:rotation="180"/>
+                android:paddingTop="10dp"
+                android:rotation="180"
+                android:src="@drawable/ic_arrow"/>
             <LinearLayout
                 android:id="@+id/sliderdots"
                 android:layout_width="wrap_content"

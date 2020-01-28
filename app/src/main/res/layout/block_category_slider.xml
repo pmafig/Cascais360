@@ -25,7 +25,7 @@
 
         </ViewFlipper>-->
 
-    <nsop.neds.cascais360.HeightWrappingViewPager
+    <nsop.neds.mycascais.CategoryWrappingViewPager
         android:id="@+id/sliderPager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -58,12 +58,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingVertical="5dp"></LinearLayout>
+            android:paddingVertical="15dp"></LinearLayout>
 
         <ImageView
             android:id="@+id/sliderdots_right_arrow"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingHorizontal="35dp"
             android:paddingBottom="10dp"
             android:src="@drawable/ic_arrow" />

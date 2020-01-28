@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="nsop.neds.cascais360">
+    package="nsop.neds.mycascais">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -39,73 +39,85 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".ValidateSMSTokenActivity"
+            android:name="nsop.neds.mycascais.ValidateSMSTokenActivity"
             android:launchMode="singleInstance"
             android:noHistory="true" />
         <activity
-            android:name=".RefreshTokenActivity"
+            android:name="nsop.neds.mycascais.RefreshTokenActivity"
             android:launchMode="singleInstance"
             android:noHistory="true" />
         <activity
-            android:name=".ProfileActivity"
+            android:name="nsop.neds.mycascais.ProfileActivity"
             android:launchMode="singleTop"
             android:noHistory="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".SearchActivity"
+            android:name="nsop.neds.mycascais.SearchActivity"
             android:launchMode="standard"
             android:noHistory="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".MapsActivity"
+            android:name="nsop.neds.mycascais.MapsActivity"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="nsop.neds.cascais360.DetailActivity" />
+                android:value="nsop.neds.mycascais.DetailActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="nsop.neds.mycascais.SettingsActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".AboutAppActivity"
+            android:name="nsop.neds.mycascais.AboutAppActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".EmailSentActivity"
+            android:name="nsop.neds.mycascais.EmailSentActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".DetailActivity"
+            android:name="nsop.neds.mycascais.DetailActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ListDetailActivity"
+            android:name="nsop.neds.mycascais.ListDetailActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ListActivity"
+            android:name="nsop.neds.mycascais.ListActivity"
             android:launchMode="standard"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".ChangePasswordActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".EditAccountActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".RegisterActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name=".LoginActivity"
+            android:name="nsop.neds.mycascais.NotificationsListActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".SplashActivity"
+            android:name="nsop.neds.mycascais.NotificationsActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.ChangePasswordActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.EditAccountActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.RecoverActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.RegisterActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.LoginActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.SplashActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -115,7 +127,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OnBoardingActivity"
+            android:name="nsop.neds.mycascais.OnBoardingActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -123,7 +135,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="nsop.neds.mycascais.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -131,7 +143,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".Authenticator.CascaisAuthenticatorService">
+        <service android:name="nsop.neds.mycascais.Authenticator.CascaisAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -141,7 +153,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <service android:name=".Manager.Broadcast.MyFirebaseInstanceIDService" android:stopWithTask="false">
+        <service android:name="nsop.neds.mycascais.Manager.Broadcast.MyFirebaseInstanceIDService" android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -149,7 +161,7 @@
         </service>
 
         <receiver
-            android:name=".Manager.Broadcast.SmsBroadcastReceiver"
+            android:name="nsop.neds.mycascais.Manager.Broadcast.SmsBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
