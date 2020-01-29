@@ -41,7 +41,6 @@
                 android:padding="20dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_arrow"
-                android:background="@drawable/on_press_arrow"
                 android:rotation="180"/>
             <TextView
                 android:id="@+id/launch_app"
@@ -50,7 +49,6 @@
                 android:padding="20dp"
                 android:text="Ir para a aplicação"
                 android:fontFamily="@font/montserrat_regular"
-                android:background="@drawable/on_press_arrow"
                 android:visibility="visible"/>
 
             <ImageView
@@ -59,8 +57,7 @@
                 android:layout_height="wrap_content"
                 android:padding="20dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_arrow"
-                android:background="@drawable/on_press_arrow"/>
+                android:src="@drawable/ic_arrow"/>
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

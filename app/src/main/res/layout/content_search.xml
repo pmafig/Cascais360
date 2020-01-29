@@ -78,7 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ic_triangle"
-                android:visibility="invisible"/>
+                android:visibility="visible"/>
             <ImageView
                 android:id="@+id/painel_calendar_triangle"
                 android:layout_width="wrap_content"
@@ -92,11 +92,11 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ic_triangle"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="10dp"
+            android:layout_height="5dp"
             android:background="@color/searchBarColor">
         </LinearLayout>
 
@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingTop="5dp"
-                    android:paddingBottom="15dp"
+                    android:paddingBottom="10dp"
                     android:paddingHorizontal="10dp"
                     android:gravity="center">
                     <com.google.android.material.textfield.TextInputEditText
@@ -136,13 +136,28 @@
                         android:focusableInTouchMode="true"
                         android:hint="O quê...?"/>
 
-                    <androidx.appcompat.widget.AppCompatImageButton
+                    <!--<androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/search_button"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:src="@drawable/ic_search"
                         android:scaleType="fitXY"
-                        android:backgroundTint="@color/colorHit"/>
+                        android:backgroundTint="@color/colorHit"/>-->
+
+                    <LinearLayout
+                        android:id="@+id/search_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingHorizontal="5dp"
+                        android:background="@color/colorHit"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_search"
+                            android:backgroundTint="@color/colorWhite" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
             <!--SearchActivity Results painel-->

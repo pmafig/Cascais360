@@ -1315,6 +1315,7 @@ public class LayoutManager {
                         context.startActivity(browser);
                     }
                 });
+                mainContent.findViewById(R.id.event_ticket_frame).setVisibility(View.VISIBLE);
             }
 
             price_frame.setVisibility(View.VISIBLE);
@@ -1342,8 +1343,6 @@ public class LayoutManager {
         String dateInfo = place.NextDates != null && place.NextDates.size() > 0 ? place.NextDates.get(0) : null;
         LinearLayout date_frame = mainContent.findViewById(R.id.event_date_wrapper);
         if(dateInfo != null) {
-            ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
-            dateIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView dateLabel = mainContent.findViewById(R.id.date_label);
             dateLabel.setText(Settings.labels.Date);
             dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -1371,7 +1370,10 @@ public class LayoutManager {
             }
         }
 
-        if((place.OfficeHours.Text != null) || (place.OfficeHours.StatusLabel != null)) {
+        if((dateInfo != null) || (place.OfficeHours.Text != null) || (place.OfficeHours.StatusLabel != null)) {
+            ImageView dateIcon = mainContent.findViewById(R.id.date_icon);
+            dateIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+
             date_frame.setVisibility(View.VISIBLE);
         }else{
             date_frame.setVisibility(View.GONE);

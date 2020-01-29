@@ -98,7 +98,7 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            context.startActivity(new Intent(context, MainActivity.class));
         }
     }
 

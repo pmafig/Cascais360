@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorHit"
-            android:fontFamily="@font/montserrat_light"
+            android:fontFamily="@font/montserrat_regular"
             android:textSize="14sp"
             android:textAllCaps="true"
             android:text="29 MAR A 30 MAR ***"
@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:fontFamily="@font/montserrat_regular"
+            android:fontFamily="@font/montserrat_bold"
             android:textSize="15sp"
             android:text="Miguel Araújo | Casca de Noz ***"/>
     </LinearLayout>

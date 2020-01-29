@@ -497,10 +497,12 @@
                 </LinearLayout>
                 <!--Buy Button-->
                 <LinearLayout
+                    android:id="@+id/event_ticket_frame"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:visibility="gone">
                     <Button
                         android:id="@+id/event_ticket"
                         android:layout_width="wrap_content"

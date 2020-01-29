@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
@@ -38,6 +39,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -98,6 +100,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private int mapScale = 14;
 
+    private LatLngBounds.Builder builder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +153,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         painel_map.setVisibility(View.GONE);
 
         //OTHER BUTTONS
-        final ImageButton search_button = findViewById(R.id.search_button);
+        final LinearLayout search_button = findViewById(R.id.search_button);
         search_button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
 
 
@@ -389,7 +393,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             findViewById(R.id.painel_map_triangle).setVisibility(View.INVISIBLE);
         }
 
-        final ImageButton searchButton = findViewById(R.id.search_button);
+        final LinearLayout searchButton = findViewById(R.id.search_button);
 
         LinearLayout mainContent = findViewById(R.id.search_result_text);
 
@@ -530,21 +534,16 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         try {
             Intent intent = getIntent();
             Bundle bundle = intent.getExtras();
+
             if (intent.hasExtra(Variables.Lat) && intent.hasExtra(Variables.Lng)) {
                 float lat = bundle.getFloat(Variables.Lat);
                 float lng = bundle.getFloat(Variables.Lng);
 
                 receivedOrigin = new LatLng(Float.valueOf(lat), Float.valueOf(lng));
-            } else {
-                origin = new LatLng(38.7025943, -9.3966299);
+                mapScale = 18;
             }
 
-            /*if (origin != null) {
-                new PinpointManager().execute(WebApiCalls.getSearchByMap(String.valueOf(origin.latitude), String.valueOf(origin.longitude)));
-            } else if (receivedOrigin != null) {
-                new PinpointManager().execute(WebApiCalls.getSearchByMap(String.valueOf(receivedOrigin.latitude), String.valueOf(receivedOrigin.longitude)));
-            }*/
-
+            MapMarkers();
         } catch (Exception ex) {
             String as = "";
             //TODO: Noservice Activity
@@ -578,61 +577,17 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     };
 
-
-    /*@Override
-    public void onInfoWindowClick(Marker marker) {
-        View view = getLayoutInflater().inflate(R.layout.fragment_slide, null);
-
-        TextView title = view.findViewById(R.id.frame_title);
-
-        PointEntity point = (PointEntity) marker.getTag();
-
-
-        //title.setText(point.Title() + " - " + point.Address());
-
-        //Toast.makeText(this, point.Title() + " - " + point.Address(), Toast.LENGTH_LONG).show();
-    }*/
-
-  /*  @Override
-    public boolean onMarkerClick(Marker marker) {
-        View view = getLayoutInflater().inflate(R.layout.fragment_slide, null);
-
-        TextView title = view.findViewById(R.id.frame_title);
-
-        //PointEntity point = (PointEntity) marker.getTag();
-
-        //title.setText(point.Title() + " - " + point.Address());
-
-        title.setText("asdfasdf");
-
-
-
-
-
-        //Toast.makeText(this, point.Title() + " - " + point.Address(), Toast.LENGTH_LONG).show();
-
-        return true;
-    }*/
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
         try {
             if (mGoogleMap != null) {
+
+                builder = new LatLngBounds.Builder();
+
                 mGoogleMap.setInfoWindowAdapter(this);
                 mGoogleMap.setOnInfoWindowClickListener(this);
-                //mGoogleMap.setOnMarkerClickListener(this);
-                //mGoogleMap.setMyLocationEnabled(true);
-
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    mGoogleMap.setMyLocationEnabled(true);
-
-                    locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                            2000,
-                            10, locationListenerGPS);
-                }
 
                 FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -646,6 +601,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                         }
                     }
                 });
+
+                mGoogleMap.setMapType(googleMap.MAP_TYPE_SATELLITE);
 
                 mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
@@ -672,7 +629,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                     }
                 });
 
+                setCameraView();
+
                 getMapMarkers();
+
+
             }
         }catch (Exception ex){
             String e = ex.getMessage();
@@ -690,7 +651,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
         if (mGoogleMap != null) {
 
-            WebApiClient.get(WebApiCalls.getSearchByMap(String.valueOf(origin.latitude), String.valueOf(origin.longitude)),  new TextHttpResponseHandler(){
+            WebApiClient.get(WebApiCalls.getSearchByMap(String.valueOf(origin.latitude), String.valueOf(origin.longitude)), new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     String message = WebApiMessages.DecryptMessage(responseString);
@@ -699,7 +660,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     String message = WebApiMessages.DecryptMessage(responseString);
-                    if(message != null) {
+                    if (message != null) {
 
                         try {
                             JSONObject response = new JSONObject(message);
@@ -708,7 +669,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                             JSONArray jsonArray = responseData.getJSONArray("Data");
 
-                            Type MapMarkerTypeList = new TypeToken<ArrayList<MapMarker>>() {}.getType();
+                            Type MapMarkerTypeList = new TypeToken<ArrayList<MapMarker>>() {
+                            }.getType();
                             List<MapMarker> mapMarkers = new Gson().fromJson(jsonArray.toString(), MapMarkerTypeList);
 
                             if (Data.LocalMarkers == null) {
@@ -719,13 +681,13 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                             for (final MapMarker m : mapMarkers) {
                                 boolean add = true;
-                                for(MapMarker mm : Data.LocalMarkers){
-                                    if(m.ID == mm.ID){
+                                for (MapMarker mm : Data.LocalMarkers) {
+                                    if (m.ID == mm.ID) {
                                         add = false;
                                         break;
                                     }
                                 }
-                                if(add) {
+                                if (add) {
                                     refreshMap = true;
 
                                     Glide.with(SearchActivity.this)
@@ -746,11 +708,11 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                                 }
                             }
 
-                            if(refreshMap) {
+                            if (refreshMap) {
                                 MapMarkers();
                             }
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             String e = ex.getMessage();
                         }
 
@@ -758,30 +720,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 }
             });
 
-            /*if(mClusterManager == null){
-                mClusterManager = new ClusterManager<ClusterMarker>(this, mGoogleMap);
-            }
-            if(mClusterManagerRenderer == null){
-                mClusterManagerRenderer = new MyClusterManagerRenderer(
-                        this,
-                        mGoogleMap,
-                        mClusterManager
-                );
-                mClusterManager.setRenderer(mClusterManagerRenderer);
-            }
-
-            for(PinPointEntity p : Data.PinpointEvents.values()){
-                ClusterMarker newClusterMarker = new ClusterMarker(
-                        new LatLng(p.Latitude(), p.Logitude()),
-                        p.Title(),
-                        "snippet",
-                        p.Nid());
-
-                mClusterManager.addItem(newClusterMarker);
-                mClusterMarkers.add(newClusterMarker);
-            }
-
-            mClusterManager.cluster();*/
         }
     }
 
@@ -795,6 +733,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 Marker marker = mGoogleMap.addMarker(new MarkerOptions().position(point).title(m.Title));
                 marker.setIcon(bitmapDescriptorFromVector(this, true));
                 marker.setTag(m);
+
+                builder.include(point);
             }
         }
 
@@ -807,17 +747,29 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     private boolean first = true;
 
     private void setCameraView() {
-        LatLng center;
+        //LatLng center;
+        //LatLng cascais = new LatLng(38.7025943, -9.3966299);
+        //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cascais, mapScale));
 
         if (receivedOrigin != null) {
-            center = receivedOrigin;
-        } else if(origin != null) {
-            center = origin;
+            LatLng center = receivedOrigin;
+            origin = center;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, mapScale));
+        /*} else if(origin != null) {
+            LatLngBounds bounds = builder.build();
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+            mGoogleMap.moveCamera(cu);
+            //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, mapScale));*/
         }else{
-            center = new LatLng(38.7025943, -9.3966299);
+            /*LatLngBounds bounds = builder.build();
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+            mGoogleMap.moveCamera(cu);*/
+
+            LatLng cascais = new LatLng(38.7025943, -9.3966299);
+            origin = cascais;
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cascais, mapScale));
         }
 
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, mapScale));
     }
 
     @Override
