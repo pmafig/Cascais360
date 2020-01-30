@@ -99,7 +99,7 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
-        //GetSubscriptions();
+        GetSubscriptions();
     }
 
 
@@ -117,7 +117,7 @@ public class NotificationsActivity extends AppCompatActivity {
         String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"LangCode\":\"%s\"}",
                 user.getSsk(), user.getUserId(),  Settings.LangCode);
 
-        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.GetSubscriptions), jsonRequest,true, new TextHttpResponseHandler(){
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiClient.METHODS.GetSubscriptions), jsonRequest,true, new TextHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 String message = WebApiMessages.DecryptMessage(responseString);
