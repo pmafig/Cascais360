@@ -146,10 +146,10 @@ public class CommonManager {
         return "";
     }
 
-    public static String WebViewFormatLight(String content, DisplayMetrics scaledDensity){
+    public static String WebViewFormatLight(String content){
 
-        float sp = 14;
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, scaledDensity);
+        float sp = 15;
+        //int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, scaledDensity);
 
         String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                 "<head>\n" +
@@ -162,7 +162,7 @@ public class CommonManager {
                 "   }\n" +
                 "   body {\n" +
                 "      font-family: 'Verdane';\n" +
-                "      font-size:"+ 14  +"px;\n" +
+                "      font-size:"+ 15  +"px;\n" +
                 "      text-align: justify;\n" +
                 "      margin: 0;\n" +
                 "      color:#808080\n" +

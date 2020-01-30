@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.MainActivity;
 import nsop.neds.mycascais.OnBoardingActivity;
+import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.SettingsActivity;
 
@@ -108,5 +109,9 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
         Settings.labels = r.Labels;
         Settings.aboutApp = r.AboutApp;
         Settings.menus = r.Menu;
+        Data.NotificationsEventsCategories = r.EventsCategories;
+        Data.NotificationsPlacesCategories = r.PlacesCategories;
+        Data.NotificationsRoutesCategories = r.RoutesCategories;
+        Data.Towns = r.TownCouncils;
     }
 }

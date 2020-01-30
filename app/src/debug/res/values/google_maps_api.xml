@@ -28,7 +28,5 @@
     <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBLNP-pV7V3sm1aU7YQzIOtuzm0IntXdDw</string>-->
 
     <!--Server key 1-->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBLNP-pV7V3sm1aU7YQzIOtuzm0IntXdDw</string>
-
-    <!--AIzaSyBLNP-pV7V3sm1aU7YQzIOtuzm0IntXdDw-->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyC9U2cnZcDdHpq4cFnrppGYk1DaSYdw0po</string>
 </resources>

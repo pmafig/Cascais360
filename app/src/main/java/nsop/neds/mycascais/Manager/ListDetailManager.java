@@ -98,6 +98,9 @@ public class ListDetailManager extends AsyncTask<String, Void, List<LayoutBlock>
                     case 7:
                         JsonArray jsonObjectType7 = new Gson().toJsonTree(b.Contents).getAsJsonArray();
                         CategoryListDetail detail = new Gson().fromJson(jsonObjectType7.get(0).toString(), CategoryListDetail.class);
+
+
+
                         mainContent.addView(LayoutManager.setCategoryListDetailBlock(b.Title, detail, context));
                         LayoutManager.setCategoryListSortBlock(detail, sortingList, context);
                         break;

@@ -34,14 +34,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="28dp"
-                        android:textStyle="bold"
+                        android:textSize="20dp"
                         android:text="Bem-vindo!"
+                        android:fontFamily="@font/montserrat_regular"
                         android:textColor="@color/colorBlack"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="15dp"
+                        android:textSize="12dp"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="Identifique-se antes de continuar."
                         android:textColor="@color/colorBlack"/>
                 </LinearLayout>
@@ -85,6 +86,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:background="@drawable/mycascais_edittext"
+                        android:fontFamily="@font/montserrat_light"
                         android:focusable="true"
                         android:focusableInTouchMode="true"/>
 
@@ -102,6 +104,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textPassword"
                         android:background="@drawable/mycascais_edittext"
+                        android:fontFamily="@font/montserrat_light"
                         android:focusable="true"
                         android:focusableInTouchMode="true"/>
 
@@ -133,25 +136,30 @@
 
                     <LinearLayout
                         android:id="@+id/terms_conditions_frame"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:paddingVertical="10dp">
+                        android:layout_gravity="left"
+                        android:paddingVertical="30dp">
                         <TextView
                             android:id="@+id/terms_conditions"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            android:gravity="left"
                             android:paddingVertical="5dp"
-                            android:text="Termos e Condições"/>
+                            android:text="Termos e Condições"
+                            android:fontFamily="@font/montserrat_light"
+                            android:background="@drawable/border_bottom"/>
                         <TextView
                             android:id="@+id/privacy_manifest"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            android:gravity="left"
+                            android:layout_marginTop="5dp"
                             android:paddingVertical="5dp"
-                            android:text="Política de Privacidade"/>
+                            android:text="Política de Privacidade"
+                            android:fontFamily="@font/montserrat_light"
+                            android:background="@drawable/border_bottom"/>
                     </LinearLayout>
 
                     <Button
@@ -162,28 +170,39 @@
 
                         android:paddingVertical="15dp"
                         android:text="INICIAR SESSÃO"
+                        android:fontFamily="@font/montserrat_light"
                         android:textColor="@color/colorWhite"
                         android:textSize="18dp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:layout_gravity="center"
                         android:paddingVertical="10dp">
                         <TextView
                             android:id="@+id/recover"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            android:gravity="right"
                             android:paddingVertical="5dp"
+                            android:paddingHorizontal="5dp"
+                            android:fontFamily="@font/montserrat_light"
                             android:text="Recuperar palavra passe"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="|"
+                            android:paddingVertical="5dp"
+                            android:fontFamily="@font/montserrat_light"/>
                         <TextView
                             android:id="@+id/register"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
+                            android:gravity="left"
                             android:paddingVertical="5dp"
+                            android:paddingHorizontal="5dp"
+                            android:fontFamily="@font/montserrat_light"
                             android:text="Fazer registo"/>
                     </LinearLayout>
 

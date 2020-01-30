@@ -72,6 +72,16 @@ public class LoginActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, "MYCASCAIS");
 
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         Button logon = findViewById(R.id.logon);
         TextView recover = findViewById(R.id.recover);
         TextView register = findViewById(R.id.register);
@@ -113,17 +123,42 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
 
 
-        frame.setOnClickListener(new View.OnClickListener() {
+        privacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(LoginActivity.this);
 
                 dialog.setContentView( R.layout.block_terms_condition_info);
                 TextView title = dialog.findViewById(R.id.terms_title);
+                title.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                title.setText(Settings.labels.PrivacyPolicy);
+
+                WebView about = dialog.findViewById(R.id.more_info_address);
+                about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+
+                dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+        terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(LoginActivity.this);
+
+                dialog.setContentView( R.layout.block_terms_condition_info);
+                TextView title = dialog.findViewById(R.id.terms_title);
+                title.setTextColor(Color.parseColor(Settings.colors.YearColor));
                 title.setText(Settings.labels.TermsAndConditions);
 
                 WebView about = dialog.findViewById(R.id.more_info_address);
-                about.loadData(CommonManager.WebViewFormatRegular(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+                about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
 
                 dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
                     @Override

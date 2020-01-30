@@ -13,7 +13,6 @@ public class Variables {
 
     public static final String Agenda = "agenda";
     public static final String Visit = "visit";
-    public static final String Routes = "routes";
     public static final String Search = "search";
     public static final String Calendar = "calendar";
     public static final String Maps = "maps";
@@ -36,4 +35,10 @@ public class Variables {
 
     public static String Lat = "lat";
     public static String Lng = "lng";
+
+    public static final String Events = "events";
+    public static final String Routes = "routes";
+    public static final String Places = "places";
+
+    public static String Description = "description";
 }

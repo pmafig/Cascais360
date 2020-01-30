@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -54,6 +56,8 @@ public class ListDetailActivity extends AppCompatActivity {
 
         new ListDetailManager(this, (androidx.appcompat.widget.Toolbar) findViewById(R.id.sorting_list), (LinearLayout) findViewById(R.id.main_content), (RelativeLayout) findViewById(R.id.loadingPanel)).execute(WebApiCalls.getCategory(id));
 
+        /*Toolbar sortBar = findViewById(R.id.sorting_list);
+        setSupportActionBar(sortBar);*/
     }
 
     @Override
@@ -74,5 +78,12 @@ public class ListDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_items, menu);
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 package nsop.neds.mycascais;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,12 +10,21 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import cz.msebera.android.httpclient.Header;
+import nsop.neds.mycascais.Authenticator.AccountGeneral;
+import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
+import nsop.neds.mycascais.WebApi.WebApiClient;
+import nsop.neds.mycascais.WebApi.WebApiMessages;
 
 public class NotificationsActivity extends AppCompatActivity {
 
@@ -31,6 +41,17 @@ public class NotificationsActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
+
+        LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
@@ -52,7 +73,7 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NotificationsActivity.this, NotificationsListActivity.class);
-                intent.putExtra(Variables.Type, "Events");
+                intent.putExtra(Variables.Type,  Variables.Events);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -62,7 +83,7 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NotificationsActivity.this, NotificationsListActivity.class);
-                intent.putExtra(Variables.Type, "Routes");
+                intent.putExtra(Variables.Type, Variables.Routes);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -72,14 +93,13 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(NotificationsActivity.this, NotificationsListActivity.class);
-                intent.putExtra(Variables.Type, "Places");
+                intent.putExtra(Variables.Type, Variables.Places);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
-        //TODO Validar se o utilizador está logado
-
+        //GetSubscriptions();
     }
 
 
@@ -89,4 +109,28 @@ public class NotificationsActivity extends AppCompatActivity {
         return parentIntent;
     }
 
+
+    private void GetSubscriptions(){
+
+        UserEntity user = AccountGeneral.getUser(this);
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"LangCode\":\"%s\"}",
+                user.getSsk(), user.getUserId(),  Settings.LangCode);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.GetSubscriptions), jsonRequest,true, new TextHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                String message = WebApiMessages.DecryptMessage(responseString);
+
+                String m = message;
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                String message = WebApiMessages.DecryptMessage(responseString);
+
+                String m = message;
+            }
+        });
+    }
 }

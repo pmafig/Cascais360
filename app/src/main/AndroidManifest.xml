@@ -89,6 +89,10 @@
             android:launchMode="standard"
             android:screenOrientation="portrait"/>
         <activity
+            android:name="nsop.neds.mycascais.NotificationsTownActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name="nsop.neds.mycascais.NotificationsListActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>

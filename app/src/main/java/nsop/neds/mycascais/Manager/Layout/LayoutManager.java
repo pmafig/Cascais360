@@ -737,6 +737,9 @@ public class LayoutManager {
             LinearLayout mainContent = ((Activity) context).findViewById(R.id.main_content);
             mainContent.removeAllViews();
 
+            boolean isLocalSort = false;
+            String localSort = "";
+
             List<InfoEventBlock> list =  Data.CurrentCategoryList;
 
             if(sort.contentEquals("Date")) {
@@ -766,6 +769,7 @@ public class LayoutManager {
                     }
                 });
             }else if(sort.contentEquals("Local")){
+                isLocalSort = true;
                 Collections.sort(list, new Comparator<InfoEventBlock>() {
                     @Override
                     public int compare(InfoEventBlock o1, InfoEventBlock o2) {
@@ -870,6 +874,17 @@ public class LayoutManager {
                     frameDate.setTextColor(Color.parseColor(Settings.colors.YearColor));
                     frameDate.setText(f.SubTitle.get(0).Text);
                 }
+
+                if(isLocalSort && !localSort.startsWith(f.Local)) {
+                    localSort = f.Local;
+
+                    View localTitleView = View.inflate(context, R.layout.block_category_title, null);
+                    TextView localTitle = localTitleView.findViewById(R.id.list_category_title);
+
+                    localTitle.setText(localSort);
+                    mainContent.addView(localTitleView);
+                }
+
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -1273,7 +1288,7 @@ public class LayoutManager {
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
 
-                    addess.loadData(CommonManager.WebViewFormatLight(point.Address, context.getResources().getDisplayMetrics()), CommonManager.MimeType(), CommonManager.Encoding());
+                    addess.loadData(CommonManager.WebViewFormatLight(point.Address), CommonManager.MimeType(), CommonManager.Encoding());
 
                     TextView town = (TextView) dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
@@ -1301,7 +1316,7 @@ public class LayoutManager {
 
             String _p = event.Price.Text.substring(event.Price.Text.indexOf("<p>"), event.Price.Text.indexOf("</p>")) + "</p>" ;
 
-            price.loadData(String.format(Settings.html, _p), "text/html; charset=utf-8", "UTF-8");
+            price.loadData(CommonManager.WebViewFormatLight(_p), CommonManager.MimeType(), CommonManager.Encoding());
 
             Button eventTicket = mainContent.findViewById(R.id.event_ticket);
             eventTicket.setVisibility(event.OnlineTicket != null ? View.VISIBLE : View.GONE );
@@ -1352,6 +1367,11 @@ public class LayoutManager {
 
         if(place.OfficeHours != null) {
             if(place.OfficeHours.StatusLabel != null) {
+                TextView dateLabel = mainContent.findViewById(R.id.date_label);
+                dateLabel.setText(Settings.labels.Schedule);
+                dateLabel.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                date_frame.setVisibility(View.VISIBLE);
+
                 TextView officeHoursLabel = mainContent.findViewById(R.id.label_office_hours_statuc);
                 officeHoursLabel.setText(place.OfficeHours.StatusLabel);
                 officeHoursLabel.setTextColor(context.getResources().getColor(R.color.colorWhite));
@@ -1365,7 +1385,7 @@ public class LayoutManager {
 
             if(place.OfficeHours.Text != null) {
                 WebView officeHours = mainContent.findViewById(R.id.place_date);
-                officeHours.loadData(String.format(Settings.html, place.OfficeHours.Text), "text/html; charset=utf-8", "UTF-8");
+                officeHours.loadData(CommonManager.WebViewFormatRegular(place.OfficeHours.Text), CommonManager.MimeType(), CommonManager.Encoding());
                 officeHours.setVisibility(View.VISIBLE);
             }
         }
@@ -1408,7 +1428,7 @@ public class LayoutManager {
                     ((TextView) dialog.findViewById(R.id.more_hours)).setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     WebView schedule = dialog.findViewById(R.id.more_hours_content);
-                    schedule.loadData(String.format(Settings.html, place.CustomHours), "text/html; charset=utf-8", "UTF-8");
+                    schedule.loadData(CommonManager.WebViewFormatRegular(place.CustomHours), CommonManager.MimeType(), CommonManager.Encoding());
 
                     dialog.show();
                 }
@@ -1483,7 +1503,7 @@ public class LayoutManager {
                     name.setText(point.Title);
 
                     WebView addess = dialog.findViewById(R.id.more_info_address);
-                    addess.loadData(CommonManager.WebViewFormatLight(point.Address, context.getResources().getDisplayMetrics()), CommonManager.MimeType(), CommonManager.Encoding());
+                    addess.loadData(CommonManager.WebViewFormatLight(point.Address), CommonManager.MimeType(), CommonManager.Encoding());
 
                     TextView town = dialog.findViewById(R.id.more_info_town);
                     town.setText(point.TownCouncil.Description);
@@ -1729,7 +1749,7 @@ public class LayoutManager {
             description_frame.setBackground(null);
 
             WebView description = mainContent.findViewById(R.id.event_description_info);
-            description.loadData(String.format(Settings.html, route.Description), "text/html; charset=utf-8", "UTF-8");
+            description.loadData(CommonManager.WebViewFormatLight(route.Description), CommonManager.MimeType(), CommonManager.Encoding());
             description_frame.setVisibility(View.VISIBLE);
         }
     }

@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import nsop.neds.mycascais.Entities.DashboardEntity;
+import nsop.neds.mycascais.Entities.Json.EventsCategories;
 import nsop.neds.mycascais.Entities.Json.InfoEventBlock;
 import nsop.neds.mycascais.Entities.Json.MapMarker;
+import nsop.neds.mycascais.Entities.Json.PlacesCategories;
+import nsop.neds.mycascais.Entities.Json.RoutesCategories;
 import nsop.neds.mycascais.Entities.Json.Search;
+import nsop.neds.mycascais.Entities.Json.TownCouncils;
 
 public class Data {
 
@@ -40,5 +44,11 @@ public class Data {
     public static List<InfoEventBlock> CurrentCategoryList;
 
     public static TextView CurrentCategorySortOption;
+
+    public static List<EventsCategories> NotificationsEventsCategories;
+    public static List<PlacesCategories> NotificationsPlacesCategories;
+    public static List<RoutesCategories> NotificationsRoutesCategories;
+
+    public static List<TownCouncils> Towns;
 
 }
