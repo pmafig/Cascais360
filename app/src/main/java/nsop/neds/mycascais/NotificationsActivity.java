@@ -1,5 +1,6 @@
 package nsop.neds.mycascais;
 
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +11,20 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Search;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
+import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.NotificationsManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
@@ -99,7 +106,8 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
-        GetSubscriptions();
+        UserEntity user = AccountGeneral.getUser(this);
+        new NotificationsManager(this, (LinearLayout) findViewById(R.id.notification_frame)).execute(WebApiCalls.getNotification(user.getSsk(), user.getUserId()));
     }
 
 
@@ -109,28 +117,4 @@ public class NotificationsActivity extends AppCompatActivity {
         return parentIntent;
     }
 
-
-    private void GetSubscriptions(){
-
-        UserEntity user = AccountGeneral.getUser(this);
-
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"LangCode\":\"%s\"}",
-                user.getSsk(), user.getUserId(),  Settings.LangCode);
-
-        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiClient.METHODS.GetSubscriptions), jsonRequest,true, new TextHttpResponseHandler(){
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                String message = WebApiMessages.DecryptMessage(responseString);
-
-                String m = message;
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                String message = WebApiMessages.DecryptMessage(responseString);
-
-                String m = message;
-            }
-        });
-    }
 }

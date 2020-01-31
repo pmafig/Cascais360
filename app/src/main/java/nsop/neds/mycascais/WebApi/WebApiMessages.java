@@ -12,7 +12,9 @@ public class WebApiMessages {
 
         if(message != null) {
 
-            m = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, message.replace('"', ' ').trim());
+            //m = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, message.replace('"', ' ').trim());
+
+            m = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, message);
 
             System.out.println(m);
         }

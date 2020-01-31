@@ -68,6 +68,11 @@ public class WebApiCalls {
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
+    public static String getNotification(String ssk, String userId){
+        String rt = new MessageEncryption().Encrypt("{\"ssk\":\"" + ssk + "\",\"userid\":\"" + userId + "\", \"LangCode\": \"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.GetSubscriptions + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
     public static String setNotification(String nid, String ssk, String userId){
         String rt = new MessageEncryption().Encrypt("{\"NID\":" + nid + ",\"ssk\":" + ssk + ",\"userid\":\"" + userId + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.setsubscription + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
