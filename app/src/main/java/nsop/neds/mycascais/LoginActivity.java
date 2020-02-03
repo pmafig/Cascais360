@@ -85,6 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         Button logon = findViewById(R.id.logon);
         TextView recover = findViewById(R.id.recover);
         TextView register = findViewById(R.id.register);
+        EditText accountNameField = findViewById(R.id.accountName);
+        EditText accountPasswordField = findViewById(R.id.accountPassword);
 
         LinearLayout frame = findViewById(R.id.terms_conditions_frame);
 
@@ -96,6 +98,10 @@ public class LoginActivity extends AppCompatActivity {
         logon.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
         recover.setTextColor(Color.parseColor(Settings.colors.YearColor));
         register.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
+        accountNameField.setHint(Settings.labels.Email);
+        accountPasswordField.setHint(Settings.labels.Password);
+        logon.setText(Settings.labels.LoginButton);
 
         logon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +183,9 @@ public class LoginActivity extends AppCompatActivity {
     private void submit(){
         EditText accountNameField = findViewById(R.id.accountName);
         EditText accountPasswordField = findViewById(R.id.accountPassword);
+
+
+
         String accountName = accountNameField.getText().toString();
         String accountPassword = accountPasswordField.getText().toString();
         login(accountName, accountPassword);
@@ -194,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
 
         SessionManager sm = new SessionManager(this);
 
-        String jsonRequest = String.format("{\"Email\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
+        String jsonRequest = String.format("{\"UserName\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
                 userName, encPass, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
 
         final ProgressDialog progressDialog = new ProgressDialog(this);

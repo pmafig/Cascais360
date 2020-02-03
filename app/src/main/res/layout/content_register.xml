@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_gravity="center_vertical"
     tools:context=".RegisterActivity">
 
     <androidx.core.widget.NestedScrollView
@@ -47,8 +48,11 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
 
+
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountPhone"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:cursorVisible="true"
@@ -64,6 +68,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountName"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:cursorVisible="true"
@@ -79,6 +84,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountPassword"
+                android:visibility="gone"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,6 +100,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountRePassword"
+                android:visibility="gone"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,6 +115,8 @@
                 android:background="@drawable/mycascais_edittext"/>
 
             <LinearLayout
+                android:id="@+id/regiter_password_requirements"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="15dp"
@@ -220,6 +229,7 @@
 
 
             <LinearLayout
+                android:id="@+id/accountPolicyPrivacy_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

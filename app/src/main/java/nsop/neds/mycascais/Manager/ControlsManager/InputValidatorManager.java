@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class InputValidatorManager {
 
-    public boolean isValidEmail(String string){
+    public static boolean isValidEmail(String string){
         return Patterns.EMAIL_ADDRESS.matcher(string).matches();
 
         /*final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -55,7 +55,7 @@ public class InputValidatorManager {
 
 
 
-    public boolean isNullOrEmpty(String string){
+    public static boolean isNullOrEmpty(String string){
         return TextUtils.isEmpty(string);
     }
 
@@ -63,7 +63,7 @@ public class InputValidatorManager {
         return TextUtils.isDigitsOnly(string);
     }
 
-    public boolean isValidPhone(String string){
+    public static boolean isValidPhone(String string){
 
         if(isNullOrEmpty(string)){
             return false;

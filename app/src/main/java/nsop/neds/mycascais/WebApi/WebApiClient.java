@@ -11,7 +11,7 @@ public class WebApiClient {
     public static final String SITE_KEY = "ae1b1452-947b-4f09-b77a-24c87f0efa6d";
     public static final String SITE_ID = "17";
 
-    public static String BASE_URL = "https://webapi.cascais.pt/api";
+    public static String BASE_URL = "https://webapiqua.cascais.pt/api";
 
     public enum API{
         cms,
@@ -24,7 +24,8 @@ public class WebApiClient {
         login,
         setsubscription,
         RefreshLoginUser,
-        CreateMobileTemporaryAuthentication,
+        CreateTemporaryLoginUser,
+        CreateLoginUser,
         UpdateMobilePhoneContact,
         ValidateMobilePhoneContact,
         ValidateMobileTemporaryLoginUser,

@@ -23,6 +23,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         if (SmsRetriever.SMS_RETRIEVED_ACTION.equals(intent.getAction())) {
             Bundle extras = intent.getExtras();
             Status status = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
+
             Intent verify = new Intent(context, ValidateSMSTokenActivity.class);
 
             switch(status.getStatusCode()) {

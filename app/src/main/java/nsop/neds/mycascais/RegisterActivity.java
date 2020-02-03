@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,18 +19,40 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.CreateLoginUserRequest;
+import nsop.neds.mycascais.Entities.Json.CreateTemporaryLoginUserRequest;
+import nsop.neds.mycascais.Entities.Json.CreateTemporaryLoginUserResponse;
+import nsop.neds.mycascais.Entities.Json.Node;
+import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.MenuManager;
-import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
+import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.ReportManager;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
@@ -61,10 +84,30 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean valid5;
     private boolean valid6;
 
+
+    EditText accountEmailField;
+    EditText accountNifField;
+    EditText accountPhoneField;
+    EditText accountNameField;
+    EditText accountPasswordField;
+    EditText accountRePasswordField;
+
+    CheckBox accountAgreementField;
+
+    //String accountEmail = accountEmailField.getText().toString();
+    //String accountNif = accountNifField.getText().toString();
+    //String accountPhone = accountPhoneField.getText().toString();
+    //String accountName = accountNameField.getText().toString();
+    //String accountPassword = accountPasswordField.getText().toString();
+    //String accountRePassword = accountRePasswordField.getText().toString();
+
+
     private Button registerButton;
 
     LinearLayout menuFragment;
     private DatePickerDialog.OnDateSetListener dateSetListener;
+
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +136,15 @@ public class RegisterActivity extends AppCompatActivity {
         rule5.setText(Settings.labels.PasswordRuleSpecial);
         rule6.setText(Settings.labels.PasswordMismatchMessage);
 
+        accountEmailField = findViewById(R.id.accountEmail);
+        accountNifField = findViewById(R.id.accountNif);
+        accountPhoneField = findViewById(R.id.accountPhone);
+        accountNameField = findViewById(R.id.accountName);
+        accountPasswordField = findViewById(R.id.accountPassword);
+        accountRePasswordField = findViewById(R.id.accountRePassword);
+
+        accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
+
         newPassword = findViewById(R.id.accountPassword);
         rePassword = findViewById(R.id.accountRePassword);
 
@@ -117,17 +169,54 @@ public class RegisterActivity extends AppCompatActivity {
         new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
 
         registerButton = findViewById(R.id.createAccount);
-        registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
-        //registerButton.setEnabled(false);
+        //registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
+        registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        registerButton.setEnabled(true);
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createAccount();
-            }
-        });
+        Bundle bundle = getIntent().getExtras();
+        Uri appLinkData = getIntent().getData();
 
-        //
+
+        if(bundle != null && bundle.containsKey(Variables.Token)) {
+            token = bundle.getString(Variables.Token);
+        }else if(appLinkData != null){
+            token = appLinkData.getQueryParameter("vt");
+        }
+
+        if(token != null){
+            validateAccountLayout();
+            registerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    validateAccount();
+                }
+            });
+        }else {
+            createAccountLayout();
+            registerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createAccount();
+                }
+            });
+        }
+    }
+
+    private void createAccountLayout(){
+        registerButton.setText(Settings.labels.Continue);
+    }
+
+    private void validateAccountLayout(){
+        registerButton.setText(Settings.labels.CreateAccount);
+
+        accountEmailField.setVisibility(View.GONE);
+        accountNifField.setVisibility(View.GONE);
+        accountAgreementField.setVisibility(View.GONE);
+
+
+        newPassword.setVisibility(View.VISIBLE);
+        rePassword.setVisibility(View.VISIBLE);
+
         newPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -201,41 +290,46 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void createAccount(){
-        EditText accountEmailField = findViewById(R.id.accountEmail);
+        EditText accountEmailPhoneField = findViewById(R.id.accountEmail);
         EditText accountNifField = findViewById(R.id.accountNif);
-        EditText accountPhoneField = findViewById(R.id.accountPhone);
-        EditText accountNameField = findViewById(R.id.accountName);
-        EditText accountPasswordField = findViewById(R.id.accountPassword);
-        EditText accountRePasswordField = findViewById(R.id.accountRePassword);
 
         CheckBox accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
 
-        String accountEmail = accountEmailField.getText().toString();
+        String accountEmail = "";
+        String accountPhoneNumber = "";
+
+        String userData = accountEmailPhoneField.getText().toString();
+
+        if(InputValidatorManager.isValidEmail(userData)){
+            accountEmail = userData;
+        }else if (InputValidatorManager.isValidPhone(userData)){
+            accountPhoneNumber = userData;
+        }
+
         String accountNif = accountNifField.getText().toString();
-        String accountPhone = accountPhoneField.getText().toString();
-        String accountName = accountNameField.getText().toString();
-        String accountPassword = accountPasswordField.getText().toString();
-        String accountRePassword = accountRePasswordField.getText().toString();
+
+        //TODO 3 party info business
+        String accountVatin = "";//accountNifField.getText().toString();
 
         Boolean agreement = accountAgreementField.isChecked();
 
         AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
-        alertMessage.setTitle("Criar Conta");
+        alertMessage.setTitle(Settings.labels.CreateAccount);
 
-        if(PasswordValidation(accountPassword, accountRePassword)){
-            if(DataValidation(accountEmail, accountNif, accountPhone, accountName)){
-                if(agreement){
-                    CreateUser(accountEmail, accountNif, accountPhone, accountName, accountPassword, accountRePassword, "1", "+351");
-                }else{
-                    alertMessage.setMessage("Para criar a conta necessita concordar com as condições.").show();
-                }
-            }
-            else{
-                alertMessage.setMessage("Dados inválidos.").show();
-            }
+        if(agreement){
+            CreateUser(accountEmail, accountPhoneNumber, "+351", accountNif, accountVatin, 1, Settings.LangCode.equals("pt") ? 1 : 2);
         }else{
-            alertMessage.setMessage("Password inválida.").show();
+            alertMessage.setMessage("Para criar a conta necessita concordar com as condições.").show();
         }
+    }
+
+    private void validateAccount(){
+
+        String accountName = accountNameField.getText().toString();
+        String accountPassword = accountPasswordField.getText().toString();
+        String accountRePassword = accountRePasswordField.getText().toString();
+
+        ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
     }
 
     private boolean DataValidation(String accountEmail, String accountNif, String accountPhone, String accountName){
@@ -309,19 +403,72 @@ public class RegisterActivity extends AppCompatActivity {
                 || !accountPassword.equals(accountRePassword));
     }
 
-    private void CreateUser(String userEmail, String userNif, final String userPhone, String userName, String password, String confPassword, String countryId, String countryCode){
-
-        String jsonRequest = String.format("{\"Email\":\"%s\", \"Nif\":\"%s\", \"PhoneNumber\":\"%s\", \"FullName\":\"%s\", \"Password\":\"%s\", \"ConfirmPassword\":\"%s\", \"CountryID\":\"%s\", \"CountryCode\":\"%s\"}",
-                userEmail, userNif, userPhone, userName, new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY),
-                new MessageEncryption().Encrypt(confPassword, WebApiClient.SITE_KEY), countryId, countryCode);
+    private void CreateUser(String userEmail, String userPhone, String countryCode, String userNif, String userVatin,  int countryId, int languageId){
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-
-        progressDialog.setMessage("A criar utilizador...");
-
+        //TODO Change label source
+        progressDialog.setMessage("Validando dados...");
         progressDialog.show();
 
-        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateMobileTemporaryAuthentication), jsonRequest, true,  new TextHttpResponseHandler(){
+        CreateTemporaryLoginUserRequest request = new CreateTemporaryLoginUserRequest();
+
+        if(userEmail != null && !userEmail.isEmpty()) {
+            request.Email = userEmail;
+        }
+
+        if(userPhone != null && !userPhone.isEmpty()) {
+            request.PhoneNumber = userPhone;
+        }
+
+        if(countryCode != null && !countryCode.isEmpty()) {
+            request.CountryCode = countryCode;
+        }
+
+        if(userNif != null && !userNif.isEmpty()) {
+            request.Nif = Integer.valueOf(userNif);
+        }
+
+        if(userVatin != null && !userVatin.isEmpty()) {
+            request.Vatin = userVatin;
+        }
+
+        if(countryId > 0) {
+            request.CountryID = 1;
+        }
+
+        if(languageId > 0) {
+            request.LanguageID = languageId;
+        }
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateTemporaryLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                progressDialog.dismiss();
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String response) {
+                progressDialog.dismiss();
+                createUserResponse(response);
+            }
+        });
+    }
+
+    private void ValidateUser(String userName, String password, String confPassword, int languageId){
+
+        CreateLoginUserRequest request = new CreateLoginUserRequest();
+        request.FullName = userName;
+        request.Password = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
+        request.ConfirmPassword = new MessageEncryption().Encrypt(confPassword, WebApiClient.SITE_KEY);
+        request.Token = token;
+        request.LanguageID = languageId;
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("A criar utilizador...");
+        progressDialog.show();
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
@@ -330,30 +477,92 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
                 progressDialog.dismiss();
-                postSuccess(response);
+                validateUserResponse(response);
             }
         });
     }
 
-    private void postSuccess(String response){
+    private void createUserResponse(String response) {
+        final String message = WebApiMessages.DecryptMessage(response);
+
+        final AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
+        alertMessage.setTitle(Settings.labels.CreateAccount);
+
+        JSONObject responseMessage = null;
+
+        try {
+            responseMessage = new JSONObject(message);
+
+            CreateTemporaryLoginUserResponse responseData = null;
+
+            if (responseMessage.has("ResponseData")) {
+                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), CreateTemporaryLoginUserResponse.class);
+            }
+
+            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {
+            }.getType();
+
+
+            if (responseMessage.has("ReportList")) {
+                List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
+
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; i < reportList.size(); i++) {
+                    sb.append(reportList.get(i).Description);
+                    if (i + 1 < reportList.size()) {
+                        sb.append("\n");
+                    }
+                }
+
+                alertMessage.setMessage(sb.toString());
+                alertMessage.show();
+            }
+
+
+            //TODO change operationsucces to true case re entry same data
+            if (responseData != null ) { //&& responseData.OperationSucess
+
+                if (responseData.EmailSent) {
+                    alertMessage.setMessage("Foi enviado um email para a sua conta.");<#
+                    alertMessage.show();
+                } else if (responseData.SMSSent) {
+                    SmsRetrieverClient client = SmsRetriever.getClient(this);
+                    Task<Void> task = client.startSmsRetriever();
+                    Data.SmsValidationContext = Data.ValidationContext.newAccount;
+                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            alertMessage.setMessage("Foi enviada uma mensagem para a seu telemóvel.");
+                            alertMessage.show();
+                        }
+                    });
+
+                    task.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            alertMessage.setMessage("Ocorreu um problema com o pedido, por favor, tente novamente!");
+                            alertMessage.show();
+                        }
+                    });
+                }
+
+            }
+        } catch (JSONException ex) {
+
+        }
+
+    }
+
+    private void validateUserResponse(String response){
         String message = WebApiMessages.DecryptMessage(response);
 
-        if(ReportManager.operationSuccess(message)){
-            Intent intent = new Intent(RegisterActivity.this, EmailSentActivity.class);
-            EditText accountEmailField = findViewById(R.id.accountEmail);
-            EditText accountMobileNumberField = findViewById(R.id.accountPhone);
-            intent.putExtra(Variables.Email, accountEmailField.getText());
+        CreateTemporaryLoginUserResponse responseData = new Gson().fromJson(message, CreateTemporaryLoginUserResponse.class);
 
-            SessionManager sm = new SessionManager(this);
-            sm.setNewAccount();
-            sm.setMobileNumber(accountMobileNumberField.getText().toString());
-
-            startActivity(intent);
+        if(responseData.OperationSucess){
+            validateAccountLayout();
         }else{
-            /*Intent intent = new Intent(this, NoServiceActivity.class);
-            String errorList = ReportManager.getErrorReportList(message);
-            intent.putExtra("errorMessage", errorList);
-            startActivity(intent);*/
+
         }
     }
 

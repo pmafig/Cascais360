@@ -41,4 +41,5 @@ public class Variables {
     public static final String Places = "places";
 
     public static String Description = "description";
+    public static String Token = "token";
 }

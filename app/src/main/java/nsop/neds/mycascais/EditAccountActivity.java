@@ -232,7 +232,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 || !accountPassword.equals(accountRePassword));
     }
 
-    private void CreateUser(String userEmail, String userNif, final String userPhone, String userName, String password, String confPassword, String countryId, String countryCode){
+    /*private void CreateUser(String userEmail, String userNif, final String userPhone, String userName, String password, String confPassword, String countryId, String countryCode){
 
         String jsonRequest = String.format("{\"Email\":\"%s\", \"Nif\":\"%s\", \"PhoneNumber\":\"%s\", \"FullName\":\"%s\", \"Password\":\"%s\", \"ConfirmPassword\":\"%s\", \"CountryID\":\"%s\", \"CountryCode\":\"%s\"}",
                 userEmail, userNif, userPhone, userName, new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY),
@@ -256,7 +256,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 postSuccess(response);
             }
         });
-    }
+    }*/
 
     private void postSuccess(String response){
         String message = WebApiMessages.DecryptMessage(response);
