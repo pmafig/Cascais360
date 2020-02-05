@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -1752,5 +1753,19 @@ public class LayoutManager {
             description.loadData(CommonManager.WebViewFormatLight(route.Description), CommonManager.MimeType(), CommonManager.Encoding());
             description_frame.setVisibility(View.VISIBLE);
         }
+    }
+
+    public static void alertMessage(Context context, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(Settings.labels.AlertMessage);
+        builder.setMessage(message);
+        builder.show();
+    }
+
+    public static void alertMessage(Context context, String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.show();
     }
 }

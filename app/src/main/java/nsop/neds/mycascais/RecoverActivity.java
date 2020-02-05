@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,14 +20,24 @@ import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import nsop.neds.mycascais.Entities.Json.ReportList;
+import nsop.neds.mycascais.Entities.WebApi.CreateTemporaryLoginUserResponse;
+import nsop.neds.mycascais.Entities.WebApi.ResetLoginRequest;
+import nsop.neds.mycascais.Entities.WebApi.ResetLoginResponse;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
+import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Data;
@@ -39,7 +50,7 @@ import nsop.neds.mycascais.WebApi.WebApiMethods;
 
 public class RecoverActivity extends AppCompatActivity {
 
-    private EditText recoverEmail;
+    private EditText recover;
 
     private Button recoverButton;
 
@@ -50,7 +61,8 @@ public class RecoverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recover);
 
-        recoverEmail = findViewById(R.id.recoverEmail);
+        recover = findViewById(R.id.recoverEmail);
+        recover.setHint(Settings.labels.Username);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
@@ -78,43 +90,42 @@ public class RecoverActivity extends AppCompatActivity {
         recoverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recoverAccount(recoverEmail.getText().toString());
+                recoverAccount(recover.getText().toString(), Settings.LangCode.equals("pt") ? 1 : 2);
             }
         });
 
     }
 
-    private void recoverAccount(final String email){
+    private void recoverAccount(final String userName, int languageID){
+        if(!userName.isEmpty()){
 
-        String jsonRequest = String.format("{\"Email\":\"%s\"}", email);
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Processando...");
 
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+            ResetLoginRequest request = new ResetLoginRequest();
+            request.UserName = userName;
+            request.LanguageID = languageID;
 
-        progressDialog.setMessage("Processando...");
-
-        if(inputValidation(email)){
             progressDialog.show();
-            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiMethods.RECOVERACCOUNT), jsonRequest, true, new TextHttpResponseHandler(){
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ResetLoginUser), new Gson().toJson(request), true, new TextHttpResponseHandler(){
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                     progressDialog.dismiss();
-                    try {
-                        postFailure(response);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(RecoverActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String response) {
                     progressDialog.dismiss();
                     try {
-                        postSuccess(response, email);
+                        postSuccess(response, userName);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             });
+        }else{
+            LayoutManager.alertMessage(this, Settings.labels.ForgotPassword, Settings.labels.LoginSubtitle);
         }
     }
 
@@ -139,82 +150,71 @@ public class RecoverActivity extends AppCompatActivity {
         return validAutentication;
     }
 
-    private void postSuccess(String response, final String email) throws JSONException {
+    private void postSuccess(String response, final String userName) throws JSONException {
         final String message = WebApiMessages.DecryptMessage(response);
 
-        if(ReportManager.success(message)){
-            if(ReportManager.smsSent(message)){
-                if(ReportManager.mobileApp(message)){
-                    SmsRetrieverClient client = SmsRetriever.getClient(this);
-                    Task<Void> task = client.startSmsRetriever();
-                    Data.SmsValidationContext = Data.ValidationContext.recoverAccount;
+        JSONObject responseMessage = null;
 
-                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Intent intent = new Intent(RecoverActivity.this, ValidateSMSTokenActivity.class);
-                            try {
-                                intent.putExtra("phoneNumber", ReportManager.getAppContact(message));
-                                intent.putExtra("email", email);
-                                startActivity(intent);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+        try {
+            responseMessage = new JSONObject(message);
 
-                    task.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            String test = "ok";
-                        }
-                    });
-                }
-            }else if(ReportManager.asContacts(message)){
-                //SEND USER TO SET PHONE APP FROM LIST
-                //Intent intent = new Intent(RecoverActivity.this, ShowContactsActivity.class);
+            ResetLoginResponse responseData = null;
 
-                ArrayList<String> phones =  new ArrayList<>();
-
-                phones = ReportManager.getPhoneContacts(message);
-
-                //intent.putStringArrayListExtra("MobilePhones", phones);
-                //intent.putExtra("Email", email);
-
-                //startActivity(intent);
-            }else{ //Informar que irá enviar email para recuperação
-                //Intent intent = new Intent(RecoverActivity.this, RecoverMessageActivity.class);
-                //intent.putExtra("message", ReportManager.getSuccessReportList(message));
-                //intent.putExtra("email", email);
-                //startActivity(intent);
+            if (responseMessage.has("ResponseData")) {
+                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), ResetLoginResponse.class);
             }
 
+            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
 
+            if (responseMessage.has("ReportList")) {
+                List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
 
+                StringBuilder sb = new StringBuilder();
 
-            /*String appNumber = ReportManager.getAppContacts(message);
-
-
-            if(appNumber != null){
-
-            }else {
-                String[] numbers = ReportManager.getPhonesContacts(message);
-
-                if(numbers.length > 0){
-
-                }else{
-
+                for (int i = 0; i < reportList.size(); i++) {
+                    sb.append(reportList.get(i).Description);
+                    if (i + 1 < reportList.size()) {
+                        sb.append("\n");
+                    }
                 }
-            }*/
 
-            //startActivity(new Intent(RecoverActivity.this, NewAccountEmailValidationActivity.class));
+                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+            }
 
-        }else{
-            //Intent intent = new Intent(this, ErrorActivity.class);
-            //String errorList = ReportManager.getErrorReportList(message);
-            //intent.putExtra("errorMessage", errorList);
-            //startActivity(intent);
+            if (responseData != null ) { //&& responseData.OperationSucess
+                if(responseData.IsReset || responseData.Email || responseData.SMS) {
+                    Data.CurrentAccountName = userName;
+                    if (responseData.Email) {
+                        Data.RecoverByEmail = true;
+                    } else if (responseData.SMS) {
+                        Data.RecoverBySms = true;
+
+                        SmsRetrieverClient client = SmsRetriever.getClient(this);
+                        Task<Void> task = client.startSmsRetriever();
+
+                        Data.SmsValidationContext = Data.ValidationContext.newAccount;
+                        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                //alertMessage.setMessage("Foi enviada uma mensagem para a seu telemóvel.");
+                                //alertMessage.show();
+                            }
+                        });
+
+                        task.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                //alertMessage.setMessage("Ocorreu um problema com o pedido, por favor, tente novamente!");
+                                // alertMessage.show();
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (JSONException ex) {
+
         }
+
     }
 
     private void postFailure(String response) throws JSONException {

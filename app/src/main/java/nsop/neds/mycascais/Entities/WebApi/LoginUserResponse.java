@@ -1,6 +1,6 @@
-package nsop.neds.mycascais.Entities.Json;
+package nsop.neds.mycascais.Entities.WebApi;
 
-public class CreateLoginUserResponse {
+public class LoginUserResponse {
     public boolean IsCreated;
     public String Email;
     public String PhoneNumber;

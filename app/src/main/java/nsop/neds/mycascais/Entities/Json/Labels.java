@@ -1,5 +1,7 @@
 package nsop.neds.mycascais.Entities.Json;
 
+import android.content.Context;
+
 public class Labels {
     public String AboutApp;
     public String Agenda;
@@ -108,4 +110,7 @@ public class Labels {
     public String ChangePasswordError = "Erro ao alterar palavra passe.";
     public String AlertMessage = "Alerta";
     public String ContactChanged = "Novo contacto atualizado com sucesso.";
+    public String TryAgain;
+    public String TermsAgree = "Para criar a conta necessita concordar com as condições.";
+    public String Username;
 }

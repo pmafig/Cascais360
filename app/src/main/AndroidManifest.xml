@@ -124,7 +124,11 @@
 
                 <data
                     android:host="myqua.cascais.pt"
-                    android:pathPattern="/Account/PreLogin"
+                    android:pathPattern="/Account/Register"
+                    android:scheme="https" />
+                <data
+                    android:host="myqua.cascais.pt"
+                    android:pathPattern="/Account/PasswordRecoveryVerification"
                     android:scheme="https" />
             </intent-filter>
         </activity>

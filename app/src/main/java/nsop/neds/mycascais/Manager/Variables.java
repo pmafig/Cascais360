@@ -42,4 +42,7 @@ public class Variables {
 
     public static String Description = "description";
     public static String Token = "token";
+
+    public static String RecoverPassword = "recoverPassword";
+    public static String Autologin = "autologin";
 }

@@ -69,7 +69,7 @@
                 android:hint="@string/mycascais_email"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="10dp"
-                android:drawableLeft="@drawable/ic_at"
+                android:drawableLeft="@drawable/ic_user"
                 android:drawablePadding="11dp"
                 android:imeOptions="actionNext"
                 android:inputType="text"

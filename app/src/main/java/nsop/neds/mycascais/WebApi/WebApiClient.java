@@ -30,7 +30,9 @@ public class WebApiClient {
         ValidateMobilePhoneContact,
         ValidateMobileTemporaryLoginUser,
         ValidateSmsToken,
-        GetSubscriptions
+        ResetLoginUser,
+        GetSubscriptions,
+        ValidateResetLoginUser
     }
 
     private static final String USERAGENT = Build.VERSION.RELEASE;

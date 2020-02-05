@@ -51,4 +51,9 @@ public class Data {
 
     public static List<TownCouncils> Towns;
 
+    public static String CurrentAccountName;
+
+    public static Boolean RecoverByEmail;
+
+    public static Boolean RecoverBySms;
 }

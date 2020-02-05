@@ -168,8 +168,8 @@
                             android:paddingHorizontal="10dp"
                             android:hint=""
                             android:drawablePadding="11dp"
-                            android:imeOptions="actionNext"
-                            android:inputType="number"
+                            android:imeOptions="actionDone"
+                            android:inputType="phone"
                             android:enabled="false"/>
                     </LinearLayout>
 

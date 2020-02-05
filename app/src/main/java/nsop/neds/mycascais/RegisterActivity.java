@@ -1,5 +1,7 @@
 package nsop.neds.mycascais;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +32,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -42,14 +43,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
-import nsop.neds.mycascais.Entities.Json.CreateLoginUserRequest;
-import nsop.neds.mycascais.Entities.Json.CreateTemporaryLoginUserRequest;
-import nsop.neds.mycascais.Entities.Json.CreateTemporaryLoginUserResponse;
-import nsop.neds.mycascais.Entities.Json.Node;
+import nsop.neds.mycascais.Entities.Json.Response;
+import nsop.neds.mycascais.Entities.Json.ResponseData;
+import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserResponse;
+import nsop.neds.mycascais.Entities.WebApi.CreateTemporaryLoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.CreateTemporaryLoginUserResponse;
 import nsop.neds.mycascais.Entities.Json.ReportList;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.ResetLoginRequest;
+import nsop.neds.mycascais.Entities.WebApi.ValidateResetLoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.ValidateResetLoginUserResponse;
+import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
+import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Data;
@@ -58,6 +69,9 @@ import nsop.neds.mycascais.WebApi.ReportManager;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
 import nsop.neds.mycascais.WebApi.WebApiClient;
 import nsop.neds.mycascais.WebApi.WebApiMessages;
+
+import static android.accounts.AccountManager.KEY_ERROR_MESSAGE;
+import static nsop.neds.mycascais.Authenticator.AccountGeneral.sServerAuthenticate;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -84,6 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean valid5;
     private boolean valid6;
 
+    EditText accountToken;
 
     EditText accountEmailField;
     EditText accountNifField;
@@ -94,13 +109,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     CheckBox accountAgreementField;
 
-    //String accountEmail = accountEmailField.getText().toString();
-    //String accountNif = accountNifField.getText().toString();
-    //String accountPhone = accountPhoneField.getText().toString();
-    //String accountName = accountNameField.getText().toString();
-    //String accountPassword = accountPasswordField.getText().toString();
-    //String accountRePassword = accountRePasswordField.getText().toString();
-
+    LinearLayout accountPolicyPrivacy;
+    LinearLayout accountRequirements;
 
     private Button registerButton;
 
@@ -108,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
     private String token;
+    private Boolean recover;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,13 +139,14 @@ public class RegisterActivity extends AppCompatActivity {
         TextView rule5 = findViewById(R.id.rule_5);
         TextView rule6 = findViewById(R.id.rule_6);
 
-
         rule1.setText(Settings.labels.PasswordRuleLength);
         rule2.setText(Settings.labels.PasswordRuleUppercase);
         rule3.setText(Settings.labels.PasswordRuleLowercase);
         rule4.setText(Settings.labels.PasswordRuleNumber);
         rule5.setText(Settings.labels.PasswordRuleSpecial);
         rule6.setText(Settings.labels.PasswordMismatchMessage);
+
+        //accountToken = findViewById(R.id.accountToken);
 
         accountEmailField = findViewById(R.id.accountEmail);
         accountNifField = findViewById(R.id.accountNif);
@@ -144,9 +156,12 @@ public class RegisterActivity extends AppCompatActivity {
         accountRePasswordField = findViewById(R.id.accountRePassword);
 
         accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
+        accountPolicyPrivacy = findViewById(R.id.accountPolicyPrivacy_frame);
 
         newPassword = findViewById(R.id.accountPassword);
         rePassword = findViewById(R.id.accountRePassword);
+
+        accountRequirements = findViewById(R.id.regiter_password_requirements);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
@@ -176,11 +191,16 @@ public class RegisterActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         Uri appLinkData = getIntent().getData();
 
+        recover = (Data.RecoverByEmail != null && Data.RecoverByEmail)  || (Data.RecoverBySms != null && Data.RecoverBySms);
 
         if(bundle != null && bundle.containsKey(Variables.Token)) {
             token = bundle.getString(Variables.Token);
         }else if(appLinkData != null){
             token = appLinkData.getQueryParameter("vt");
+        }
+
+        if(bundle != null && bundle.containsKey(Variables.RecoverPassword)) {
+            recover = bundle.getBoolean(Variables.RecoverPassword);
         }
 
         if(token != null){
@@ -203,7 +223,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void createAccountLayout(){
+        accountEmailField.setHint(Settings.labels.Username);
         registerButton.setText(Settings.labels.Continue);
+
     }
 
     private void validateAccountLayout(){
@@ -212,8 +234,10 @@ public class RegisterActivity extends AppCompatActivity {
         accountEmailField.setVisibility(View.GONE);
         accountNifField.setVisibility(View.GONE);
         accountAgreementField.setVisibility(View.GONE);
+        accountPolicyPrivacy.setVisibility(View.GONE);
 
-
+        accountRequirements.setVisibility(View.VISIBLE);
+        accountNameField.setVisibility(recover ? View.GONE : View.VISIBLE);
         newPassword.setVisibility(View.VISIBLE);
         rePassword.setVisibility(View.VISIBLE);
 
@@ -266,7 +290,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-
         rePassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -311,25 +334,23 @@ public class RegisterActivity extends AppCompatActivity {
         //TODO 3 party info business
         String accountVatin = "";//accountNifField.getText().toString();
 
-        Boolean agreement = accountAgreementField.isChecked();
-
-        AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
-        alertMessage.setTitle(Settings.labels.CreateAccount);
-
-        if(agreement){
+        if(accountAgreementField.isChecked()){
             CreateUser(accountEmail, accountPhoneNumber, "+351", accountNif, accountVatin, 1, Settings.LangCode.equals("pt") ? 1 : 2);
         }else{
-            alertMessage.setMessage("Para criar a conta necessita concordar com as condições.").show();
+            LayoutManager.alertMessage(this, Settings.labels.TermsAgree);
         }
     }
 
     private void validateAccount(){
-
         String accountName = accountNameField.getText().toString();
         String accountPassword = accountPasswordField.getText().toString();
         String accountRePassword = accountRePasswordField.getText().toString();
 
-        ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
+        if(recover != null && recover){
+            ValidateResetLoginUser(Data.CurrentAccountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
+        }else {
+            ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
+        }
     }
 
     private boolean DataValidation(String accountEmail, String accountNif, String accountPhone, String accountName){
@@ -414,6 +435,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(userEmail != null && !userEmail.isEmpty()) {
             request.Email = userEmail;
+            Data.CurrentAccountName = userEmail;
         }
 
         if(userPhone != null && !userPhone.isEmpty()) {
@@ -444,7 +466,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
-
+                Toast.makeText(RegisterActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -472,6 +494,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
+                Toast.makeText(RegisterActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -482,11 +505,36 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void ValidateResetLoginUser(String userName, String password, String confPassword, int languageId){
+
+        ValidateResetLoginUserRequest request = new ValidateResetLoginUserRequest();
+        request.UserName = userName;
+        request.Password = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
+        request.ConfirmPassword = new MessageEncryption().Encrypt(confPassword, WebApiClient.SITE_KEY);
+        request.Token = token;
+        request.LanguageID = languageId;
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("A recuperar utilizador...");
+        progressDialog.show();
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ValidateResetLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                progressDialog.dismiss();
+                Toast.makeText(RegisterActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String response) {
+                progressDialog.dismiss();
+                validateResetLoginResponse(response);
+            }
+        });
+    }
+
     private void createUserResponse(String response) {
         final String message = WebApiMessages.DecryptMessage(response);
-
-        final AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
-        alertMessage.setTitle(Settings.labels.CreateAccount);
 
         JSONObject responseMessage = null;
 
@@ -499,9 +547,7 @@ public class RegisterActivity extends AppCompatActivity {
                 responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), CreateTemporaryLoginUserResponse.class);
             }
 
-            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {
-            }.getType();
-
+            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
 
             if (responseMessage.has("ReportList")) {
                 List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
@@ -515,36 +561,43 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
 
-                alertMessage.setMessage(sb.toString());
-                alertMessage.show();
+                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
             }
 
 
             //TODO change operationsucces to true case re entry same data
             if (responseData != null ) { //&& responseData.OperationSucess
 
+                if(responseData.OperationSucess){
+
+                }
+
                 if (responseData.EmailSent) {
-                    alertMessage.setMessage("Foi enviado um email para a sua conta.");<#
-                    alertMessage.show();
+
                 } else if (responseData.SMSSent) {
+
                     SmsRetrieverClient client = SmsRetriever.getClient(this);
                     Task<Void> task = client.startSmsRetriever();
+
                     Data.SmsValidationContext = Data.ValidationContext.newAccount;
                     task.addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            alertMessage.setMessage("Foi enviada uma mensagem para a seu telemóvel.");
-                            alertMessage.show();
+                            //alertMessage.setMessage("Foi enviada uma mensagem para a seu telemóvel.");
+                            //alertMessage.show();
                         }
                     });
 
                     task.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            alertMessage.setMessage("Ocorreu um problema com o pedido, por favor, tente novamente!");
-                            alertMessage.show();
+                            //alertMessage.setMessage("Ocorreu um problema com o pedido, por favor, tente novamente!");
+                           // alertMessage.show();
                         }
                     });
+
+                    Intent verify = new Intent(RegisterActivity.this, ValidateSMSTokenActivity.class);
+                    startActivity(verify);
                 }
 
             }
@@ -557,12 +610,98 @@ public class RegisterActivity extends AppCompatActivity {
     private void validateUserResponse(String response){
         String message = WebApiMessages.DecryptMessage(response);
 
-        CreateTemporaryLoginUserResponse responseData = new Gson().fromJson(message, CreateTemporaryLoginUserResponse.class);
+        JSONObject responseMessage = null;
+        try {
+            responseMessage = new JSONObject(message);
+        }catch (JSONException ex){
+            Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+        }
 
-        if(responseData.OperationSucess){
-            validateAccountLayout();
-        }else{
+        CreateLoginUserResponse responseData = null;
 
+        if(responseMessage.has("ResponseData")) {
+            try {
+                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), CreateLoginUserResponse.class);
+            }catch (JSONException ex){
+                //TODO add error message
+            }
+        }
+
+        if(responseData != null && responseData.IsCreated){
+            String username = Data.CurrentAccountName;
+            String password = accountPasswordField.getText().toString();
+            autoLogin(username, password);
+        }else {
+            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {
+            }.getType();
+
+
+
+            if (responseMessage.has("ReportList")) {
+                try {
+                    List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
+
+
+                    StringBuilder sb = new StringBuilder();
+
+                    for (int i = 0; i < reportList.size(); i++) {
+                        sb.append(reportList.get(i).Description);
+                        if (i + 1 < reportList.size()) {
+                            sb.append("\n");
+                        }
+                    }
+
+                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                }catch (JSONException ex){}
+            }
+        }
+    }
+
+    private void validateResetLoginResponse(String response){
+        String message = WebApiMessages.DecryptMessage(response);
+
+        JSONObject responseMessage = null;
+        try {
+            responseMessage = new JSONObject(message);
+        }catch (JSONException ex){
+            Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+        }
+
+        ValidateResetLoginUserResponse responseData = null;
+
+        if(responseMessage.has("ResponseData")) {
+            try {
+                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), ValidateResetLoginUserResponse.class);
+            }catch (JSONException ex){
+                //TODO add error message
+            }
+        }
+
+        if(responseData != null && responseData.PasswordChanged){
+            String username = Data.CurrentAccountName;
+            String password = accountPasswordField.getText().toString();
+            autoLogin(username, password);
+        }else {
+            Type ReportListType = new TypeToken<ArrayList<ReportList>>() {
+            }.getType();
+
+            if (responseMessage.has("ReportList")) {
+                try {
+                    List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
+
+
+                    StringBuilder sb = new StringBuilder();
+
+                    for (int i = 0; i < reportList.size(); i++) {
+                        sb.append(reportList.get(i).Description);
+                        if (i + 1 < reportList.size()) {
+                            sb.append("\n");
+                        }
+                    }
+
+                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                }catch (JSONException ex){}
+            }
         }
     }
 
@@ -582,5 +721,145 @@ public class RegisterActivity extends AppCompatActivity {
             registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
             registerButton.setEnabled(false);
         }
+    }
+
+    private void autoLogin(String userName, String password){
+        String encPass = "";
+
+        SessionManager sm = new SessionManager(this);
+
+        LoginUserRequest request = new LoginUserRequest();
+        request.UserName = userName;
+        request.Password = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
+        request.FirebaseToken = sm.getFirebaseToken();
+        request.AppType = 2;
+        request.LanguageID = sm.getLangCodePosition() + 1;
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.login), new Gson().toJson(request),true, new TextHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                String message = WebApiMessages.DecryptMessage(responseString);
+                Toast.makeText(RegisterActivity.this, "Conta criada com sucesso.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                String message = WebApiMessages.DecryptMessage(responseString);
+                postSuccess(message);
+            }
+        });
+    }
+
+    private void postSuccess(String json){
+        Response data = new Gson().fromJson(json, Response.class);
+
+        if(data.ReportList != null && data.ReportList.size() > 0){
+            LayoutManager.alertMessage(this, Settings.labels.CreateAccount, data.ReportList.get(0).Description);
+        }else {
+            if (data.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
+                try {
+                    SessionManager sm = new SessionManager(this);
+
+                    menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
+                    menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
+                    TextView name = menuFragment.findViewById(R.id.user_name);
+                    name.setText(data.ResponseData.DisplayName);
+
+                    sm.setDisplayname(data.ResponseData.DisplayName);
+                    sm.setFullName(ReportManager.getFullName(json));
+                    sm.setEmail(ReportManager.getEmail(json));
+
+                    if (data.ResponseData.PhoneContacts != null && data.ResponseData.PhoneContacts.size() > 0) {
+                        sm.setMobileNumber(data.ResponseData.PhoneContacts.get(0).Number);
+                    }
+
+                    sm.setAddress(ReportManager.getAddress(json));
+
+                    submit(data.ResponseData.SSK, data.ResponseData.UserID, data.ResponseData.RefreshToken);
+                } catch (Exception e) {
+                    AccountGeneral.logout(this);
+
+                    Intent i = new Intent(this, MainActivity.class);
+                    i.putExtra(Variables.Autologin, true);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+
+                    //TODO toast message
+                    Toast.makeText(this, Settings.labels.LoginSubtitle, Toast.LENGTH_SHORT).show();
+                }
+            } 
+        }
+    }
+
+    public final static String PARAM_USER_PASS = "USER_PASS";
+
+    private AccountManager mAccountManager;
+    private String mAuthTokenType;
+
+    public void submit(String ssk, String userId, String refreshToken) {
+        final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
+        final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
+
+        final String accountType = AccountGeneral.ACCOUNT_TYPE;
+
+        String authtoken = null;
+        Bundle data = new Bundle();
+
+        try {
+            authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
+
+            data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+            data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+            data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
+            data.putString(PARAM_USER_PASS, userPass);
+            data.putString("SSK", ssk);
+            data.putString("UserId", userId);
+            data.putString("RefreshToken", refreshToken);
+
+        } catch (Exception e) {
+            data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+        }
+
+        final Intent res = new Intent();
+        res.putExtras(data);
+
+        if (res.hasExtra(KEY_ERROR_MESSAGE)) {
+            Toast.makeText(getBaseContext(), res.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
+        } else {
+            finishLogin(res);
+        }
+    }
+
+    public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
+    public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
+
+    private void finishLogin(Intent intent) {
+        String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+        String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+
+        final Account account = new Account(accountName, AccountGeneral.ACCOUNT_TYPE);
+
+        AccountManager mAccountManager = AccountManager.get(this);
+
+        mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
+        if (mAuthTokenType == null)
+            mAuthTokenType = AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
+
+        if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, true)) {
+            String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+            String authtokenType = mAuthTokenType;
+
+            mAccountManager.addAccountExplicitly(account, accountPassword, intent.getExtras());
+            mAccountManager.setAuthToken(account, authtokenType, authtoken);
+        }else{
+            mAccountManager.setPassword(account, accountPassword);
+        }
+
+        Intent i = new Intent(this, ProfileActivity.class);
+        i.putExtra(Variables.Autologin, true);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 }

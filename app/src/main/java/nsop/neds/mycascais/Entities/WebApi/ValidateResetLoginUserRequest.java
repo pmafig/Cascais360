@@ -1,9 +1,9 @@
-package nsop.neds.mycascais.Entities.Json;
+package nsop.neds.mycascais.Entities.WebApi;
 
-public class CreateLoginUserRequest {
+public class ValidateResetLoginUserRequest {
     public String Token;
     public String Password;
     public String ConfirmPassword;
-    public String FullName;
+    public String UserName;
     public int LanguageID;
 }

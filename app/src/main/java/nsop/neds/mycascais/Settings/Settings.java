@@ -37,7 +37,7 @@ public class Settings {
 
     public static int screen_heigth;
 
-    public static String SmsHash = "h+6G4vdG51b";
+    public static String SmsHash = "QHuSagyVxeP";
 
     /*public static String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
             "<head>\n" +

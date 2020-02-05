@@ -1,4 +1,4 @@
-package nsop.neds.mycascais.Entities.Json;
+package nsop.neds.mycascais.Entities.WebApi;
 
 public class CreateTemporaryLoginUserResponse {
     public boolean OperationSucess;

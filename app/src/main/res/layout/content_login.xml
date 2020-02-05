@@ -101,7 +101,7 @@
                         android:paddingHorizontal="10dp"
                         android:paddingVertical="10dp"
                         android:drawableStart="@drawable/ic_lock"
-                        android:imeOptions="actionNext"
+                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:background="@drawable/mycascais_edittext"
                         android:fontFamily="@font/montserrat_light"

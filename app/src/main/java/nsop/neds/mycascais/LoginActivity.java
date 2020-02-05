@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -16,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -26,9 +26,11 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.CommonManager;
+import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
@@ -99,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         recover.setTextColor(Color.parseColor(Settings.colors.YearColor));
         register.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
-        accountNameField.setHint(Settings.labels.Email);
+        accountNameField.setHint(Settings.labels.Username);
         accountPasswordField.setHint(Settings.labels.Password);
         logon.setText(Settings.labels.LoginButton);
 
@@ -140,7 +142,8 @@ public class LoginActivity extends AppCompatActivity {
                 title.setText(Settings.labels.PrivacyPolicy);
 
                 WebView about = dialog.findViewById(R.id.more_info_address);
-                about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+                about.loadUrl("https://sites.cascais.pt/mycascais-contents/privacyandpolicy");
+                //about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
 
                 dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -164,7 +167,8 @@ public class LoginActivity extends AppCompatActivity {
                 title.setText(Settings.labels.TermsAndConditions);
 
                 WebView about = dialog.findViewById(R.id.more_info_address);
-                about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+                about.loadUrl("https://sites.cascais.pt/mycascais-contents/termsandconditions");
+                //about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
 
                 dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -184,11 +188,14 @@ public class LoginActivity extends AppCompatActivity {
         EditText accountNameField = findViewById(R.id.accountName);
         EditText accountPasswordField = findViewById(R.id.accountPassword);
 
-
-
         String accountName = accountNameField.getText().toString();
         String accountPassword = accountPasswordField.getText().toString();
-        login(accountName, accountPassword);
+
+        if(accountName.isEmpty() || accountPassword.isEmpty()){
+            LayoutManager.alertMessage(this, Settings.labels.LoginSubtitle);
+        }else {
+            login(accountName, accountPassword);
+        }
     }
 
     private void login(String userName, String password){
@@ -217,6 +224,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 String message = WebApiMessages.DecryptMessage(responseString);
                 progressDialog.dismiss();
+                Toast.makeText(LoginActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -233,10 +241,8 @@ public class LoginActivity extends AppCompatActivity {
         Response data = new Gson().fromJson(json, Response.class);
 
         if(data.ReportList != null && data.ReportList.size() > 0){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(Settings.labels.AlertMessage);
-            builder.setMessage(data.ReportList.get(0).Description);
-            builder.show();
+
+            LayoutManager.alertMessage(this, data.ReportList.get(0).Description);
         }else {
             if (data.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
                 try {

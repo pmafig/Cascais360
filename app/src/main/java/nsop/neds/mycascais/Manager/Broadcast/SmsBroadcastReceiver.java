@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 
 import nsop.neds.mycascais.Manager.Variables;
+import nsop.neds.mycascais.RegisterActivity;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.ValidateSMSTokenActivity;
 
@@ -24,7 +25,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             Bundle extras = intent.getExtras();
             Status status = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
 
-            Intent verify = new Intent(context, ValidateSMSTokenActivity.class);
+            Intent verify = new Intent(context, RegisterActivity.class);
 
             switch(status.getStatusCode()) {
                 case CommonStatusCodes.SUCCESS:
@@ -32,12 +33,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
                     String[] token = message.trim().replace(Settings.SmsHash, "").trim().split(" ");
 
-                    verify.putExtra(Variables.SMSToken, token[token.length - 1].trim());
+                    verify.putExtra(Variables.Token, token[token.length - 1].trim());
 
                     context.startActivity(verify);
                     break;
                 case CommonStatusCodes.TIMEOUT:
-                    context.startActivity(verify);
+                    //TODO write on log
                     break;
             }
         }
