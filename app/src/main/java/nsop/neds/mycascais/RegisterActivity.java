@@ -561,7 +561,11 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
 
-                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                if(sb.length() > 0) {
+                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                }else{
+                    Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                }
             }
 
 
@@ -651,7 +655,12 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
 
-                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                    if(sb.length() > 0) {
+                        LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                    }else{
+                        Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                    }
+
                 }catch (JSONException ex){}
             }
         }

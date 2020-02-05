@@ -178,7 +178,11 @@ public class RecoverActivity extends AppCompatActivity {
                     }
                 }
 
-                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                if(sb.length() > 0) {
+                    LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
+                }else{
+                    Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                }
             }
 
             if (responseData != null ) { //&& responseData.OperationSucess
