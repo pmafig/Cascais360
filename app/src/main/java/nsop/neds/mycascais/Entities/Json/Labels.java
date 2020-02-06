@@ -113,4 +113,5 @@ public class Labels {
     public String TryAgain;
     public String TermsAgree = "Para criar a conta necessita concordar com as condições.";
     public String Username;
+    public String ProcessingData = "Processando dados...";
 }

@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,12 +102,15 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText accountToken;
 
-    EditText accountEmailField;
+    EditText accountUsernameField;
     EditText accountNifField;
+    EditText accountVatinField;
     EditText accountPhoneField;
     EditText accountNameField;
     EditText accountPasswordField;
     EditText accountRePasswordField;
+
+    Spinner accountCountryField;
 
     CheckBox accountAgreementField;
 
@@ -125,6 +130,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        //region init
         icon1 = findViewById(R.id.rule_icon_1);
         icon2 = findViewById(R.id.rule_icon_2);
         icon3 = findViewById(R.id.rule_icon_3);
@@ -146,14 +152,15 @@ public class RegisterActivity extends AppCompatActivity {
         rule5.setText(Settings.labels.PasswordRuleSpecial);
         rule6.setText(Settings.labels.PasswordMismatchMessage);
 
-        //accountToken = findViewById(R.id.accountToken);
-
-        accountEmailField = findViewById(R.id.accountEmail);
+        accountUsernameField = findViewById(R.id.accountUsername);
         accountNifField = findViewById(R.id.accountNif);
+        accountVatinField = findViewById(R.id.accountVatin);
         accountPhoneField = findViewById(R.id.accountPhone);
         accountNameField = findViewById(R.id.accountName);
         accountPasswordField = findViewById(R.id.accountPassword);
         accountRePasswordField = findViewById(R.id.accountRePassword);
+
+        accountCountryField = findViewById(R.id.accountCountry);
 
         accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
         accountPolicyPrivacy = findViewById(R.id.accountPolicyPrivacy_frame);
@@ -187,32 +194,45 @@ public class RegisterActivity extends AppCompatActivity {
         //registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
         registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
         registerButton.setEnabled(true);
+        //endregion
 
         Bundle bundle = getIntent().getExtras();
+
+        //region novo registo, validação do token
         Uri appLinkData = getIntent().getData();
 
-        recover = (Data.RecoverByEmail != null && Data.RecoverByEmail)  || (Data.RecoverBySms != null && Data.RecoverBySms);
-
         if(bundle != null && bundle.containsKey(Variables.Token)) {
+            //validação via telemóvel
             token = bundle.getString(Variables.Token);
         }else if(appLinkData != null){
-            token = appLinkData.getQueryParameter("vt");
+            //validação via email
+            token = appLinkData.getQueryParameter(Variables.VT);
         }
+        //endregion
+
+        //region recuperação de conta
+        recover = (Data.RecoverByEmail != null && Data.RecoverByEmail)  || (Data.RecoverBySms != null && Data.RecoverBySms);
 
         if(bundle != null && bundle.containsKey(Variables.RecoverPassword)) {
             recover = bundle.getBoolean(Variables.RecoverPassword);
         }
+        //endregion
 
+        //region ação do button
         if(token != null){
-            validateAccountLayout();
+            validateAccountLayout(); //set layout
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    validateAccount();
+                    if(recover){
+                        recoverAccount();
+                    }else {
+                        validateAccount();
+                    }
                 }
             });
         }else {
-            createAccountLayout();
+            createAccountLayout(); //set layout
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -220,18 +240,35 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
         }
+        //endregion
     }
 
+    //region LAYOUT
     private void createAccountLayout(){
-        accountEmailField.setHint(Settings.labels.Username);
+        accountUsernameField.setHint(Settings.labels.Username);
+        registerButton.setText(Settings.labels.Continue);
+    }
+
+    private void createAccountVatinLayout(){
+        accountUsernameField.setHint(Settings.labels.Username);
+        accountNifField.setVisibility(View.GONE);
+        accountVatinField.setVisibility(View.VISIBLE);
+        accountCountryField.setVisibility(View.VISIBLE);
         registerButton.setText(Settings.labels.Continue);
 
+        List<String> country = new ArrayList<>();
+        country.add("Portugal");
+        country.add("Brasil");
+        country.add("Inglaterra");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, country);
+        accountCountryField.setAdapter(dataAdapter);
     }
 
     private void validateAccountLayout(){
         registerButton.setText(Settings.labels.CreateAccount);
 
-        accountEmailField.setVisibility(View.GONE);
+        accountUsernameField.setVisibility(View.GONE);
         accountNifField.setVisibility(View.GONE);
         accountAgreementField.setVisibility(View.GONE);
         accountPolicyPrivacy.setVisibility(View.GONE);
@@ -311,17 +348,14 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+    //endregion
+
 
     private void createAccount(){
-        EditText accountEmailPhoneField = findViewById(R.id.accountEmail);
-        EditText accountNifField = findViewById(R.id.accountNif);
-
-        CheckBox accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
-
         String accountEmail = "";
         String accountPhoneNumber = "";
 
-        String userData = accountEmailPhoneField.getText().toString();
+        String userData = accountUsernameField.getText().toString();
 
         if(InputValidatorManager.isValidEmail(userData)){
             accountEmail = userData;
@@ -330,14 +364,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         String accountNif = accountNifField.getText().toString();
-
-        //TODO 3 party info business
-        String accountVatin = "";//accountNifField.getText().toString();
+        String accountVatin = accountVatinField.getText().toString();
 
         if(accountAgreementField.isChecked()){
             CreateUser(accountEmail, accountPhoneNumber, "+351", accountNif, accountVatin, 1, Settings.LangCode.equals("pt") ? 1 : 2);
         }else{
-            LayoutManager.alertMessage(this, Settings.labels.TermsAgree);
+            LayoutManager.alertMessage(this, Settings.labels.AlertMessage,  Settings.labels.TermsAgree);
         }
     }
 
@@ -346,11 +378,14 @@ public class RegisterActivity extends AppCompatActivity {
         String accountPassword = accountPasswordField.getText().toString();
         String accountRePassword = accountRePasswordField.getText().toString();
 
-        if(recover != null && recover){
-            ValidateResetLoginUser(Data.CurrentAccountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
-        }else {
-            ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
-        }
+        ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
+    }
+
+    private void recoverAccount(){
+        String accountPassword = accountPasswordField.getText().toString();
+        String accountRePassword = accountRePasswordField.getText().toString();
+
+        ValidateResetLoginUser(Data.CurrentAccountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
     }
 
     private boolean DataValidation(String accountEmail, String accountNif, String accountPhone, String accountName){
@@ -424,11 +459,12 @@ public class RegisterActivity extends AppCompatActivity {
                 || !accountPassword.equals(accountRePassword));
     }
 
+
     private void CreateUser(String userEmail, String userPhone, String countryCode, String userNif, String userVatin,  int countryId, int languageId){
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        //TODO Change label source
-        progressDialog.setMessage("Validando dados...");
+
+        progressDialog.setMessage(Settings.labels.ProcessingData);
         progressDialog.show();
 
         CreateTemporaryLoginUserRequest request = new CreateTemporaryLoginUserRequest();
@@ -487,7 +523,7 @@ public class RegisterActivity extends AppCompatActivity {
         request.LanguageID = languageId;
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("A criar utilizador...");
+        progressDialog.setMessage(Settings.labels.ProcessingData);
         progressDialog.show();
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
@@ -611,21 +647,21 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void validateUserResponse(String response){
-        String message = WebApiMessages.DecryptMessage(response);
+    private void validateUserResponse(String eMessage){
+        String message = WebApiMessages.DecryptMessage(eMessage);
 
-        JSONObject responseMessage = null;
+        JSONObject response = null;
         try {
-            responseMessage = new JSONObject(message);
+            response = new JSONObject(message);
         }catch (JSONException ex){
             Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
         }
 
         CreateLoginUserResponse responseData = null;
 
-        if(responseMessage.has("ResponseData")) {
+        if(response.has(Variables.ResponseData)) {
             try {
-                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), CreateLoginUserResponse.class);
+                responseData = new Gson().fromJson(response.getJSONObject(Variables.ResponseData).toString(), CreateLoginUserResponse.class);
             }catch (JSONException ex){
                 //TODO add error message
             }
@@ -640,11 +676,9 @@ public class RegisterActivity extends AppCompatActivity {
             }.getType();
 
 
-
-            if (responseMessage.has("ReportList")) {
+            if (response.has(Variables.ReportList)) {
                 try {
-                    List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
-
+                    List<ReportList> reportList = new Gson().fromJson(response.getJSONArray(Variables.ReportList).toString(), ReportListType);
 
                     StringBuilder sb = new StringBuilder();
 
@@ -654,6 +688,8 @@ public class RegisterActivity extends AppCompatActivity {
                             sb.append("\n");
                         }
                     }
+
+                    
 
                     if(sb.length() > 0) {
                         LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());

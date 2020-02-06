@@ -6,8 +6,10 @@
     <string name="mycascais_password">PALAVRA PASSE</string>
     <string name="mycascais_re_password">CONFIRMAR PALAVRA PASSE</string>
 
+    <string name="mycascais_username">USERNAME</string>
     <string name="mycascais_email">E-MAIL</string>
     <string name="mycascais_nif">NIF</string>
+    <string name="mycascais_vatin">VATIN</string>
     <string name="mycascais_phone">TELEMÓVEL</string>
     <string name="mycascais_full_name">NOME COMPLETO</string>
     <string name="mycascais_full_birthday">DATA ANIVERSÁRIO</string>

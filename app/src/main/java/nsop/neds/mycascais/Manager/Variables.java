@@ -45,4 +45,13 @@ public class Variables {
 
     public static String RecoverPassword = "recoverPassword";
     public static String Autologin = "autologin";
+
+    //region Queristring variables
+    public static String VT = "vt";
+    //endregion
+
+    //region Json variables
+    public static String ResponseData = "ResponseData";
+    public static String ReportList = "ReportList";
+    //endregion
 }

@@ -19,11 +19,11 @@
             android:paddingBottom="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/accountEmail"
+                android:id="@+id/accountUsername"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:cursorVisible="true"
-                android:hint="@string/mycascais_email"
+                android:hint="@string/mycascais_username"
                 android:paddingHorizontal="5dp"
                 android:paddingVertical="5dp"
                 android:drawableLeft="@drawable/ic_user"
@@ -39,6 +39,31 @@
                 android:layout_height="match_parent"
                 android:cursorVisible="true"
                 android:hint="@string/mycascais_nif"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="5dp"
+                android:drawableLeft="@drawable/ic_user"
+                android:drawablePadding="5dp"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/accountCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/mycascais_nif"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mycascais_edittext"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/accountVatin"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cursorVisible="true"
+                android:hint="@string/mycascais_vatin"
                 android:paddingHorizontal="5dp"
                 android:paddingVertical="5dp"
                 android:drawableLeft="@drawable/ic_user"
