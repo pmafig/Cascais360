@@ -42,9 +42,13 @@ public class Variables {
 
     public static String Description = "description";
     public static String Token = "token";
+    public static String ReceivedToken = "ReceivedToken";
+    public static String AlertMessage = "AlertMessage";
 
     public static String RecoverPassword = "recoverPassword";
     public static String Autologin = "autologin";
+
+
 
     //region Queristring variables
     public static String VT = "vt";

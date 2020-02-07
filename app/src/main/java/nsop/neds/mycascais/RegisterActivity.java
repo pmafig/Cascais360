@@ -188,8 +188,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
-        new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
-
         registerButton = findViewById(R.id.createAccount);
         //registerButton.setBackgroundColor(Color.parseColor(Settings.colors.Gray2));
         registerButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
@@ -221,6 +219,7 @@ public class RegisterActivity extends AppCompatActivity {
         //region ação do button
         if(token != null){
             validateAccountLayout(); //set layout
+            new MenuManager(this, toolbar, menuFragment, Settings.labels.PasswordRecovery);
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -233,9 +232,11 @@ public class RegisterActivity extends AppCompatActivity {
             });
         }else {
             createAccountLayout(); //set layout
+            new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Data.CurrentAccountName = null;
                     createAccount();
                 }
             });
@@ -266,7 +267,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void validateAccountLayout(){
-        registerButton.setText(Settings.labels.CreateAccount);
+        registerButton.setText(Settings.labels.PasswordRecovery);
 
         accountUsernameField.setVisibility(View.GONE);
         accountNifField.setVisibility(View.GONE);
@@ -476,6 +477,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(userPhone != null && !userPhone.isEmpty()) {
             request.PhoneNumber = userPhone;
+            Data.CurrentAccountName = userPhone;
         }
 
         if(countryCode != null && !countryCode.isEmpty()) {
@@ -483,7 +485,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if(userNif != null && !userNif.isEmpty()) {
-            request.Nif = Integer.valueOf(userNif);
+            try {
+                request.Nif = Integer.valueOf(userNif);
+            }catch (Exception ex){
+                request.Nif = 0;
+            }
         }
 
         if(userVatin != null && !userVatin.isEmpty()) {
@@ -579,14 +585,16 @@ public class RegisterActivity extends AppCompatActivity {
 
             CreateTemporaryLoginUserResponse responseData = null;
 
-            if (responseMessage.has("ResponseData")) {
-                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), CreateTemporaryLoginUserResponse.class);
+            if (responseMessage.has(Variables.ResponseData) && !responseMessage.isNull(Variables.ResponseData)) {
+                responseData = new Gson().fromJson(responseMessage.getJSONObject(Variables.ResponseData).toString(), CreateTemporaryLoginUserResponse.class);
             }
 
             Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
 
-            if (responseMessage.has("ReportList")) {
-                List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
+            String receivedMessage = "";
+
+            if (responseMessage.has("ReportList") && !responseMessage.isNull("ReportList")) {
+                List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -598,7 +606,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if(sb.length() > 0) {
-                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                    receivedMessage = sb.toString();
                 }else{
                     Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
                 }
@@ -612,9 +620,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                 }
 
-                if (responseData.EmailSent) {
+                if (responseData.Email) {
+                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
 
-                } else if (responseData.SMSSent) {
+                } else if (responseData.SMS) {
 
                     SmsRetrieverClient client = SmsRetriever.getClient(this);
                     Task<Void> task = client.startSmsRetriever();
@@ -637,13 +646,25 @@ public class RegisterActivity extends AppCompatActivity {
                     });
 
                     Intent verify = new Intent(RegisterActivity.this, ValidateSMSTokenActivity.class);
+                    verify.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    verify.putExtra(Variables.ReceivedToken, responseData.Token);
+                    verify.putExtra(Variables.AlertMessage, receivedMessage);
                     startActivity(verify);
                 }
 
+            }else{
+                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
             }
+
+            if(!receivedMessage.isEmpty()){
+                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
+            }
+
         } catch (JSONException ex) {
 
         }
+
+
 
     }
 
@@ -688,8 +709,6 @@ public class RegisterActivity extends AppCompatActivity {
                             sb.append("\n");
                         }
                     }
-
-                    
 
                     if(sb.length() > 0) {
                         LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
@@ -855,7 +874,7 @@ public class RegisterActivity extends AppCompatActivity {
         try {
             authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
 
-            data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+            data.putString(AccountManager.KEY_ACCOUNT_NAME, Data.CurrentAccountName);
             data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
             data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
             data.putString(PARAM_USER_PASS, userPass);

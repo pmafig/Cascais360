@@ -50,6 +50,7 @@
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/accountCountry"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/mycascais_nif"
@@ -63,6 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:cursorVisible="true"
+                android:visibility="gone"
                 android:hint="@string/mycascais_vatin"
                 android:paddingHorizontal="5dp"
                 android:paddingVertical="5dp"

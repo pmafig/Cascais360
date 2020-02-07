@@ -13,14 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.auth.api.phone.SmsRetriever;
-import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -31,13 +25,11 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.ReportList;
-import nsop.neds.mycascais.Entities.WebApi.CreateTemporaryLoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenRequest;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenResponse;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -55,7 +47,10 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
     EditText smsTokenField;
     TextView resendSmsToken;
 
-    Intent intent;
+    String token = "";
+    String alertMessage = "";
+
+    boolean receivedToken = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +63,6 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         title.setTextColor(Color.parseColor(Settings.color));
         title.setText(R.string.title_activity_mycascais);*/
 
-        intent = getIntent();
-
         validateButton = findViewById(R.id.accountValidateSmsToken);
         smsTokenField = findViewById(R.id.smsTokenPhone);
         resendSmsToken = findViewById(R.id.resendSmsToken);
@@ -77,8 +70,29 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         validateButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
         resendSmsToken.setText(Settings.labels.ResendSMS);
 
-        //obtem token via sms ou via direta (inserido pelo utilizador)
-        smsTokenField.setText(intent.getStringExtra(Variables.SMSToken));
+        //region obtem token via sms ou via direta (inserido pelo utilizador)
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        //
+        if(bundle.containsKey(Variables.ReceivedToken)){
+            receivedToken = true;
+            token = bundle.getString(Variables.ReceivedToken);
+        }
+
+        if(bundle.containsKey(Variables.AlertMessage)){
+            alertMessage = bundle.getString(Variables.AlertMessage);
+        }
+
+        if(bundle.containsKey(Variables.Token)){
+            token = bundle.getString(Variables.Token);
+
+            if(!token.isEmpty() && !receivedToken) {
+                smsTokenField.setText(token);
+            }
+        }
+
+        final String finalToken = token;
 
         validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +105,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                         ValidateNewRegisterSmsToken();
                         break;
                     case recoverAccount:
-                        RecoverSmsToken();
+                        RecoverSmsToken(finalToken);
                         break;
                 }
             }
@@ -100,10 +114,24 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         resendSmsToken.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RecoverSmsToken("token");
+
+                SessionManager sm = new SessionManager(ValidateSMSTokenActivity.this);
+                ResendSMSTokenRequest request = new ResendSMSTokenRequest();
+
+                request.SmsToken = token;
+                request.LanguageID = sm.getLangCodePosition() + 1;
+
+                //new ResendSMSManager(ValidateSMSTokenActivity.this).execute(WebApiCalls.getResendSmsToken(request));
+
+                RecoverSmsToken(token);
             }
         });
+
+        if(!alertMessage.isEmpty()){
+            LayoutManager.alertMessage(this, alertMessage);
+        }
     }
+
 
     private void ValidateSmsToken() {
         EditText smsToken = this.findViewById(R.id.smsTokenPhone);
@@ -178,7 +206,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
     }
 
     private void ValidateNewRegisterSmsToken() {
-        EditText smsToken = this.findViewById(R.id.smsTokenPhone);
+        /*EditText smsToken = this.findViewById(R.id.smsTokenPhone);
 
         final String token = smsToken.getText().toString();
 
@@ -210,7 +238,16 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 //Toast.makeText(getBaseContext(), getResources().getString(R.string.info_message_new_user_success), Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(ValidateSMSTokenActivity.this, LoginActivity.class));
             }
-        });
+        });*/
+
+        if(!token.isEmpty()) {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            intent.putExtra(Variables.Token, token);
+            startActivity(intent);
+        }else{
+            LayoutManager.alertMessage(this, Settings.labels.InvalidToken);
+        }
+
     }
 
     private void RecoverSmsToken(String token) {
@@ -219,11 +256,15 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         progressDialog.setMessage(Settings.labels.ProcessingData);
         progressDialog.show();
 
+        SessionManager sm = new SessionManager(this);
         ResendSMSTokenRequest request = new ResendSMSTokenRequest();
 
-        request.Token = token;
+        request.SmsToken = token;
+        request.LanguageID = sm.getLangCodePosition() + 1;
 
-        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ResendSmsToken), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
+
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ResendSMSToken), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
@@ -233,13 +274,13 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
                 progressDialog.dismiss();
-                RecoverSmsTokenSuccess(response);
+                ResendSmsTokenSuccess(response);
             }
         });
 
     }
 
-    private void RecoverSmsTokenSuccess(String response){
+    private void ResendSmsTokenSuccess(String response){
         final String message = WebApiMessages.DecryptMessage(response);
 
         JSONObject responseMessage = null;

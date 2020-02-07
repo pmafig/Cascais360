@@ -33,7 +33,7 @@ public class WebApiClient {
         ResetLoginUser,
         GetSubscriptions,
         ValidateResetLoginUser,
-        ResendSmsToken
+        ResendSMSToken
     }
 
     private static final String USERAGENT = Build.VERSION.RELEASE;
