@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +40,7 @@ import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
+import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
@@ -55,6 +58,9 @@ public class EditAccountActivity extends AppCompatActivity {
     LinearLayout menuFragment;
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private SessionManager sm;
+
+    private boolean changeEmail = false;
+    private boolean changePhoneNumber = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +137,11 @@ public class EditAccountActivity extends AppCompatActivity {
         editSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeAppContact();
+                if(changePhoneNumber) {
+                    changeUserData();
+                }else{
+                    Toast.makeText(EditAccountActivity.this, "Encontra-se em desenvolvimento...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -140,25 +150,57 @@ public class EditAccountActivity extends AppCompatActivity {
 
     private void editAccount(){
         EditText accountPhoneField = findViewById(R.id.accountPhone);
-        accountPhoneField.setEnabled(true);
-        accountPhoneField.setHint(sm.getMobileNumber());
-        accountPhoneField.setBackground(getDrawable(R.drawable.mycascais_edittext));
-        accountPhoneField.requestFocus();
+        EditText accountEmailField = findViewById(R.id.accountEmail);
 
-        findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
-        findViewById(R.id.editAccount).setVisibility(View.GONE);
+        String contact = accountPhoneField.getHint().toString();
+        String email = accountEmailField.getHint().toString();
 
+        if(contact.isEmpty()) {
 
+            changePhoneNumber = true;
+
+            accountPhoneField.setEnabled(true);
+            accountPhoneField.setHint(sm.getMobileNumber());
+            accountPhoneField.setBackground(getDrawable(R.drawable.mycascais_edittext));
+            accountPhoneField.requestFocus();
+
+            findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
+            findViewById(R.id.editAccount).setVisibility(View.GONE);
+        }else if(email.isEmpty()){
+
+            changeEmail = true;
+
+            accountEmailField.setEnabled(true);
+            accountEmailField.setHint(sm.getMobileNumber());
+            accountEmailField.setBackground(getDrawable(R.drawable.mycascais_edittext));
+            accountEmailField.requestFocus();
+
+            findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
+            findViewById(R.id.editAccount).setVisibility(View.GONE);
+        }else{
+            LayoutManager.alertMessage(this, "Não é possível alterar os dados.");
+        }
     }
 
     private void cancelAccount(){
-        EditText accountPhoneField = findViewById(R.id.accountPhone);
-        accountPhoneField.setEnabled(false);
-        accountPhoneField.setHint(sm.getMobileNumber());
-        accountPhoneField.setBackground(getDrawable(R.drawable.border_bottom));
 
-        findViewById(R.id.editAccount).setVisibility(View.VISIBLE);
-        findViewById(R.id.editAccountSubmitFrame).setVisibility(View.GONE);
+        if(changePhoneNumber) {
+            EditText accountPhoneField = findViewById(R.id.accountPhone);
+            accountPhoneField.setEnabled(false);
+            accountPhoneField.setHint(sm.getMobileNumber());
+            accountPhoneField.setBackground(getDrawable(R.drawable.border_bottom));
+
+            findViewById(R.id.editAccount).setVisibility(View.VISIBLE);
+            findViewById(R.id.editAccountSubmitFrame).setVisibility(View.GONE);
+        }else if(changeEmail){
+            EditText accountEmailField = findViewById(R.id.accountEmail);
+            accountEmailField.setEnabled(false);
+            accountEmailField.setHint(sm.getMobileNumber());
+            accountEmailField.setBackground(getDrawable(R.drawable.border_bottom));
+
+            findViewById(R.id.editAccount).setVisibility(View.VISIBLE);
+            findViewById(R.id.editAccountSubmitFrame).setVisibility(View.GONE);
+        }
     }
 
     private boolean DataValidation(String accountEmail, String accountNif, String accountPhone, String accountName){
@@ -286,7 +328,7 @@ public class EditAccountActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
-    private void changeAppContact(){
+    private void changeUserData(){
         UserEntity user = AccountGeneral.getUser(this);
 
         EditText phoneContactField = findViewById(R.id.accountPhone);

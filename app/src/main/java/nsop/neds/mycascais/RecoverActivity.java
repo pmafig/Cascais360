@@ -39,6 +39,7 @@ import nsop.neds.mycascais.Entities.WebApi.ResetLoginResponse;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
@@ -212,6 +213,11 @@ public class RecoverActivity extends AppCompatActivity {
                                 // alertMessage.show();
                             }
                         });
+
+                        Intent intent = new Intent(RecoverActivity.this, ValidateSMSTokenActivity.class);
+                        intent.putExtra(Variables.Token, responseData.Token);
+                        startActivity(intent);
+
                     }
                 }
             }

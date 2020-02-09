@@ -1,6 +1,9 @@
 package nsop.neds.mycascais.WebApi;
 
+import com.google.gson.Gson;
+
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenRequest;
 import nsop.neds.mycascais.Settings.Settings;
 
 public class WebApiCalls {
@@ -81,5 +84,10 @@ public class WebApiCalls {
     public static String setRefreshToken(String refreshToken, String ssk, String userId){
         String rt = new MessageEncryption().Encrypt("{\"RefreshToken\":" + refreshToken + ",\"ssk\":" + ssk + ",\"userid\":\"" + userId + "\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.RefreshLoginUser + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
+    public static String getResendSmsToken(ResendSMSTokenRequest request){
+        String rt = new MessageEncryption().Encrypt(new Gson().toJson(request), WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.ResendSMSToken + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 }

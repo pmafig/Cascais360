@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
-        progressDialog.setMessage("Autenticação...");
+        progressDialog.setMessage(Settings.labels.ProcessingData);
 
         progressDialog.show();
 
