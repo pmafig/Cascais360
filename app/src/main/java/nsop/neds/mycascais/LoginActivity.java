@@ -27,7 +27,10 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Labels;
-import nsop.neds.mycascais.Entities.Json.Response;
+
+import nsop.neds.mycascais.Entities.WebApi.LoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
+import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -202,16 +205,14 @@ public class LoginActivity extends AppCompatActivity {
 
         String encPass = "";
 
-        try{
-            encPass = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
-        }catch (Exception ex){
-            System.out.println(ex.getMessage());
-        }
-
         SessionManager sm = new SessionManager(this);
 
-        String jsonRequest = String.format("{\"UserName\":\"%s\", \"Password\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
-                userName, encPass, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
+        LoginUserRequest request = new LoginUserRequest();
+        request.UserName = userName;
+        request.Password = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
+        request.FirebaseToken = sm.getFirebaseToken();
+        request.AppType = 2;
+        request.LanguageID = sm.getLangCodePosition() + 1;
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
@@ -219,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
 
         progressDialog.show();
 
-        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.login), jsonRequest,true, new TextHttpResponseHandler(){
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.login), new Gson().toJson(request),true, new TextHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 String message = WebApiMessages.DecryptMessage(responseString);
@@ -238,40 +239,40 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postSuccess(String json){
-        Response data = new Gson().fromJson(json, Response.class);
+        Response<LoginUserResponse> response = new Gson().fromJson(json, nsop.neds.mycascais.Entities.WebApi.Response.class);
 
-        if(data.ReportList != null && data.ReportList.size() > 0){
+        if(response.ReportList != null && response.ReportList.size() > 0){
 
-            LayoutManager.alertMessage(this, data.ReportList.get(0).Description);
+            LayoutManager.alertMessage(this, response.ReportList.get(0).Description);
         }else {
-            if (data.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
+            if (response.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
                 try {
                     SessionManager sm = new SessionManager(this);
 
                     menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
                     menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
                     TextView name = menuFragment.findViewById(R.id.user_name);
-                    name.setText(data.ResponseData.DisplayName);
+                    name.setText(response.ResponseData.DisplayName);
 
-                    sm.setDisplayname(data.ResponseData.DisplayName);
+                    sm.setDisplayname(response.ResponseData.DisplayName);
                     sm.setFullName(ReportManager.getFullName(json));
                     sm.setEmail(ReportManager.getEmail(json));
 
-                    if (data.ResponseData.PhoneContacts != null && data.ResponseData.PhoneContacts.size() > 0) {
-                        sm.setMobileNumber(data.ResponseData.PhoneContacts.get(0).Number);
+                    if (response.ResponseData.PhoneContacts != null && response.ResponseData.PhoneContacts.size() > 0) {
+                        sm.setMobileNumber(response.ResponseData.PhoneContacts.get(0).Number);
                     }
 
                     sm.setAddress(ReportManager.getAddress(json));
 
-                    submit(data.ResponseData.SSK, data.ResponseData.UserID, data.ResponseData.RefreshToken);
+                    submit(response.ResponseData.SSK, response.ResponseData.UserID, response.ResponseData.RefreshToken);
                 } catch (Exception e) {
                     AccountGeneral.logout(this);
                     intentNavegation();
                 }
             } else {
-                /*AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertessageDialog);
-                alertMessage.setMessage(ReportManager.getReportList(json));
-                alertMessage.show();*/
+                //AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertessageDialog);
+                //alertMessage.setMessage(ReportManager.getReportList(json));
+                //alertMessage.show();
             }
         }
     }
