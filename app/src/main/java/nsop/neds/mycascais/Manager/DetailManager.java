@@ -17,14 +17,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.User;
+import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.LoginActivity;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.R;
@@ -57,11 +62,12 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         try {
             JSONObject response = CommonManager.getResponseData(strings[0]);
 
+
             SessionManager sm = new SessionManager(context);
 
             if(response != null) {
 
-                JSONObject responseData = response.getJSONObject("ResponseData");
+                JSONObject responseData = response.getJSONObject(Variables.ResponseData);
 
                 JSONObject jsonObject = null;
 
@@ -74,8 +80,8 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                         intent.putExtra(Variables.Id, this.nid);
                         context.startActivity(intent);
                     }else {
-                        final JSONObject jsonDetail = responseData.getJSONObject("ContentDetail");
-                        jsonObject = jsonDetail.getJSONObject("Data");
+                        final JSONObject jsonDetail = responseData.getJSONObject(Variables.ContentDetail);
+                        jsonObject = jsonDetail.getJSONObject(Variables.Data);
                         String _s = jsonObject.toString();
                         Detail detail = new Gson().fromJson(_s, Detail.class);
                         detail.Like = user.Like;
@@ -83,7 +89,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                         return detail;
                     }
                 }else{
-                    jsonObject = responseData.getJSONObject("Data");
+                    jsonObject = responseData.getJSONObject(Variables.Data);
                     String _s = jsonObject.toString();
                     Detail detail = new Gson().fromJson(_s, Detail.class);
                     return detail;

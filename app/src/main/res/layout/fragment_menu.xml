@@ -132,6 +132,7 @@
                     <Button
                         android:id="@+id/menu_button_about"
                         style="@style/MenuItem"
+                        android:layout_marginBottom="-3dp"
                         android:text="about this app" />
                 </LinearLayout>
             </LinearLayout>

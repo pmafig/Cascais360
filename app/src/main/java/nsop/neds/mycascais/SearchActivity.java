@@ -865,8 +865,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         int nid = p.ID;
         event.putExtra(Variables.Id, nid);
 
-        lastMarket.setIcon(bitmapDescriptorFromVector(getBaseContext(), true));
-        lastMarket = null;
+        if(lastMarket != null) {
+            lastMarket.setIcon(bitmapDescriptorFromVector(getBaseContext(), true));
+            lastMarket = null;
+        }
 
 
         /*this.infoButtonListener = new OnInfoWindowElemTouchListener(infoButton1, getResources().getDrawable(R.drawable.btn_bg), getResources().getDrawable(R.drawable.btn_bg)){

@@ -57,5 +57,7 @@ public class Variables {
     //region Json variables
     public static String ResponseData = "ResponseData";
     public static String ReportList = "ReportList";
+    public static String Data = "Data";
+    public static String ContentDetail = "ContentDetail";
     //endregion
 }

@@ -788,7 +788,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void autoLogin(String userName, String password){
-        String encPass = "";
 
         SessionManager sm = new SessionManager(this);
 
