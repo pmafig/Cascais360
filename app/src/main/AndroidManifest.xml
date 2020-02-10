@@ -40,6 +40,16 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name="nsop.neds.mycascais.DisclaimerActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name="nsop.neds.mycascais.NoDataActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name="nsop.neds.mycascais.ValidateSMSTokenActivity"
             android:launchMode="singleInstance"
             android:noHistory="true" />

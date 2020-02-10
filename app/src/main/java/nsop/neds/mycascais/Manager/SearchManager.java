@@ -75,6 +75,12 @@ public class SearchManager extends AsyncTask<String, Void, Search> {
                 Search s = new Search();
                 s.Events = list.get(0).Data;
 
+                if(strings.length > 1) {
+                    String monthYear = strings[1];
+                    if(!Data.CalendarEvents.containsKey(monthYear)) {
+                        Data.CalendarEvents.put(monthYear, s);
+                    }
+                }
                 return s;
             }
         } catch (Exception e) {

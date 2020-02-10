@@ -28,13 +28,32 @@ public class SplashActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        if(getIntent().hasExtra(Variables.Id)){
-            new ResourcesManager(this, false, false).execute(WebApiCalls.getResources());
-            Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(Variables.Id, getIntent().getStringExtra(Variables.Id));
-            startActivity(intent);
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        String packageName = "";
+        int externalAppId = 0;
+        if(intent.hasExtra("packageName")) {
+            packageName = bundle.getString("packageName");
+        }
+        if(intent.hasExtra("externalAppId")) {
+            externalAppId = bundle.getInt("externalAppId");
+        }
+
+        if(!packageName.isEmpty() && externalAppId > 0){
+            Intent disclaimer = new Intent(this, DisclaimerActivity.class);
+            disclaimer.putExtra("packageName", packageName);
+            disclaimer.putExtra("externalAppId", externalAppId);
+            startActivity(disclaimer);
         }else {
-            new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
+            if (intent.hasExtra(Variables.Id)) {
+                new ResourcesManager(this, false, false).execute(WebApiCalls.getResources());
+                Intent i = new Intent(this, DetailActivity.class);
+                i.putExtra(Variables.Id, getIntent().getStringExtra(Variables.Id));
+                startActivity(i);
+            } else {
+                new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
+            }
         }
     }
 }

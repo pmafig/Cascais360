@@ -32,6 +32,7 @@ import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.LoginActivity;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
+import nsop.neds.mycascais.NoDataActivity;
 import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.RefreshTokenActivity;
 import nsop.neds.mycascais.Settings.Settings;
@@ -193,6 +194,8 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
 
                 mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }else{
+                context.startActivity(new Intent(context, NoDataActivity.class));
             }
         } catch (Exception e) {
             Log.e("Error", e.getMessage());

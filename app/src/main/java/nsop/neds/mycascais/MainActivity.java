@@ -3,6 +3,7 @@ package nsop.neds.mycascais;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -36,6 +37,5 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         new MenuManager(this, toolbar, menuFragment, null);
-
     }
 }

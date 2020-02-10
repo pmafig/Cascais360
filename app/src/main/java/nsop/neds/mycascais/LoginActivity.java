@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.text.Layout;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,13 +22,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Labels;
 
+import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserRequest;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.Response;
@@ -197,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
         if(accountName.isEmpty() || accountPassword.isEmpty()){
             LayoutManager.alertMessage(this, Settings.labels.LoginSubtitle);
         }else {
-            login(accountName, accountPassword);
+            login(accountName.trim(), accountPassword.trim());
         }
     }
 
@@ -241,30 +247,53 @@ public class LoginActivity extends AppCompatActivity {
     private void postSuccess(String json){
         Response<LoginUserResponse> response = new Gson().fromJson(json, nsop.neds.mycascais.Entities.WebApi.Response.class);
 
+        LoginUserResponse responseLogin = null;
+
+        String jsonUser = "";
+
+        try {
+            JSONObject data = new JSONObject(json);
+            JSONObject responseData = data.getJSONObject(Variables.ResponseData);
+            jsonUser = responseData.toString();
+
+            responseLogin = new Gson().fromJson(jsonUser, LoginUserResponse.class);
+
+        }catch (JSONException ex){}
+
         if(response.ReportList != null && response.ReportList.size() > 0){
 
             LayoutManager.alertMessage(this, response.ReportList.get(0).Description);
         }else {
-            if (response.ResponseData.IsAuthenticated) { // ReportManager.isAuthenticated(json)
+            if (responseLogin.IsAuthenticated) { // ReportManager.isAuthenticated(json)
                 try {
                     SessionManager sm = new SessionManager(this);
+                    sm.setUser(jsonUser);
 
                     menuFragment.findViewById(R.id.user_loggedon_header).setVisibility(View.VISIBLE);
                     menuFragment.findViewById(R.id.menu_button_login_frame).setVisibility(View.GONE);
                     TextView name = menuFragment.findViewById(R.id.user_name);
-                    name.setText(response.ResponseData.DisplayName);
+                    name.setText(responseLogin.DisplayName);
 
-                    sm.setDisplayname(response.ResponseData.DisplayName);
+                    sm.setDisplayname(responseLogin.DisplayName);
                     sm.setFullName(ReportManager.getFullName(json));
                     sm.setEmail(ReportManager.getEmail(json));
 
-                    if (response.ResponseData.PhoneContacts != null && response.ResponseData.PhoneContacts.size() > 0) {
-                        sm.setMobileNumber(response.ResponseData.PhoneContacts.get(0).Number);
+                    if (responseLogin.PhoneContacts != null && responseLogin.PhoneContacts.size() > 0) {
+
+                        String phoneNumber = "";
+
+                        for (PhoneContacts contact : responseLogin.PhoneContacts){
+                            if(contact.Main){
+                                phoneNumber = contact.Number;
+                            }
+                        }
+
+                        sm.setMobileNumber(phoneNumber);
                     }
 
                     sm.setAddress(ReportManager.getAddress(json));
 
-                    submit(response.ResponseData.SSK, response.ResponseData.UserID, response.ResponseData.RefreshToken);
+                    submit(responseLogin.SSK, responseLogin.UserID, responseLogin.RefreshToken);
                 } catch (Exception e) {
                     AccountGeneral.logout(this);
                     intentNavegation();

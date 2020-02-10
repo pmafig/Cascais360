@@ -120,6 +120,12 @@ public class EditAccountActivity extends AppCompatActivity {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+
+        if(!sm.getEmail().isEmpty() && !sm.getMobileNumber().isEmpty()){
+            editButton.setVisibility(View.GONE);
+        }
+
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

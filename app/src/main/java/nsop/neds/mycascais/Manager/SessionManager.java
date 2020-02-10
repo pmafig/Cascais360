@@ -35,6 +35,7 @@ public class SessionManager {
     private static final String recover = "recover";
     private static final String newaccount = "newaccount";
     private static final String recoveremail = "recoveremail";
+    private static final String user = "User";
     private static final String fullname = "Nome";
     private static final String username = "username";
     private static final String userstatus = "userstatus";
@@ -176,6 +177,10 @@ public class SessionManager {
     public String getFullDisclaimer(){ return sharedpreferences.getString(fulldisclaimer, "");    }
 
     public void setFullDisclaimer(String json){ editor.putString(fulldisclaimer, json).commit(); }
+
+    public String getUser(){ return sharedpreferences.getString(user, " ");    }
+
+    public void setUser(String json){ editor.putString(user, json).commit(); }
 
     public boolean isLoggedOn(){
         AccountManager mAccountManager = AccountManager.get(context);

@@ -25,6 +25,7 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
@@ -249,6 +250,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 System.out.println(json);
 
                 if (ReportManager.invalidSession(json)) {
+                    AccountGeneral.logout(ChangePasswordActivity.this);
+                    Intent intent = new Intent(ChangePasswordActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     //refreshToken(accountFunc.changePassword, getBaseContext());
                 } else {
                     if (ReportManager.getIsSuccess(json)) {

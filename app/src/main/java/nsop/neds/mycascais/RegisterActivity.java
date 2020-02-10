@@ -504,6 +504,8 @@ public class RegisterActivity extends AppCompatActivity {
             request.LanguageID = languageId;
         }
 
+
+
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateTemporaryLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {

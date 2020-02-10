@@ -114,4 +114,8 @@ public class Labels {
     public String TermsAgree = "Para criar a conta necessita concordar com as condições.";
     public String Username;
     public String ProcessingData = "Processando dados...";
+    public String UnsubscribedConfirmation;
+    public String Confirm;
+    public String Cancel;
+    public String AppInMaintenanceMessage;
 }
