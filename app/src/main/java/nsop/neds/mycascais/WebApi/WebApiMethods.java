@@ -32,4 +32,6 @@ public class WebApiMethods {
 
     public static final String SETSUBSCRIPTION= "setsubscription";
     public static final String SETLIKESTATUS = "setlike";
+
+    public static final String SETDISCLAIMERRESPONSE = "SetDisclaimerResponse";
 }

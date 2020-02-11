@@ -52,6 +52,10 @@ public class SessionManager {
 
     private static final String fulldisclaimer = "fulldisclaimer";
 
+    private static final String appInfo = "appinfo";
+    private static final String packageName = "packageName";
+    private static final String externalAppId = "externalAppId";
+
     private Context context;
 
     public SessionManager(Context context){
@@ -181,6 +185,18 @@ public class SessionManager {
     public String getUser(){ return sharedpreferences.getString(user, " ");    }
 
     public void setUser(String json){ editor.putString(user, json).commit(); }
+
+    public String getExternalAppInfo(){ return sharedpreferences.getString(appInfo, "");    }
+
+    public void setExternalAppInfo(String info){ editor.putString(appInfo, info).commit(); }
+
+    public String getExternalAppPackageName(){ return sharedpreferences.getString(packageName, "");    }
+
+    public void setExternalAppPackageName(String name){ editor.putString(packageName, name).commit(); }
+
+    public int getExternalAppExternalId(){ return sharedpreferences.getInt(externalAppId, 0);    }
+
+    public void setExternalAppPackageExternalId(int id){ editor.putInt(externalAppId, id).commit(); }
 
     public boolean isLoggedOn(){
         AccountManager mAccountManager = AccountManager.get(context);

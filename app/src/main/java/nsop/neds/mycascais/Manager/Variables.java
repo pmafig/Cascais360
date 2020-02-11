@@ -48,7 +48,10 @@ public class Variables {
     public static String RecoverPassword = "recoverPassword";
     public static String Autologin = "autologin";
 
-
+    //region Intent variables
+    public static String PackageName = "packageName";
+    public static String ExternalAppId = "externalAppId";
+    //endregion
 
     //region Queristring variables
     public static String VT = "vt";

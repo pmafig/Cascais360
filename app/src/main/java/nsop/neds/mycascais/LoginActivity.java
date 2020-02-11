@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.Json.Labels;
 
 import nsop.neds.mycascais.Entities.Json.PhoneContacts;
@@ -385,8 +386,16 @@ public class LoginActivity extends AppCompatActivity {
 
     public void intentNavegation(){
 
-        if(getIntent().hasExtra(Variables.Id)){
+        SessionManager sm = new SessionManager(this);
+        String externalAppInfo = sm.getExternalAppInfo();
 
+        if(sm != null && !externalAppInfo.isEmpty()) {
+            Intent intent = new Intent(this, DisclaimerActivity.class);
+            intent.putExtra(Variables.PackageName, sm.getExternalAppPackageName());
+            intent.putExtra(Variables.ExternalAppId, sm.getExternalAppExternalId());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }else if(getIntent().hasExtra(Variables.Id)){
             Intent intent = getIntent();
             Bundle extras = intent.getExtras();
             int nid = extras.getInt(Variables.Id);

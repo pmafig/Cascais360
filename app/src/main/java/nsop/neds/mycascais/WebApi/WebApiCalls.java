@@ -90,4 +90,11 @@ public class WebApiCalls {
         String rt = new MessageEncryption().Encrypt(new Gson().toJson(request), WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.ResendSMSToken + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
+
+    public static String getExternalAppInfo(int appId){
+        String json = String.format("{\"appid\":%s}", appId);
+
+        String rt = new MessageEncryption().Encrypt(json, WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.WebApiAccount + "/" + WebApiClient.METHODS.GetExternalAppInfo + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
 }

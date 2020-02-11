@@ -118,4 +118,5 @@ public class Labels {
     public String Confirm;
     public String Cancel;
     public String AppInMaintenanceMessage;
+    public String DisclaimerTextInfo = "Autoriza a applicação %s aceder aos seguintes dados:";
 }
