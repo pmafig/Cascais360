@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +35,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +51,8 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Country;
+import nsop.neds.mycascais.Entities.Json.ExternalAppInfo;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.Json.ResponseData;
 import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserRequest;
@@ -100,6 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean valid5;
     private boolean valid6;
 
+    RelativeLayout loading;
+
     EditText accountToken;
 
     EditText accountUsernameField;
@@ -129,6 +137,8 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        loading = findViewById(R.id.loadingPanel);
 
         //region init
         icon1 = findViewById(R.id.rule_icon_1);
@@ -248,22 +258,92 @@ public class RegisterActivity extends AppCompatActivity {
     private void createAccountLayout(){
         accountUsernameField.setHint(Settings.labels.Username);
         registerButton.setText(Settings.labels.Continue);
+
+        SessionManager sm = new SessionManager(this);
+
+        if(sm != null) {
+            String externalAppInfo = sm.getExternalAppInfo();
+            ExternalAppInfo appInfo = null;
+
+            if (!externalAppInfo.isEmpty()) {
+                loading.setVisibility(View.VISIBLE);
+                appInfo = new Gson().fromJson(sm.getExternalAppInfo(), ExternalAppInfo.class);
+
+                if(appInfo.ShowVATINField) {
+                    createAccountVatinLayout();
+                }
+            }
+        }
     }
 
     private void createAccountVatinLayout(){
-        accountUsernameField.setHint(Settings.labels.Username);
-        accountNifField.setVisibility(View.GONE);
-        accountVatinField.setVisibility(View.VISIBLE);
-        accountCountryField.setVisibility(View.VISIBLE);
-        registerButton.setText(Settings.labels.Continue);
 
-        List<String> country = new ArrayList<>();
-        country.add("Portugal");
-        country.add("Brasil");
-        country.add("Inglaterra");
+        final SessionManager sm = new SessionManager(this);
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, country);
-        accountCountryField.setAdapter(dataAdapter);
+        if(sm != null) {
+            accountUsernameField.setHint(Settings.labels.Username);
+            accountNifField.setVisibility(View.GONE);
+            accountVatinField.setVisibility(View.VISIBLE);
+            accountCountryField.setVisibility(View.VISIBLE);
+            registerButton.setText(Settings.labels.Continue);
+
+            Type CountryTypeList = new TypeToken<ArrayList<Country>>() { }.getType();
+            final List<Country>[] country_list = new List[]{new Gson().fromJson(sm.getCountryList(), CountryTypeList)};
+
+
+            if(country_list[0] == null){
+
+                String json = String.format("{\"LanguageID \":%s}", sm.getLangCodePosition() + 1);
+
+                WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiClient.METHODS.GetCountryList), json, true,  new TextHttpResponseHandler(){
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                        accountCountryField.setVisibility(View.GONE);
+                        accountNifField.setVisibility(View.VISIBLE);
+                        accountVatinField.setVisibility(View.GONE);
+                        loading.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, String response) {
+                        final String message = WebApiMessages.DecryptMessage(response);
+
+                        try {
+                            JSONObject resp = new JSONObject(message);
+
+                            JSONArray responseData = resp.getJSONArray(Variables.ResponseData);
+
+                            Type CountryTypeList = new TypeToken<ArrayList<Country>>() { }.getType();
+                            country_list[0] = new Gson().fromJson(responseData.toString(), CountryTypeList);
+
+                            if (country_list[0] != null && country_list[0].size() > 0) {
+
+                                Data.CountryList = country_list[0];
+
+                                List<String> countries = new ArrayList<>();
+
+                                for(Country c : country_list[0]){
+                                    countries.add(c.label);
+                                }
+
+                                ArrayAdapter<String> dataAdapter = new ArrayAdapter(RegisterActivity.this, android.R.layout.simple_spinner_item, countries);
+                                accountCountryField.setAdapter(dataAdapter);
+                            }
+                            loading.setVisibility(View.GONE);
+                        }catch (Exception ex){
+                            accountCountryField.setVisibility(View.GONE);
+                            accountNifField.setVisibility(View.VISIBLE);
+                            accountVatinField.setVisibility(View.GONE);
+                            loading.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }else{
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, country_list[0]);
+                accountCountryField.setAdapter(dataAdapter);
+                loading.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void validateAccountLayout(){
@@ -355,6 +435,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void createAccount(){
         String accountEmail = "";
         String accountPhoneNumber = "";
+        int countryId = 189;
 
         String userData = accountUsernameField.getText().toString();
 
@@ -367,8 +448,14 @@ public class RegisterActivity extends AppCompatActivity {
         String accountNif = accountNifField.getText().toString();
         String accountVatin = accountVatinField.getText().toString();
 
+        int countryPosition = accountCountryField.getSelectedItemPosition();
+
+        if(Data.CountryList != null && Data.CountryList.size() > 0) {
+            countryId = Data.CountryList.get(countryPosition).Id;
+        }
+
         if(accountAgreementField.isChecked()){
-            CreateUser(accountEmail, accountPhoneNumber, "+351", accountNif, accountVatin, 1, Settings.LangCode.equals("pt") ? 1 : 2);
+            CreateUser(accountEmail, accountPhoneNumber, "+351", accountNif, accountVatin, countryId, Settings.LangCode.equals("pt") ? 1 : 2);
         }else{
             LayoutManager.alertMessage(this, Settings.labels.AlertMessage,  Settings.labels.TermsAgree);
         }
@@ -486,9 +573,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(userNif != null && !userNif.isEmpty()) {
             try {
-                request.Nif = Integer.valueOf(userNif);
+                request.Nif = userNif;
             }catch (Exception ex){
-                request.Nif = 0;
+                request.Nif = "";
             }
         }
 
@@ -503,7 +590,6 @@ public class RegisterActivity extends AppCompatActivity {
         if(languageId > 0) {
             request.LanguageID = languageId;
         }
-
 
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.CreateTemporaryLoginUser), new Gson().toJson(request), true,  new TextHttpResponseHandler(){

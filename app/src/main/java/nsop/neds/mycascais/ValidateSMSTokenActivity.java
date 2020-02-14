@@ -74,21 +74,22 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-        //
-        if(bundle.containsKey(Variables.ReceivedToken)){
-            receivedToken = true;
-            token = bundle.getString(Variables.ReceivedToken);
-        }
+        if(bundle != null) {
+            if (bundle.containsKey(Variables.ReceivedToken)) {
+                receivedToken = true;
+                token = bundle.getString(Variables.ReceivedToken);
+            }
 
-        if(bundle.containsKey(Variables.AlertMessage)){
-            alertMessage = bundle.getString(Variables.AlertMessage);
-        }
+            if (bundle.containsKey(Variables.AlertMessage)) {
+                alertMessage = bundle.getString(Variables.AlertMessage);
+            }
 
-        if(bundle.containsKey(Variables.Token)){
-            token = bundle.getString(Variables.Token);
+            if (bundle.containsKey(Variables.Token)) {
+                token = bundle.getString(Variables.Token);
 
-            if(!token.isEmpty() && !receivedToken) {
-                smsTokenField.setText(token);
+                if (!token.isEmpty() && !receivedToken) {
+                    smsTokenField.setText(token);
+                }
             }
         }
 
@@ -107,6 +108,10 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                     case recoverAccount:
                         RecoverSmsToken(finalToken);
                         break;
+                    case addAuth:
+                        ValidateCustomerContact();
+                        break;
+
                 }
             }
         });
@@ -185,21 +190,14 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 if (ReportManager.IsValid(json)) {
-
                     Toast.makeText(getBaseContext(), Settings.labels.ContactChanged, Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ValidateSMSTokenActivity.this, EditAccountActivity.class));
                 } else {
-                    AlertDialog.Builder alertMessage = new AlertDialog.Builder(ValidateSMSTokenActivity.this, R.style.AlertMessageDialog);
-
-                    androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(ValidateSMSTokenActivity.this);
-                    builder.setTitle(Settings.labels.AlertMessage);
-
                     if (!message.isEmpty()) {
-                        alertMessage.setMessage(message.trim());
+                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, message.trim());
                     } else {
-                        alertMessage.setMessage(Settings.labels.ChangePasswordError);
+                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, Settings.labels.AppInMaintenanceMessage);
                     }
-                    alertMessage.show();
                 }
             }
         });
@@ -317,5 +315,60 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         } catch (JSONException ex) {
 
         }
+    }
+
+    private void ValidateCustomerContact() {
+        EditText smsToken = this.findViewById(R.id.smsTokenPhone);
+
+        final String token = smsToken.getText().toString();
+
+        String jsonRequest = "";
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+
+        String url = "";
+
+        SessionManager session = new SessionManager(this);
+
+        progressDialog.setMessage("Validando código...");
+        AccountManager mAccountManager = AccountManager.get(this);
+        Account[] availableAccounts = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
+        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+
+        jsonRequest = String.format("{\"Token\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", i:false}", token, ssk, userId);
+        url = String.format("/%s/%s", WebApiClient.API.cms, WebApiClient.METHODS.ValidateCustomerContact);
+
+
+        progressDialog.show();
+
+        WebApiClient.post(url, jsonRequest, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+                progressDialog.dismiss();
+                Toast.makeText(ValidateSMSTokenActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String response) {
+                String json = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, response.replace('"', ' ').trim());
+
+                String message = ReportManager.getErrorReportList(json);
+
+                progressDialog.dismiss();
+
+                if (ReportManager.IsValidated(json)) {
+                    Toast.makeText(getBaseContext(), Settings.labels.ContactAuth, Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class));
+                } else {
+                    if (!message.isEmpty()) {
+                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, message.trim());
+                    } else {
+                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, Settings.labels.AppInMaintenanceMessage);
+                    }
+                }
+            }
+        });
     }
 }

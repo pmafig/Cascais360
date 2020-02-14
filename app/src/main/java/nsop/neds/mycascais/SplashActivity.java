@@ -12,6 +12,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
+import nsop.neds.mycascais.Manager.CountryListManager;
 import nsop.neds.mycascais.Manager.ExternalAppManager;
 import nsop.neds.mycascais.Manager.ResourcesManager;
 import nsop.neds.mycascais.Manager.SessionManager;
@@ -29,8 +30,14 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         try {
+            String packageName = "";
+            int externalAppId = 0;
+
             SessionManager sm = new SessionManager(this);
             Settings.LangCode = sm.getLangCode();
+
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
 
             setContentView(R.layout.activity_splash);
 
@@ -40,11 +47,6 @@ public class SplashActivity extends AppCompatActivity {
                 actionBar.hide();
             }
 
-            Intent intent = getIntent();
-            Bundle bundle = intent.getExtras();
-
-            String packageName = "";
-            int externalAppId = 0;
             if (intent.hasExtra(Variables.PackageName)) {
                 packageName = bundle.getString(Variables.PackageName);
                 sm.setExternalAppPackageName(packageName);
@@ -55,6 +57,9 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             if (!packageName.isEmpty() && externalAppId > 0) {
+
+                new CountryListManager(this).execute(WebApiCalls.getCountryList(sm.getLangCodePosition() + 1));
+
                 LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
                 final String name = packageName;

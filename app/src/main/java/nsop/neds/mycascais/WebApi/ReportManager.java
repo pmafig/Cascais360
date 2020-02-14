@@ -115,6 +115,10 @@ public class ReportManager {
         return Boolean.valueOf(getVariable(json, "IsValid"));
     }
 
+    public static boolean IsValidated(String json){
+        return Boolean.valueOf(getVariable(json, "IsValidated"));
+    }
+
 
     public static String getAppContact(String json) throws JSONException {
         JSONObject data = new JSONObject(json);

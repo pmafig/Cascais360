@@ -119,4 +119,6 @@ public class Labels {
     public String Cancel;
     public String AppInMaintenanceMessage;
     public String DisclaimerTextInfo = "Autoriza a applicação %s aceder aos seguintes dados:";
+    public String AskForAuthentication;
+    public String ContactAuth = "Contacto inserido com sucesso.";
 }

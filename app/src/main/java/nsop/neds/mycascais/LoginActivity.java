@@ -32,6 +32,7 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
+import nsop.neds.mycascais.Entities.Json.Email;
 import nsop.neds.mycascais.Entities.Json.Labels;
 
 import nsop.neds.mycascais.Entities.Json.PhoneContacts;
@@ -40,6 +41,7 @@ import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.CommonManager;
+import nsop.neds.mycascais.Manager.CountryListManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
@@ -277,7 +279,23 @@ public class LoginActivity extends AppCompatActivity {
 
                     sm.setDisplayname(responseLogin.DisplayName);
                     sm.setFullName(ReportManager.getFullName(json));
-                    sm.setEmail(ReportManager.getEmail(json));
+
+                    if (responseLogin.Emails != null && responseLogin.Emails.size() > 0) {
+
+                        String email = "";
+
+                        for (Email e : responseLogin.Emails){
+                            if(e.Main){
+                                email = e.EmailAddress;
+                            }
+                        }
+
+                        if(email.isEmpty()){
+                            email = responseLogin.Emails.get(0).EmailAddress;
+                        }
+
+                        sm.setEmail(email);
+                    }
 
                     if (responseLogin.PhoneContacts != null && responseLogin.PhoneContacts.size() > 0) {
 
@@ -289,7 +307,13 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
 
+                        if(phoneNumber.isEmpty()){
+                            phoneNumber = responseLogin.PhoneContacts.get(0).Number;
+                        }
+
                         sm.setMobileNumber(phoneNumber);
+                    }else{
+                        sm.setMobileNumber("");
                     }
 
                     sm.setAddress(ReportManager.getAddress(json));
@@ -367,7 +391,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void register(){
+
         SessionManager sm = new SessionManager(this);
+        new CountryListManager(this).execute(WebApiCalls.getCountryList(sm.getLangCodePosition() + 1));
         sm.clear();
         sm.setNewAccount();
 

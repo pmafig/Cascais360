@@ -31,6 +31,7 @@ public class SessionManager {
     private static final String langcode = "LangCode";
     private static final String langcodeposition = "LangCodePosition";
 
+    private static final String countryList = "countryList";
     private static final String onBoarding = "onboarding";
     private static final String recover = "recover";
     private static final String newaccount = "newaccount";
@@ -84,6 +85,7 @@ public class SessionManager {
         }
         return null;
     }
+
     public void setResources(Resources resources){
         editor.putString(keys.resources.key, new Gson().toJson(resources)).commit();
     }
@@ -95,15 +97,24 @@ public class SessionManager {
         }
         return null;
     }
+
     public void setDashboard(Dashboard dashboard){
         editor.putString(keys.dashboard.key, new Gson().toJson(dashboard)).commit();
     }
-
 
     public Boolean getOnboarding(){ return sharedpreferences.getBoolean(onBoarding, false);    }
 
     public void setOnboarding(){ editor.putBoolean(onBoarding, true).commit(); }
 
+    public String getCountryList(){
+        if(sharedpreferences.contains(countryList)) {
+            return sharedpreferences.getString(countryList, "");
+        }else{
+            return null;
+        }
+    }
+
+    public void setSetCountryList(String list){ editor.putString(countryList, list).commit(); }
 
     public void setEvents(String e){ editor.putString(events, e).commit(); }
 
@@ -145,8 +156,19 @@ public class SessionManager {
 
     public void setDisplaystatus(String status){ editor.putString(userstatus, status).commit(); }
 
+    public void clear(){
+        editor.remove(username).commit();
+        editor.remove(fullname).commit();
+        editor.remove(address).commit();
+        editor.remove(email).commit();
 
-    public void clear(){ editor.remove(recover).commit(); editor.remove(newaccount).commit(); }
+        editor.remove(mobilenumber).commit();
+        editor.remove(packageName).commit();
+        editor.remove(externalAppId).commit();
+
+        editor.remove(recover).commit();
+        editor.remove(newaccount).commit();
+    }
 
     public void setRecover(){ editor.putBoolean(recover, true).commit(); }
 

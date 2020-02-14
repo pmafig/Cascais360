@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nsop.neds.mycascais.Entities.DashboardEntity;
+import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.EventsCategories;
 import nsop.neds.mycascais.Entities.Json.InfoEventBlock;
 import nsop.neds.mycascais.Entities.Json.MapMarker;
@@ -33,12 +34,14 @@ public class Data {
     public static List<MapMarker> LocalMarkers;
 
     public static ValidationContext SmsValidationContext;
+    public static List<Country> CountryList;
 
     public enum ValidationContext{
         none,
         changeContact,
         newAccount,
-        recoverAccount
+        recoverAccount,
+        addAuth
     }
 
     public static List<InfoEventBlock> CurrentCategoryList;

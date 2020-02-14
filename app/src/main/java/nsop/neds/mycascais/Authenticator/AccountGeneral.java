@@ -4,9 +4,11 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Build;
+import android.se.omapi.Session;
 import android.widget.Toast;
 
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Settings.Settings;
 
 public class AccountGeneral {
@@ -35,6 +37,9 @@ public class AccountGeneral {
         if(availableAccounts.length > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 mAccountManager.removeAccountExplicitly(availableAccounts[0]);
+
+                SessionManager sm = new SessionManager(context);
+                sm.clear();
             }
 
             Toast.makeText(context, Settings.labels.LogoutSuccess, Toast.LENGTH_LONG).show();

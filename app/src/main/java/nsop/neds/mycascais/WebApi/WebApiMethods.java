@@ -24,6 +24,8 @@ public class WebApiMethods {
 
     public static final String UPDATEMOBILEPHONECONTACT = "UpdateMobilePhoneContact";
 
+    public static final String UPDATECUSTOMERCONTACT = "UpdateCustomerContact";
+
     public static final String VALIDATEMOBILEPHONECONTACT = "ValidateMobilePhoneContact";
 
     public static final String REFRESHLOGINUSER = "RefreshLoginUser";

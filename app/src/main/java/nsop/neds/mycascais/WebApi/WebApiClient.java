@@ -34,7 +34,9 @@ public class WebApiClient {
         GetSubscriptions,
         ValidateResetLoginUser,
         ResendSMSToken,
-        GetExternalAppInfo
+        GetExternalAppInfo,
+        GetCountryList,
+        ValidateCustomerContact
     }
 
     private static final String USERAGENT = Build.VERSION.RELEASE;

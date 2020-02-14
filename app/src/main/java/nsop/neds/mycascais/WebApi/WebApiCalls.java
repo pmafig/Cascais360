@@ -31,6 +31,13 @@ public class WebApiCalls {
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
+    public static String getCountryList(int languageId){
+        String json = String.format("{\"LanguageID\":\"%s\"}", languageId);
+
+        String rt = new MessageEncryption().Encrypt(json, WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.GetCountryList + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
     public static String getWeather(){
         String rt = new MessageEncryption().Encrypt("{\"ContentType\":\"weather\"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;

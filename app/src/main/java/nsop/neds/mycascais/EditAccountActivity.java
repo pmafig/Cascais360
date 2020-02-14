@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -143,10 +144,8 @@ public class EditAccountActivity extends AppCompatActivity {
         editSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(changePhoneNumber) {
-                    changeUserData();
-                }else{
-                    Toast.makeText(EditAccountActivity.this, "Encontra-se em desenvolvimento...", Toast.LENGTH_SHORT).show();
+                if(changePhoneNumber || changeEmail) {
+                    validateChangeUserData();
                 }
             }
         });
@@ -334,24 +333,94 @@ public class EditAccountActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
-    private void changeUserData(){
+    private void validateChangeUserData(){
+
         UserEntity user = AccountGeneral.getUser(this);
-
+        EditText emailField = findViewById(R.id.accountEmail);
         EditText phoneContactField = findViewById(R.id.accountPhone);
-        final String phoneContact = phoneContactField.getText().toString();
 
-        String mobileNumber = new SessionManager(this).getMobileNumber();
+        final String phoneContact = phoneContactField.getText().toString();
+        final String emailContact = emailField.getText().toString();
+        final String mobileNumber = new SessionManager(this).getMobileNumber();
 
         boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
+        boolean validEmail = new InputValidatorManager().isValidEmail(emailContact);
 
-        AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
+        String validationMessage = "";
 
-        if(mobileNumber == phoneContact){
-            alertMessage.setMessage("O número de telemóvel inserido é igual ao registado.");
-            alertMessage.show();
-        }else if(!validPhoneNumber){
-            alertMessage.setMessage("O número de telemóvel inserido inválido.");
-            alertMessage.show();
+        if(emailField.isEnabled() && !validEmail){
+            validationMessage = Settings.labels.InvalidEmail;
+        }
+
+        if(phoneContactField.isEnabled() && !validPhoneNumber){
+            if(!validationMessage.isEmpty()){
+                validationMessage += "\n";
+            }
+            validationMessage += Settings.labels.InvalidContact;
+        }
+
+        if(!validationMessage.isEmpty()){
+            LayoutManager.alertMessage(this, validationMessage);
+        }else {
+
+            final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            changeUserData(true);
+                            builder.show().dismiss();
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            changeUserData(false);
+                            builder.show().dismiss();
+                            break;
+                    }
+                }
+            };
+
+            builder.setMessage(Settings.labels.AskForAuthentication).setPositiveButton(Settings.labels.Confirm, dialogClickListener)
+                    .setNegativeButton(Settings.labels.Cancel, dialogClickListener).show();
+        }
+    }
+
+    private void changeUserData(final boolean isAuthenticator){
+        UserEntity user = AccountGeneral.getUser(this);
+        EditText emailField = findViewById(R.id.accountEmail);
+        EditText phoneContactField = findViewById(R.id.accountPhone);
+
+        final String phoneContact = phoneContactField.getText().toString();
+        final String emailContact = emailField.getText().toString();
+        final String mobileNumber = new SessionManager(this).getMobileNumber();
+
+        boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
+        boolean validEmail = new InputValidatorManager().isValidEmail(emailContact);
+
+        String validationMessage = "";
+
+        if(mobileNumber.startsWith(phoneContact)){
+            validationMessage = Settings.labels.ChangePhoneNumberMessageMustBeDifferent;
+        }
+
+        if(emailField.isEnabled() && !validEmail){
+            if(!validationMessage.isEmpty()){
+                validationMessage += "\n";
+            }
+            validationMessage = Settings.labels.InvalidEmail;
+        }
+
+        if(phoneContactField.isEnabled() && !validPhoneNumber){
+            if(!validationMessage.isEmpty()){
+                validationMessage += "\n";
+            }
+            validationMessage += Settings.labels.InvalidContact;
+        }
+
+        if(!validationMessage.isEmpty()){
+            LayoutManager.alertMessage(this, validationMessage);
         }else {
 
             final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -359,20 +428,18 @@ public class EditAccountActivity extends AppCompatActivity {
             progressDialog.setMessage("Alterando telemóvel...");
             progressDialog.show();
 
-            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\"}", user.getSsk(), user.getUserId(), "+351", phoneContact);
+            if(isAuthenticator){
+                Data.SmsValidationContext = Data.ValidationContext.addAuth;
+            }
 
-            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiMethods.UPDATEMOBILEPHONECONTACT), jsonRequest, true, new TextHttpResponseHandler() {
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\", \"Email\":\"%s\", CreateAuthentication:%s}",
+                    user.getSsk(), user.getUserId(), "+351", phoneContact, emailContact, isAuthenticator);
+
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.UPDATECUSTOMERCONTACT), jsonRequest, true, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    System.out.println(responseString);
                     progressDialog.dismiss();
-                    try {
-                        AlertDialog.Builder alertMessage = new AlertDialog.Builder(getBaseContext(), R.style.AlertMessageDialog);
-                        alertMessage.setMessage("Lamentamos, ocorreu um erro com o seu pedido.");
-                        alertMessage.show();
-                    } catch (Exception e) {
-                        //clearAccount();
-                    }
+                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.TryAgain);
                 }
 
                 @Override
@@ -410,8 +477,8 @@ public class EditAccountActivity extends AppCompatActivity {
                             }catch (Exception ex){
                                 try{
                                 JSONObject data = new JSONObject(json);
-                                String smsCode = data.getString("ResponseData");
-                                intent.putExtra(Variables.ResponseSMSToken, smsCode);
+                                String smsCode = data.getString(Variables.ResponseData);
+                                intent.putExtra(Variables.Token, smsCode);
                                 }catch (JSONException jex){
 
                                 }
