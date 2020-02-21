@@ -162,17 +162,17 @@
             android:name="nsop.neds.mycascais.OnBoardingActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name="nsop.neds.mycascais.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <service android:name="nsop.neds.mycascais.Authenticator.CascaisAuthenticatorService">

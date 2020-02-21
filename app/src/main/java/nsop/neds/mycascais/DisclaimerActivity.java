@@ -33,9 +33,11 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
+import nsop.neds.mycascais.Entities.Json.Colors;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.Json.DisclaimerField;
 import nsop.neds.mycascais.Entities.Json.ExternalAppInfo;
+import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.UserEntity;
@@ -44,6 +46,7 @@ import nsop.neds.mycascais.Entities.WebApi.SetDisclaimerRequest;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.DashboardManager;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.ResourcesManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
@@ -74,34 +77,41 @@ public class DisclaimerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disclaimer);
 
-        int bitwiseAutotization = 0;
-
-        new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
-
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
+
+        findViewById(R.id.menu_button_frame).setVisibility(View.GONE);
+
+        int bitwiseAutotization = 0;
+
         LinearLayout disclaimerContent = findViewById(R.id.disclaimer_content);
 
         disclaimerConfirm = findViewById(R.id.disclaimerConfirm);
-        disclaimerConfirm.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
-
         disclaimerCancel = findViewById(R.id.disclaimerCancel);
-        disclaimerCancel.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+
+        if(Settings.colors != null && !Settings.colors.YearColor.isEmpty()) {
+            disclaimerConfirm.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+            disclaimerCancel.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        }else{
+            disclaimerConfirm.setBackgroundColor(Color.parseColor("#BEBEBE"));
+            disclaimerCancel.setBackgroundColor(Color.parseColor("#BEBEBE"));
+        }
 
         diclaimerText = findViewById(R.id.disclaimer_textInfo);
-
-        new MenuManager(this, toolbar, menuFragment, null);
 
         SessionManager sm = new SessionManager(this);
 
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
 
-        if(intent.hasExtra(Variables.PackageName)) {
-            packageName = bundle.getString(Variables.PackageName);
-        }
-        if(intent.hasExtra(Variables.ExternalAppId)) {
-            externalAppId = bundle.getInt(Variables.ExternalAppId);
+        if(intent != null) {
+            Bundle bundle = intent.getExtras();
+
+            if (bundle != null && bundle.containsKey(Variables.PackageName)) {
+                packageName = bundle.getString(Variables.PackageName);
+            }
+            if (bundle != null && bundle.containsKey(Variables.ExternalAppId)) {
+                externalAppId = bundle.getInt(Variables.ExternalAppId);
+            }
         }
 
         if(sm != null){
@@ -124,31 +134,38 @@ public class DisclaimerActivity extends AppCompatActivity {
                     }
                 }
 
-                if (appInfo != null) {
-                    diclaimerText.setText(String.format(Settings.labels.DisclaimerTextInfo, appInfo.AppName));
+                if (appInfo != null && appInfo.AppName != null) {
+                    diclaimerText.setText(String.format("Autoriza a APP %s aceder aos seguintes dados:", appInfo.AppName));
                 }else{
-                    diclaimerText.setVisibility(View.GONE);
+                    diclaimerText.setText("A APP não tem permissões!");
+                    disclaimerConfirm.setVisibility(View.GONE);disclaimerCancel.setVisibility(View.GONE);
                 }
 
-                for (int i = 0; i < disclaimer.DisclaimerFields.size(); i++) {
-                    DisclaimerField field = disclaimer.DisclaimerFields.get(i);
-                    for (int j = 0; j < user.FullDisclaimer.size(); j++) {
-                        if (field.BitwiseID == user.FullDisclaimer.get(j).BitwiseID) {
-                            View disclaimerField = View.inflate(this, R.layout.block_disclalimer_field, null);
-                            TextView tv_item = disclaimerField.findViewById(R.id.disclaimer_item);
-                            TextView tv_value = disclaimerField.findViewById(R.id.disclaimer_value);
-                            tv_item.setText(field.Name);
-                            tv_item.setTextColor(Color.parseColor(Settings.colors.YearColor));
-                            tv_value.setText(user.FullDisclaimer.get(j).Description);
-                            disclaimerContent.addView(disclaimerField);
+                diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados: ", appInfo.AppName));
 
-                            DisclaimerField f = new DisclaimerField();
-                            f.Name = field.Name;
-                            f.Description = user.FullDisclaimer.get(j).Description;
-                            disclaimerFieldList.add(f);
+                if(disclaimer != null && disclaimer.DisclaimerFields != null && disclaimer.DisclaimerFields.size() > 0) {
+                    for (int i = 0; i < disclaimer.DisclaimerFields.size(); i++) {
+                        DisclaimerField field = disclaimer.DisclaimerFields.get(i);
+                        if(user.FullDisclaimer != null && user.FullDisclaimer.size() > 0) {
+                            for (int j = 0; j < user.FullDisclaimer.size(); j++) {
+                                if (field.BitwiseID == user.FullDisclaimer.get(j).BitwiseID) {
+                                    View disclaimerField = View.inflate(this, R.layout.block_disclalimer_field, null);
+                                    TextView tv_item = disclaimerField.findViewById(R.id.disclaimer_item);
+                                    TextView tv_value = disclaimerField.findViewById(R.id.disclaimer_value);
+                                    tv_item.setText(field.Name);
+                                    //tv_item.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                                    tv_value.setText(user.FullDisclaimer.get(j).Description);
+                                    disclaimerContent.addView(disclaimerField);
 
-                            bitwiseAutotization += field.BitwiseID;
-                            break;
+                                    DisclaimerField f = new DisclaimerField();
+                                    f.Name = field.Name;
+                                    f.Description = user.FullDisclaimer.get(j).Description;
+                                    disclaimerFieldList.add(f);
+
+                                    bitwiseAutotization += field.BitwiseID;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -169,8 +186,13 @@ public class DisclaimerActivity extends AppCompatActivity {
                     }
                 });
             }else{
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivity(loginIntent);
+                try {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivityForResult(loginIntent, 1);
+                }catch (Exception ex){
+                    System.out.println(ex.getMessage());
+                }
             }
         }
     }
@@ -180,7 +202,7 @@ public class DisclaimerActivity extends AppCompatActivity {
         SessionManager sm = new SessionManager(this);
         UserEntity user = AccountGeneral.getUser(this);
 
-        progressDialog.setMessage(Settings.labels.ProcessingData);
+        //progressDialog.setMessage(Settings.labels.ProcessingData);
         progressDialog.show();
 
         SetDisclaimerRequest disclaimerRequest = new SetDisclaimerRequest();

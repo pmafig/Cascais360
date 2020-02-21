@@ -11,16 +11,17 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
+import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.CountryListManager;
 import nsop.neds.mycascais.Manager.ExternalAppManager;
 import nsop.neds.mycascais.Manager.ResourcesManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
+import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
-import nsop.neds.mycascais.WebApi.WebApiClient;
-import nsop.neds.mycascais.WebApi.WebApiMessages;
+
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -47,16 +48,36 @@ public class SplashActivity extends AppCompatActivity {
                 actionBar.hide();
             }
 
-            if (intent.hasExtra(Variables.PackageName)) {
-                packageName = bundle.getString(Variables.PackageName);
-                sm.setExternalAppPackageName(packageName);
-            }
-            if (intent.hasExtra(Variables.ExternalAppId)) {
-                externalAppId = bundle.getInt(Variables.ExternalAppId);
-                sm.setExternalAppPackageExternalId(externalAppId);
+            if(intent != null && bundle != null) {
+                if (bundle.containsKey(Variables.PackageName)) {
+                    packageName = bundle.getString(Variables.PackageName);
+                    sm.setExternalAppPackageName(packageName);
+                }
+                if (bundle.containsKey(Variables.ExternalAppId)) {
+                    externalAppId = bundle.getInt(Variables.ExternalAppId);
+                    sm.setExternalAppPackageExternalId(externalAppId);
+                }
             }
 
             if (!packageName.isEmpty() && externalAppId > 0) {
+
+                if(sm == null){
+                    sm = new SessionManager(getBaseContext());
+                }
+
+                Resources r = sm.getResources();
+
+                if(r != null) {
+                    Settings.colors = r.Colors;
+                    Settings.labels = r.Labels;
+                    Settings.labels = r.Labels;
+                    Settings.aboutApp = r.AboutApp;
+                    Settings.menus = r.Menu;
+                    Data.NotificationsEventsCategories = r.EventsCategories;
+                    Data.NotificationsPlacesCategories = r.PlacesCategories;
+                    Data.NotificationsRoutesCategories = r.RoutesCategories;
+                    Data.Towns = r.TownCouncils;
+                }
 
                 new CountryListManager(this).execute(WebApiCalls.getCountryList(sm.getLangCodePosition() + 1));
 
@@ -79,10 +100,10 @@ public class SplashActivity extends AppCompatActivity {
                 if (disclaimer == null) {
                     Intent disclaimerIntent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(disclaimerIntent);
-                } else if (disclaimer.ShowDisclaimer) {
+                } else if (disclaimer != null  && disclaimer.ShowDisclaimer) {
                     Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
                     disclaimerIntent.putExtra(Variables.PackageName, name);
-                    disclaimerIntent.putExtra(Variables.ExternalAppId, appId);
+                    disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
                     startActivity(disclaimerIntent);
                 } else {
                     new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
@@ -121,7 +142,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }catch (Exception ex){
-            new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
+            //new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
         }
     }
 }
