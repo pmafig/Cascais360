@@ -49,8 +49,8 @@ public class Variables {
     public static String Autologin = "autologin";
 
     //region Intent variables
-    public static String PackageName = "packageName";
-    public static String ExternalAppId = "externalAppId";
+    public static String PackageName = "PACKAGE_NAME";
+    public static String ExternalAppId = "APP_ID";
     //endregion
 
     //region Queristring variables

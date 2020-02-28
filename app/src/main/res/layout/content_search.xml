@@ -133,6 +133,7 @@
                         android:inputType="text"
                         android:background="@color/colorWhite"
                         android:focusable="true"
+                        android:fontFamily="@font/montserrat_light"
                         android:focusableInTouchMode="true"
                         android:hint="O quê...?"/>
 

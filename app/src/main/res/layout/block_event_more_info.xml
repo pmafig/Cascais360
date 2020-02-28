@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="15dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorWhite">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -37,20 +38,22 @@
             android:id="@+id/more_info_label_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:fontFamily="@font/montserrat_light"
+            android:layout_marginTop="16sp"
+            android:fontFamily="@font/montserrat_regular"
             android:text="Nome"/>
         <TextView
             android:id="@+id/more_info_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"/>
+            android:fontFamily="@font/montserrat_light"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"/>
         <TextView
             android:id="@+id/more_info_label_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"
-            android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:layout_marginTop="16sp"
             android:text="Address"/>
         <WebView
             android:id="@+id/more_info_address"
@@ -61,20 +64,22 @@
             android:id="@+id/more_info_label_town"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"
-            android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:layout_marginTop="16sp"
             android:text="Freguesia"/>
         <TextView
             android:id="@+id/more_info_town"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"/>
+            android:fontFamily="@font/montserrat_light"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp" />
         <TextView
             android:id="@+id/more_info_label_geo_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"
-            android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:layout_marginTop="16sp"
             android:text="Geo"/>
 
         <FrameLayout
@@ -88,7 +93,9 @@
                     android:id="@+id/more_info_geo_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_light"/>
+                    android:fontFamily="@font/montserrat_light"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="14sp" />
                 <ImageView
                     android:id="@+id/map_detail"
                     android:layout_width="wrap_content"

@@ -116,11 +116,11 @@ public class CommonManager {
                 "<meta forua=\"true\" http-equiv=\"Cache-Control\" content=\"max-age=0\"/>\n" +
                 "<style type=\"text/css\">\n" +
                 "   @font-face {\n" +
-                "      font-family: 'Font';\n" +
+                "      font-family: Font;\n" +
                 "      src:url(\"file:///android_asset/montserrat_regular.otf\")\n" +
                 "   }\n" +
                 "   body {\n" +
-                "      font-family: 'Font';\n" +
+                "      font-family: Font;\n" +
                 //"      font-size: medium;\n" +
                 "      text-align: justify;\n" +
                 "      margin: 0;\n" +
@@ -151,21 +151,23 @@ public class CommonManager {
         float sp = 15;
         //int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, scaledDensity);
 
+        //int sp = Math.round(px * context.getResources().getDisplayMetrics().scaledDensity);
+
         String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                 "<head>\n" +
                 "<title>WebView9</title>\n" +
                 "<meta forua=\"true\" http-equiv=\"Cache-Control\" content=\"max-age=0\"/>\n" +
                 "<style type=\"text/css\">\n" +
                 "   @font-face {\n" +
-                "      font-family: 'Font';\n" +
+                "      font-family: Font;\n" +
                 "      src:url(\"file:///android_asset/fonts/montserrat_light.otf\")\n" +
                 "   }\n" +
                 "   body {\n" +
-                "      font-family: 'Verdane';\n" +
-                "      font-size:"+ 15  +"px;\n" +
+                "      font-family: Font;\n" +
+                "      font-size:"+ sp  +"px;\n" +
                 "      text-align: justify;\n" +
                 "      margin: 0;\n" +
-                "      color:#808080\n" +
+                "      color:#000000\n" +
                 "   }\n" +
                /* "   p {\n" +
                 "      font-family: 'Arial';\n" +

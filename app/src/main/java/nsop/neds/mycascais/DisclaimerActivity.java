@@ -33,6 +33,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
+import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Colors;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.Json.DisclaimerField;
@@ -239,7 +240,12 @@ public class DisclaimerActivity extends AppCompatActivity {
         sm.setExternalAppPackageName(null);
 
         Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
-        intent.putExtra(packageName + ".vault", new Gson().toJson(disclaimerFieldList));
+
+        try {
+            intent.putExtra(packageName + ".vault", new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+        }catch (Exception ex){
+            intent.putExtra(packageName + ".vault", "error... " + ex.getMessage());
+        }
         startActivityForResult(intent, 1);
     }
 

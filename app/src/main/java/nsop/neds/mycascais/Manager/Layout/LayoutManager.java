@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
@@ -58,6 +60,9 @@ import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.SearchActivity;
 import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
+
+import static androidx.core.content.res.ResourcesCompat.getColor;
+import static androidx.core.content.res.ResourcesCompat.getFont;
 
 public class LayoutManager {
 
@@ -1149,6 +1154,8 @@ public class LayoutManager {
                     public void onClick(View v) {
                         final Dialog dialog = new Dialog(context);
 
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                         View dates = View.inflate(context, R.layout.block_event_more_dates, null);
                         LinearLayout wrapper = dates.findViewById(R.id.more_dates_content);
 
@@ -1162,6 +1169,15 @@ public class LayoutManager {
                         for (String d : event.NextDates) {
                             TextView date = new TextView(context);
                             date.setText(d);
+                            date.setTypeface(getFont(context, R.font.montserrat_light));
+                            date.setTextColor(ContextCompat.getColor(context, R.color.colorBlack));
+
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                            int sp = Math.round(Settings.dotsMargin * context.getResources().getDisplayMetrics().scaledDensity);
+
+                            params.setMargins(0, sp, 0, sp);
+                            date.setLayoutParams(params);
 
                             wrapper.addView(date);
                         }
@@ -1244,6 +1260,9 @@ public class LayoutManager {
                 @Override
                 public void onClick(View v) {
                     final Dialog dialog = new Dialog(context);
+
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                     dialog.setContentView(R.layout.block_event_more_info);
 
                     TextView local_label = dialog.findViewById(R.id.more_info_title);
@@ -1317,7 +1336,7 @@ public class LayoutManager {
 
             String _p = event.Price.Text.substring(event.Price.Text.indexOf("<p>"), event.Price.Text.indexOf("</p>")) + "</p>" ;
 
-            price.loadData(CommonManager.WebViewFormatLight(_p), CommonManager.MimeType(), CommonManager.Encoding());
+            price.loadData(CommonManager.WebViewFormatLight( _p), CommonManager.MimeType(), CommonManager.Encoding());
 
             Button eventTicket = mainContent.findViewById(R.id.event_ticket);
             eventTicket.setVisibility(event.OnlineTicket != null ? View.VISIBLE : View.GONE );
@@ -1417,6 +1436,9 @@ public class LayoutManager {
                 @Override
                 public void onClick(View v) {
                     final Dialog dialog = new Dialog(context);
+
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                     dialog.setContentView(R.layout.block_event_hours);
 
                     dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
@@ -1459,6 +1481,9 @@ public class LayoutManager {
                 @Override
                 public void onClick(View v) {
                     final Dialog dialog = new Dialog(context);
+
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                     dialog.setContentView(R.layout.block_event_more_info);
 
                     dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
@@ -1541,6 +1566,9 @@ public class LayoutManager {
                 @Override
                 public void onClick(View v) {
                     final Dialog dialog = new Dialog(context);
+
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                     dialog.setContentView(R.layout.block_event_hours);
 
                     dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {

@@ -14,9 +14,9 @@
             android:layout_height="match_parent"
             android:text="datas"
             android:textAllCaps="true"
-            android:textSize="18dp"
-            android:paddingVertical="15dp"
-            android:paddingHorizontal="15dp"
+            android:textSize="18sp"
+            android:paddingVertical="15sp"
+            android:paddingHorizontal="15sp"
             android:background="@drawable/border_bottom"
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/montserrat_regular"/>

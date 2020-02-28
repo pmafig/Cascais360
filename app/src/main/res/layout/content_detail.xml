@@ -285,7 +285,7 @@
                             android:text=""
                             android:fontFamily="@font/montserrat_regular"
                             android:textColor="@color/colorHit"
-                            android:textSize="16dp"/>
+                            android:textSize="16sp"/>
                         <TextView
                             android:id="@+id/label_more_dates"
                             android:layout_width="match_parent"
@@ -296,7 +296,7 @@
                             android:text="[+ datas]"
                             android:fontFamily="@font/montserrat_light"
                             android:textColor="@color/colorHit"
-                            android:textSize="14dp"
+                            android:textSize="14sp"
                             android:visibility="gone"/>
                         <TextView
                             android:id="@+id/label_office_hours_statuc"
@@ -308,7 +308,7 @@
                             android:text="encerrado"
                             android:fontFamily="@font/montserrat_light"
                             android:textColor="@color/colorHit"
-                            android:textSize="12dp"
+                            android:textSize="12sp"
                             android:background="@drawable/office_hours"
                             android:visibility="gone"/>
                     </LinearLayout>
@@ -320,7 +320,7 @@
                     android:text="11 mai a 19 mai 2019"
                     android:fontFamily="@font/montserrat_light"
                     android:textColor="@color/colorBlack"
-                    android:textSize="14dp"
+                    android:textSize="14sp"
                     android:visibility="gone"/>
                 <WebView
                     android:id="@+id/place_date"
@@ -366,7 +366,7 @@
                             android:text="HORÁRIO"
                             android:fontFamily="@font/montserrat_regular"
                             android:textColor="@color/colorHit"
-                            android:textSize="16dp"/>
+                            android:textSize="16sp"/>
                         <TextView
                             android:id="@+id/label_more_time"
                             android:layout_width="match_parent"
@@ -375,7 +375,7 @@
                             android:text="[+ ver detalhe]"
                             android:fontFamily="@font/montserrat_light"
                             android:textColor="@color/colorHit"
-                            android:textSize="14dp"/>
+                            android:textSize="14sp"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -416,7 +416,7 @@
                             android:text="LOCAL"
                             android:fontFamily="@font/montserrat_regular"
                             android:textColor="@color/colorHit"
-                            android:textSize="16dp"/>
+                            android:textSize="16sp"/>
                         <TextView
                             android:id="@+id/label_more_info"
                             android:layout_width="match_parent"
@@ -425,7 +425,7 @@
                             android:text="[+ info]"
                             android:fontFamily="@font/montserrat_light"
                             android:textColor="@color/colorHit"
-                            android:textSize="14dp"/>
+                            android:textSize="14sp"/>
                     </LinearLayout>
                     <TextView
                         android:id="@+id/location_name"
@@ -434,7 +434,7 @@
                         android:text="Quinta do pisão - Parque de Natureza. Alcabideche"
                         android:fontFamily="@font/montserrat_light"
                         android:textColor="@color/colorBlack"
-                        android:textSize="14dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -474,7 +474,7 @@
                             android:text="PREÇO"
                             android:fontFamily="@font/montserrat_regular"
                             android:textColor="@color/colorHit"
-                            android:textSize="16dp"/>
+                            android:textSize="16sp"/>
                         <TextView
                             android:id="@+id/label_more_price"
                             android:layout_width="match_parent"
@@ -483,7 +483,7 @@
                             android:text="[+ info]"
                             android:fontFamily="@font/montserrat_light"
                             android:textColor="@color/colorHit"
-                            android:textSize="14dp"
+                            android:textSize="14sp"
                             android:visibility="gone"/>
                     </LinearLayout>
 
@@ -533,7 +533,7 @@
                     android:text="DESCRIÇÃO"
                     android:fontFamily="@font/montserrat_regular"
                     android:textColor="@color/colorHit"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:layout_marginBottom="5dp"/>
 
                 <WebView

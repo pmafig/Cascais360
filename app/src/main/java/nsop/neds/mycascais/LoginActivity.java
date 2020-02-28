@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.se.omapi.Session;
 import android.text.Layout;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -148,6 +149,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(LoginActivity.this);
 
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
                 dialog.setContentView( R.layout.block_terms_condition_info);
                 TextView title = dialog.findViewById(R.id.terms_title);
                 title.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -172,6 +175,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(LoginActivity.this);
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
                 dialog.setContentView( R.layout.block_terms_condition_info);
                 TextView title = dialog.findViewById(R.id.terms_title);
