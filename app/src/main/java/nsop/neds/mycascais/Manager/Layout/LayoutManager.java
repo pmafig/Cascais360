@@ -1593,16 +1593,18 @@ public class LayoutManager {
 
             Button eventTicket = mainContent.findViewById(R.id.event_ticket);
             eventTicket.setVisibility(place.OnlineTicket != null ? View.VISIBLE : View.GONE );
+
             if(place.OnlineTicket != null) {
                 final String ticket_page = place.OnlineTicket;
                 eventTicket.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
                 eventTicket.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        /*Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(ticket_page));
-                        context.startActivity(browser);*/
+                        Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(ticket_page));
+                        context.startActivity(browser);
                     }
                 });
+                mainContent.findViewById(R.id.event_ticket_frame).setVisibility(View.VISIBLE);
             }
 
             price_frame.setVisibility(View.VISIBLE);

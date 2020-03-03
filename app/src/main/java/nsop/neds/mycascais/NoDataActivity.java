@@ -49,7 +49,7 @@ public class NoDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_validate_sms_token);
+        setContentView(R.layout.activity_no_data);
 
         backButton = findViewById(R.id.accountBack);
         noDataMessage = findViewById(R.id.noDataMessage);

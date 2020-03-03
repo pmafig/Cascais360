@@ -459,6 +459,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
             Button getDirections = view.findViewById(R.id.get_directions);
+
+            getDirections.setText(Settings.labels.InitTrip);
+            //seeRoute.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(Settings.colors.YearColor)));
+            Drawable bgDirections = this.getDrawable(R.drawable.see_map_bg);
+            bgDirections.setTint(Color.parseColor(Settings.colors.YearColor));
+            getDirections.setBackground(bgDirections);
+            //getDirections.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
             getDirections.setText(Settings.labels.GetDirections);
             getDirections.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -125,6 +128,8 @@ public class RegisterActivity extends AppCompatActivity {
     LinearLayout accountPolicyPrivacy;
     LinearLayout accountRequirements;
 
+    TextView accountPolicyPrivacyText;
+
     private Button registerButton;
 
     LinearLayout menuFragment;
@@ -175,6 +180,10 @@ public class RegisterActivity extends AppCompatActivity {
         accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
         accountPolicyPrivacy = findViewById(R.id.accountPolicyPrivacy_frame);
 
+        accountPolicyPrivacy = findViewById(R.id.accountPolicyPrivacy_frame);
+        accountPolicyPrivacyText = findViewById(R.id.accountPolicyPrivacy);
+        accountPolicyPrivacyText.setTextColor(Color.parseColor(Settings.colors.YearColor));
+
         newPassword = findViewById(R.id.accountPassword);
         rePassword = findViewById(R.id.accountRePassword);
 
@@ -193,6 +202,33 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
+
+        accountPolicyPrivacyText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(RegisterActivity.this);
+
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                dialog.setContentView( R.layout.block_terms_condition_info);
+                TextView title = dialog.findViewById(R.id.terms_title);
+                title.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                title.setText(Settings.labels.TermsAndConditions);
+
+                WebView about = dialog.findViewById(R.id.more_info_address);
+                about.loadUrl("https://sites.cascais.pt/mycascais-contents/termsandconditions");
+                //about.loadData(CommonManager.WebViewFormatLight(Settings.aboutApp), CommonManager.MimeType(), CommonManager.Encoding());
+
+                dialog.findViewById(R.id.close_terms).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
             }
         });
 

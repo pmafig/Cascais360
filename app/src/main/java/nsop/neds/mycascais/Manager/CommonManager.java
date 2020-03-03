@@ -1,6 +1,11 @@
 package nsop.neds.mycascais.Manager;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
@@ -18,6 +23,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.WebApiMessages;
@@ -210,6 +217,28 @@ public class CommonManager {
             return price.substring(price.indexOf("<p>"), price.indexOf("</p>")) + "</p>";
         }catch (Exception e){
             return price;
+        }
+    }
+
+    public void launchApp(Context context, String packageName, String variable) {
+        Intent intent = new Intent();
+        intent.setPackage(packageName);
+
+        PackageManager pm = context.getPackageManager();
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
+        Collections.sort(resolveInfos, new ResolveInfo.DisplayNameComparator(pm));
+
+        if(resolveInfos.size() > 0) {
+            ResolveInfo launchable = resolveInfos.get(0);
+            ActivityInfo activity = launchable.activityInfo;
+            ComponentName name=new ComponentName(activity.applicationInfo.packageName, activity.name);
+
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.putExtra(packageName + ".vault", variable);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            i.setComponent(name);
+
+            context.startActivity(i);
         }
     }
 }

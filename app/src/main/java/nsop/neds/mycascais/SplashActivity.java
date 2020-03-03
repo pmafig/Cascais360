@@ -1,6 +1,12 @@
 package nsop.neds.mycascais;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -9,10 +15,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import cz.msebera.android.httpclient.Header;
+import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
+import nsop.neds.mycascais.Entities.Json.DisclaimerField;
 import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
+import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.CountryListManager;
 import nsop.neds.mycascais.Manager.ExternalAppManager;
 import nsop.neds.mycascais.Manager.ResourcesManager;
@@ -100,11 +113,37 @@ public class SplashActivity extends AppCompatActivity {
                 if (disclaimer == null) {
                     Intent disclaimerIntent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(disclaimerIntent);
-                } else if (disclaimer != null  && disclaimer.ShowDisclaimer) {
-                    Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
-                    disclaimerIntent.putExtra(Variables.PackageName, name);
-                    disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
-                    startActivity(disclaimerIntent);
+                } else if (disclaimer != null) {
+                    if(disclaimer.ShowDisclaimer) {
+                        Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
+                        disclaimerIntent.putExtra(Variables.PackageName, name);
+                        disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
+                        startActivity(disclaimerIntent);
+                    }else{ //if(disclaimer.AcceptedDisclaimer){
+                        final List<DisclaimerField> disclaimerFieldList = new ArrayList<>();
+
+                        if(disclaimer != null && disclaimer.DisclaimerFields != null && disclaimer.DisclaimerFields.size() > 0) {
+                            for (int i = 0; i < disclaimer.DisclaimerFields.size(); i++) {
+                                DisclaimerField field = disclaimer.DisclaimerFields.get(i);
+                                if(user.FullDisclaimer != null && user.FullDisclaimer.size() > 0) {
+                                    for (int j = 0; j < user.FullDisclaimer.size(); j++) {
+                                        if (field.BitwiseID == user.FullDisclaimer.get(j).BitwiseID) {
+
+                                            DisclaimerField f = new DisclaimerField();
+                                            f.Name = field.Name;
+                                            f.Description = user.FullDisclaimer.get(j).Description;
+                                            disclaimerFieldList.add(f);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+                    //}else{
+                        //launchApp(packageName, new MessageEncryption().Encrypt("request denied...", "fc4e5f84847b4712b88f11db42fd804a"));
+                    }
                 } else {
                     new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
                 }
@@ -142,7 +181,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }catch (Exception ex){
-            //new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
+            new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
         }
     }
 }

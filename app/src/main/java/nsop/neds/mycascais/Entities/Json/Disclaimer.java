@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Disclaimer {
     public boolean ShowDisclaimer;
+    public boolean AcceptedDisclaimer;
     public int SiteID;
     public List<DisclaimerField> DisclaimerFields;
 }

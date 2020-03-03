@@ -45,6 +45,7 @@ import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.SetDisclaimerRequest;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
+import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.DashboardManager;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.ResourcesManager;
@@ -242,9 +243,11 @@ public class DisclaimerActivity extends AppCompatActivity {
         Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
         try {
-            intent.putExtra(packageName + ".vault", new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+            //intent.putExtra(packageName + ".vault", new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
         }catch (Exception ex){
-            intent.putExtra(packageName + ".vault", "error... " + ex.getMessage());
+            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt("error... " + ex.getMessage(), "fc4e5f84847b4712b88f11db42fd804a"));
+            //intent.putExtra(packageName + ".vault", "error... " + ex.getMessage());
         }
         startActivityForResult(intent, 1);
     }
