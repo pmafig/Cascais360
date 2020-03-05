@@ -52,38 +52,36 @@
             android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="10dp">
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <LinearLayout
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/marker_index"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:textSize="12dp"
-                        android:gravity="center"
-                        android:textColor="@color/colorWhite"
-                        android:background="@drawable/ic_dot"
-                        android:text="1"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/marker_index"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorWhite"
+                    android:background="@drawable/ic_dot"
+                    android:text="1"/>
 
-                    <TextView
-                        android:id="@+id/marker_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Casa D. Maria Pia"
-                        android:textSize="14dp"
-                        android:fontFamily="@font/montserrat_regular"
-                        android:paddingLeft="10dp"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/colorBlack"/>
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/marker_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Casa D. Maria Pia"
+                    android:textSize="14dp"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:paddingLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/colorBlack"/>
+            </LinearLayout>
 
                 <TextView
                     android:id="@+id/marker_address"
@@ -117,11 +115,15 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_play_arrow_black_24dp"/>
                 </LinearLayout>
+            </LinearLayout>
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_weight="0.4">
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
-
+                    android:layout_height="wrap_content">
                     <TextView
                         android:id="@+id/marker_description"
                         android:layout_width="match_parent"
@@ -129,21 +131,19 @@
                         android:text="Avenida Marginal n.º 10"
                         android:textColor="@color/colorBlack"
                         android:textSize="12dp" />
-
-                </LinearLayout>
+                </ScrollView>
             </LinearLayout>
-            </ScrollView>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
                 android:gravity="center">
-
                 <Button
                     android:id="@+id/get_directions"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="25dp"
+                    android:layout_height="35dp"
+                    android:paddingHorizontal="35dp"
                     android:text="Iniciar Percurso"
                     android:textColor="@color/colorWhite"
                     android:textSize="10dp" />

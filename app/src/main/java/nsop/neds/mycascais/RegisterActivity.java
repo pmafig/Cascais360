@@ -56,6 +56,7 @@ import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.ExternalAppInfo;
+import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.Json.ResponseData;
 import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserRequest;
@@ -265,7 +266,15 @@ public class RegisterActivity extends AppCompatActivity {
         //region ação do button
         if(token != null){
             validateAccountLayout(); //set layout
-            new MenuManager(this, toolbar, menuFragment, Settings.labels.PasswordRecovery);
+
+            if(recover) {
+                new MenuManager(this, toolbar, menuFragment, Settings.labels.PasswordRecovery);
+                registerButton.setText(Settings.labels.Continue);
+            }else{
+                new MenuManager(this, toolbar, menuFragment, Settings.labels.CreateAccount);
+                registerButton.setText(Settings.labels.Continue);
+            }
+
             registerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -740,14 +749,13 @@ public class RegisterActivity extends AppCompatActivity {
             //TODO change operationsucces to true case re entry same data
             if (responseData != null ) { //&& responseData.OperationSucess
 
-                if(responseData.OperationSucess){
+                if (responseData.IsCreated) {
 
-                }
 
-                if (responseData.Email) {
+                /*if (responseData.EmailSent) {
                     LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
 
-                } else if (responseData.SMS) {
+                } else if (responseData.SMSSent) {
 
                     SmsRetrieverClient client = SmsRetriever.getClient(this);
                     Task<Void> task = client.startSmsRetriever();
@@ -775,21 +783,18 @@ public class RegisterActivity extends AppCompatActivity {
                     verify.putExtra(Variables.AlertMessage, receivedMessage);
                     startActivity(verify);
                 }
-
             }else{
                 LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
             }
 
-            if(!receivedMessage.isEmpty()){
-                LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
+            if(!receivedMessage.isEmpty()){*/
+                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
+                }
             }
 
         } catch (JSONException ex) {
 
         }
-
-
-
     }
 
     private void validateUserResponse(String eMessage){

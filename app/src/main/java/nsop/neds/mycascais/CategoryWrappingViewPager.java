@@ -6,6 +6,8 @@ import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
 
+import nsop.neds.mycascais.Settings.Settings;
+
 public class CategoryWrappingViewPager extends ViewPager {
     public CategoryWrappingViewPager(Context context) {
         super(context);
@@ -18,6 +20,7 @@ public class CategoryWrappingViewPager extends ViewPager {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int mode = MeasureSpec.getMode(heightMeasureSpec);
+        int sp = Math.round(135 * getResources().getDisplayMetrics().scaledDensity);
         // Unspecified means that the ViewPager is in a ScrollView WRAP_CONTENT.
         // At Most means that the ViewPager is not in a ScrollView WRAP_CONTENT.
         if (mode == MeasureSpec.UNSPECIFIED || mode == MeasureSpec.AT_MOST) {
@@ -31,7 +34,7 @@ public class CategoryWrappingViewPager extends ViewPager {
                 int h = child.getMeasuredHeight();
 
                 if (h > height) {
-                    height = h + 250;
+                    height = h + sp;
                 }
             }
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

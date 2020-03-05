@@ -1,5 +1,6 @@
 package nsop.neds.mycascais.Manager;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
@@ -22,12 +23,15 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Entities.Json.Detail;
+import nsop.neds.mycascais.Entities.Json.Event;
+import nsop.neds.mycascais.Entities.Json.Point;
 import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.LoginActivity;
@@ -184,11 +188,17 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                 calendar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            //requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR}, PERMISSIONS_REQUEST_WRITE_CALENDAR);
-                        }
+
                         //addReminderInCalendar();
-                        //addevent(title, description, location, false,false, beginTime.getTimeInMillis(), endTime.getTimeInMillis());
+                        Event event = detail.Events.get(0);
+
+                        final Calendar beginTime = Calendar.getInstance();
+                        beginTime.set(2019, 11, 4, 15, 30);
+
+                        final Calendar endTime = Calendar.getInstance();
+                        beginTime.set(2019, 11, 4, 16, 30);
+
+                        new CalendarManager(context).addevent(event.Title, event.Description, event.Points.get(0).Title);
                     }
                 });
 

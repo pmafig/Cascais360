@@ -115,6 +115,7 @@ public class CommonManager {
         //context.startActivity(new Intent(context, NoServiceActivity.class));
     }
 
+
     public static String WebViewFormatRegular(String content){
 
         String html = "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
@@ -124,7 +125,7 @@ public class CommonManager {
                 "<style type=\"text/css\">\n" +
                 "   @font-face {\n" +
                 "      font-family: Font;\n" +
-                "      src:url(\"file:///android_asset/montserrat_regular.otf\")\n" +
+                "      src:url(\"https://fonts.gstatic.com/s/montserrat/v14/JTUQjIg1_i6t8kCHKm45_QpRxC7mw9c.woff2\")\n" +
                 "   }\n" +
                 "   body {\n" +
                 "      font-family: Font;\n" +
@@ -134,7 +135,7 @@ public class CommonManager {
                 "      color:#333\n" +
                 "   }\n" +
                 "   a {\n" +
-                "      font-family: 'Font';\n" +
+                "      font-family: Font;\n" +
                 "      color:"+ Settings.colors.YearColor +"\n" +
                 "   }\n" +
                 "</style>\n" +
@@ -167,7 +168,7 @@ public class CommonManager {
                 "<style type=\"text/css\">\n" +
                 "   @font-face {\n" +
                 "      font-family: Font;\n" +
-                "      src:url(\"file:///android_asset/fonts/montserrat_light.otf\")\n" +
+                "      src:url(\"https://fonts.gstatic.com/s/montserrat/v14/JTURjIg1_i6t8kCHKm45_cJD3gTD_u50.woff2\")\n" +
                 "   }\n" +
                 "   body {\n" +
                 "      font-family: Font;\n" +
@@ -180,7 +181,7 @@ public class CommonManager {
                 "      font-family: 'Arial';\n" +
                 "   }\n" +*/
                 "   a {\n" +
-                "      font-family: 'Font';\n" +
+                "      font-family: Font;\n" +
                 "      color:"+ Settings.colors.YearColor +"\n" +
                 "   }\n" +
                 "</style>\n" +

@@ -119,6 +119,10 @@ public class Labels {
     public String Cancel;
     public String AppInMaintenanceMessage;
     public String DisclaimerTextInfo = "Autoriza a applicação %s aceder aos seguintes dados:";
+    public String DisclaimerDeniedbyUser= "Autorização negada pelo utilizador.";
     public String AskForAuthentication;
     public String ContactAuth = "Contacto inserido com sucesso.";
+    public String SubscriptionRemoved = "Subscrição removida com sucesso.";
+    public String AddingEmail = "Addicionando email...";
+    public String AddingPhoneContact = "Addicionando telemóvel...";
 }

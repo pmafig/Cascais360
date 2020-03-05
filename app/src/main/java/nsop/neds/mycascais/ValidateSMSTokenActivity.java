@@ -98,21 +98,20 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (Data.SmsValidationContext) {
-                    case changeContact:
-                        ValidateSmsToken();
-                        break;
-                    case newAccount:
-                        ValidateNewRegisterSmsToken();
-                        break;
-                    case recoverAccount:
-                        RecoverSmsToken(finalToken);
-                        break;
-                    case addAuth:
-                        ValidateCustomerContact();
-                        break;
-
-                }
+            switch (Data.SmsValidationContext) {
+                case changeContact:
+                    ValidateSmsToken();
+                    break;
+                case newAccount:
+                    ValidateNewRegisterSmsToken();
+                    break;
+                case recoverAccount:
+                    RecoverSmsToken(finalToken);
+                    break;
+                case addAuth:
+                    ValidateCustomerContact();
+                    break;
+            }
             }
         });
 

@@ -36,4 +36,10 @@ public class WebApiMethods {
     public static final String SETLIKESTATUS = "setlike";
 
     public static final String SETDISCLAIMERRESPONSE = "SetDisclaimerResponse";
+
+    //region crm
+    public static final String ADDCUSTOMEREMAIL = "AddCustomerEmail";
+    public static final String ADDCUSTOMERPHONECONTACT = "AddCustomerPhoneContact";
+    public static final String CHANGEENTITYVALIDATIONSTATE = "ChangeEntityValidationState";
+    //endregion
 }

@@ -29,16 +29,24 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Entities.WebApi.ChangeEntityValidationStateResponse;
+import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserResponse;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -60,8 +68,8 @@ public class EditAccountActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener;
     private SessionManager sm;
 
-    private boolean changeEmail = false;
-    private boolean changePhoneNumber = false;
+    private boolean addEmail = false;
+    private boolean addPhoneNumber = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +152,7 @@ public class EditAccountActivity extends AppCompatActivity {
         editSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(changePhoneNumber || changeEmail) {
+                if(addPhoneNumber || addEmail) {
                     validateChangeUserData();
                 }
             }
@@ -162,7 +170,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
         if(contact.isEmpty()) {
 
-            changePhoneNumber = true;
+            addPhoneNumber = true;
 
             accountPhoneField.setEnabled(true);
             accountPhoneField.setHint(sm.getMobileNumber());
@@ -173,7 +181,7 @@ public class EditAccountActivity extends AppCompatActivity {
             findViewById(R.id.editAccount).setVisibility(View.GONE);
         }else if(email.isEmpty()){
 
-            changeEmail = true;
+            addEmail = true;
 
             accountEmailField.setEnabled(true);
             accountEmailField.setHint(sm.getMobileNumber());
@@ -189,7 +197,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
     private void cancelAccount(){
 
-        if(changePhoneNumber) {
+        if(addPhoneNumber) {
             EditText accountPhoneField = findViewById(R.id.accountPhone);
             accountPhoneField.setEnabled(false);
             accountPhoneField.setHint(sm.getMobileNumber());
@@ -197,7 +205,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
             findViewById(R.id.editAccount).setVisibility(View.VISIBLE);
             findViewById(R.id.editAccountSubmitFrame).setVisibility(View.GONE);
-        }else if(changeEmail){
+        }else if(addEmail){
             EditText accountEmailField = findViewById(R.id.accountEmail);
             accountEmailField.setEnabled(false);
             accountEmailField.setHint(sm.getMobileNumber());
@@ -334,14 +342,11 @@ public class EditAccountActivity extends AppCompatActivity {
     }
 
     private void validateChangeUserData(){
-
-        UserEntity user = AccountGeneral.getUser(this);
         EditText emailField = findViewById(R.id.accountEmail);
         EditText phoneContactField = findViewById(R.id.accountPhone);
 
         final String phoneContact = phoneContactField.getText().toString();
         final String emailContact = emailField.getText().toString();
-        final String mobileNumber = new SessionManager(this).getMobileNumber();
 
         boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
         boolean validEmail = new InputValidatorManager().isValidEmail(emailContact);
@@ -370,12 +375,20 @@ public class EditAccountActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
-                            changeUserData(true);
+                            if(addEmail){
+                                addCustomerEmail(true);
+                            }else if (addPhoneNumber){
+                                addCustomerPhoneContact(true);
+                            }
                             builder.show().dismiss();
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
-                            changeUserData(false);
+                            if(addEmail){
+                                addCustomerEmail(false);
+                            }else if (addPhoneNumber){
+                                addCustomerPhoneContact(false);
+                            }
                             builder.show().dismiss();
                             break;
                     }
@@ -387,29 +400,115 @@ public class EditAccountActivity extends AppCompatActivity {
         }
     }
 
-    private void changeUserData(final boolean isAuthenticator){
+    private void addCustomerEmail(final boolean isAuthenticator){
         UserEntity user = AccountGeneral.getUser(this);
         EditText emailField = findViewById(R.id.accountEmail);
+
+        final String emailContact = emailField.getText().toString();
+
+        boolean validEmail = new InputValidatorManager().isValidEmail(emailContact);
+
+        String validationMessage = "";
+
+        if(emailField.isEnabled() && !validEmail){
+            if(!validationMessage.isEmpty()){
+            }
+            validationMessage = Settings.labels.InvalidEmail;
+        }
+
+        if(!validationMessage.isEmpty()){
+            LayoutManager.alertMessage(this, validationMessage);
+        }else {
+
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+
+            progressDialog.setMessage(Settings.labels.AddingEmail);
+            progressDialog.show();
+
+            if (isAuthenticator) {
+                Data.SmsValidationContext = Data.ValidationContext.addAuth;
+            }
+
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EmailID\":\"%s\", LanguageID:%s}",
+                    user.getSsk(), user.getUserId(), emailContact, sm.getLangCodePosition() + 1);
+
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.ADDCUSTOMEREMAIL), jsonRequest, true, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progressDialog.dismiss();
+                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.TryAgain);
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                    AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
+                    appSignatureHelper.getAppSignatures();
+
+                    progressDialog.dismiss();
+
+                    String message = WebApiMessages.DecryptMessage(response);
+
+                    JSONObject jsonMessage = null;
+                    try {
+                        jsonMessage = new JSONObject(message);
+                    } catch (JSONException ex) {
+                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+
+                    }
+
+                    CreateLoginUserResponse responseData = null;
+
+                    if (jsonMessage.has(Variables.ResponseData)) {
+                        try {
+                            responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), CreateLoginUserResponse.class);
+                        } catch (JSONException ex) {
+                            //TODO add error message
+                        }
+                    }
+
+                    Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+
+                    if (jsonMessage.has(Variables.ReportList)) {
+                        try {
+                            List<ReportList> reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+                            StringBuilder sb = new StringBuilder();
+
+                            for (int i = 0; i < reportList.size(); i++) {
+                                sb.append(reportList.get(i).Description);
+                                if (i + 1 < reportList.size()) {
+                                    sb.append("\n");
+                                }
+                            }
+
+                            if (sb.length() > 0) {
+                                LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.CreateAccount, sb.toString());
+                            } else {
+                                Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException ex) {
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void addCustomerPhoneContact(final boolean isAuthenticator){
+        UserEntity user = AccountGeneral.getUser(this);
         EditText phoneContactField = findViewById(R.id.accountPhone);
 
         final String phoneContact = phoneContactField.getText().toString();
-        final String emailContact = emailField.getText().toString();
         final String mobileNumber = new SessionManager(this).getMobileNumber();
 
         boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
-        boolean validEmail = new InputValidatorManager().isValidEmail(emailContact);
 
         String validationMessage = "";
 
         if(mobileNumber.startsWith(phoneContact)){
             validationMessage = Settings.labels.ChangePhoneNumberMessageMustBeDifferent;
-        }
-
-        if(emailField.isEnabled() && !validEmail){
-            if(!validationMessage.isEmpty()){
-                validationMessage += "\n";
-            }
-            validationMessage = Settings.labels.InvalidEmail;
         }
 
         if(phoneContactField.isEnabled() && !validPhoneNumber){
@@ -425,17 +524,17 @@ public class EditAccountActivity extends AppCompatActivity {
 
             final ProgressDialog progressDialog = new ProgressDialog(this);
 
-            progressDialog.setMessage("Alterando telemóvel...");
+            progressDialog.setMessage(Settings.labels.AddingPhoneContact);
             progressDialog.show();
 
             if(isAuthenticator){
                 Data.SmsValidationContext = Data.ValidationContext.addAuth;
             }
 
-            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\", \"Email\":\"%s\", CreateAuthentication:%s}",
-                    user.getSsk(), user.getUserId(), "+351", phoneContact, emailContact, isAuthenticator);
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\", \"LanguageID\":%s}",
+                    user.getSsk(), user.getUserId(), "+351", phoneContact, sm.getLangCodePosition() + 1);
 
-            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.UPDATECUSTOMERCONTACT), jsonRequest, true, new TextHttpResponseHandler() {
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.ADDCUSTOMERPHONECONTACT), jsonRequest, true, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     progressDialog.dismiss();
@@ -445,57 +544,107 @@ public class EditAccountActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String response) {
 
-                    AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
-                    appSignatureHelper.getAppSignatures();
+                    String message = WebApiMessages.DecryptMessage(response);
 
-                    progressDialog.dismiss();
+                    JSONObject jsonMessage = null;
+                    try {
+                        jsonMessage = new JSONObject(message);
+                    } catch (JSONException ex) {
+                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                    }
 
-                    final String json = WebApiMessages.DecryptMessage(response);
+                    ChangeEntityValidationStateResponse responseData = null;
 
-                    SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
+                    if (jsonMessage.has(Variables.ResponseData)) {
+                        try {
 
-                    Task<Void> task = client.startSmsRetriever();
+                            responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
 
-                    new SessionManager(getBaseContext()).setMobileNumber(phoneContact);
-
-                    task.addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            //String test = "ok";
-                            //getSupportFragmentManager().beginTransaction().replace(R.id.container, RecoverPhoneCodeFragment.newInstance()).commitNow();
-                            //finishAndRemoveTask();
-                            //Toast.makeText(AccountActivity.this, String.format(getResources().getString(R.string.info_message_sms_codevalidation), phoneContact), Toast.LENGTH_SHORT).show();
-                            Data.SmsValidationContext = Data.ValidationContext.changeContact;
-
-                            Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
-                            try {
-                                Response response =  new Gson().fromJson(json, Response.class);
-
-                                if(response.ResponseData.InvalidaSession){
-
-                                }
-                            }catch (Exception ex){
-                                try{
-                                JSONObject data = new JSONObject(json);
-                                String smsCode = data.getString(Variables.ResponseData);
-                                intent.putExtra(Variables.Token, smsCode);
-                                }catch (JSONException jex){
-
-                                }
+                            if(responseData.IsAdded) {
+                                changeEntityValidationState(isAuthenticator, responseData.PhoneContactID);
+                            }else{
+                                //TODO add error message
                             }
 
-                            startActivity(intent);
+                        } catch (JSONException ex) {
+                            //TODO add error message
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            //String test = "ok";
-                            //Toast.makeText(AccountActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                    }
                 }
             });
         }
+    }
+
+    private void changeEntityValidationState(final boolean isAuthenticator, final int id){
+        UserEntity user = AccountGeneral.getUser(this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+
+        progressDialog.setMessage(Settings.labels.AddingPhoneContact);
+        progressDialog.show();
+
+        if(isAuthenticator){
+            Data.SmsValidationContext = Data.ValidationContext.addAuth;
+        }
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s}",
+                user.getSsk(), user.getUserId(), id, sm.getLangCodePosition() + 1);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.CHANGEENTITYVALIDATIONSTATE), jsonRequest, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                progressDialog.dismiss();
+                LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.TryAgain);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
+                appSignatureHelper.getAppSignatures();
+
+                progressDialog.dismiss();
+
+                final String json = WebApiMessages.DecryptMessage(response);
+
+                SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
+
+                Task<Void> task = client.startSmsRetriever();
+
+                task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Data.SmsValidationContext = Data.ValidationContext.changeContact;
+
+                        Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
+                        try {
+                            Response response =  new Gson().fromJson(json, Response.class);
+
+                            if(response.ResponseData.InvalidaSession){
+
+                            }
+                        }catch (Exception ex){
+                            try{
+                                JSONObject data = new JSONObject(json);
+                                String smsCode = data.getString(Variables.ResponseData);
+                                intent.putExtra(Variables.Token, smsCode);
+                            }catch (JSONException jex){
+
+                            }
+                        }
+
+                        startActivity(intent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //String test = "ok";
+                        //Toast.makeText(AccountActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+
     }
 }

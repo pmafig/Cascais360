@@ -1,26 +1,34 @@
 package nsop.neds.mycascais.Manager;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
+import cz.msebera.android.httpclient.Header;
+import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.DetailActivity;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.Event;
@@ -31,6 +39,9 @@ import nsop.neds.mycascais.Entities.Json.Search;
 import nsop.neds.mycascais.Entities.Json.Weather;
 import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.Settings.Settings;
+import nsop.neds.mycascais.WebApi.WebApiClient;
+import nsop.neds.mycascais.WebApi.WebApiMessages;
+import nsop.neds.mycascais.WebApi.WebApiMethods;
 
 public class NotificationsManager extends AsyncTask<String, Void, Search> {
 
@@ -75,7 +86,7 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
         }
     }
 
-    private void addNotification(String name, final int ID){
+    private void addNotification(String name, final int id){
         View block = View.inflate(context, R.layout.block_notification_selected_item, null);
 
         final TextView nameField = block.findViewById(R.id.notification_name);
@@ -87,7 +98,7 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra(Variables.Id, ID);
+                intent.putExtra(Variables.Id, id);
                 context.startActivity(intent);
             }
         });
@@ -105,6 +116,7 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
                             case DialogInterface.BUTTON_POSITIVE:
                                 nameField.setVisibility(View.GONE);
                                 removeButton.setVisibility(View.GONE);
+                                setNotification(id);
                                 break;
 
                             case DialogInterface.BUTTON_NEGATIVE:
@@ -144,5 +156,27 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
         }
 
         return null;
+    }
+
+    public void setNotification(int nid){
+        AccountManager mAccountManager = AccountManager.get(this.context);
+        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
+        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, nid);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETSUBSCRIPTION), jsonRequest, true, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(context, Settings.labels.TryAgain, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Toast.makeText(context, Settings.labels.SubscriptionRemoved, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

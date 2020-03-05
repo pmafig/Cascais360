@@ -114,12 +114,12 @@ public class SplashActivity extends AppCompatActivity {
                     Intent disclaimerIntent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(disclaimerIntent);
                 } else if (disclaimer != null) {
-                    if(disclaimer.ShowDisclaimer) {
+                    if(disclaimer.HasDisclaimer || disclaimer.NeedUpdate) {
                         Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
                         disclaimerIntent.putExtra(Variables.PackageName, name);
                         disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
                         startActivity(disclaimerIntent);
-                    }else{ //if(disclaimer.AcceptedDisclaimer){
+                    }else if(disclaimer.HasAccepted){
                         final List<DisclaimerField> disclaimerFieldList = new ArrayList<>();
 
                         if(disclaimer != null && disclaimer.DisclaimerFields != null && disclaimer.DisclaimerFields.size() > 0) {
@@ -139,10 +139,9 @@ public class SplashActivity extends AppCompatActivity {
                                 }
                             }
                         }
-
                         new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
-                    //}else{
-                        //launchApp(packageName, new MessageEncryption().Encrypt("request denied...", "fc4e5f84847b4712b88f11db42fd804a"));
+                    }else{
+                        new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(   Settings.labels.DisclaimerDeniedbyUser, "fc4e5f84847b4712b88f11db42fd804a"));
                     }
                 } else {
                     new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());

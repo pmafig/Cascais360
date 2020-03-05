@@ -363,6 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         final List<View> views = new ArrayList<>();
 
+
         int i = 1;
 
         for (final PointMap info: pointMap) {
@@ -488,6 +489,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ViewPager viewPager = findViewById(R.id.sliderPager);
         final TextView numeration = findViewById(R.id.sliderPagerNumeration);
 
+        ImageView left = findViewById(R.id.sliderdots_left_arrow);
+        ImageView right = findViewById(R.id.sliderdots_right_arrow);
+
+        numeration.setText(String.format("%s / %s", 1 , views.size()));
+
         viewPager.setAdapter(new SliderPageAdapter(views, this));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -504,6 +510,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = viewPager.getCurrentItem();
+
+                if (i == 0 || i < views.size()) {
+                    viewPager.setCurrentItem(i - 1);
+                }
+            }
+        });
+
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = viewPager.getCurrentItem();
+
+                if (i == 0 || i < views.size()) {
+                    viewPager.setCurrentItem(i + 1);
+                }
             }
         });
     }

@@ -24,27 +24,24 @@ public class CalendarManager {
         this.context = context;
     }
 
-    public void addevent(String title, String description, String location, Boolean occupy, Boolean allday, long beginDateMillis, long endDateMillis){
+    public void addevent(String title, String description, String location){
 
         Intent intent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginDateMillis)
+                //.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginDateMillis)
                 .putExtra(CalendarContract.Events.TITLE, title)
-                .putExtra(CalendarContract.Events.DESCRIPTION, description)
+                .putExtra(CalendarContract.Events.DESCRIPTION, Html.fromHtml(description).toString())
                 .putExtra(CalendarContract.Events.EVENT_LOCATION, location);
 
-        if(allday) {
+        /*if(allday) {
             intent.putExtra(CalendarContract.Events.ALL_DAY, true);
         }else{
             intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endDateMillis);
-        }
+        }*/
 
         //indica se o evento ocupa a disponibilidade do utilizador
-        if(occupy){
-            intent.putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
-        }else{
-            intent.putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE);
-        }
+        intent.putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+
 
         intent.putExtra(CalendarContract.Reminders.MINUTES, 15);
         //intent.putExtra(CalendarContract.Reminders.EVENT_ID, eventID);

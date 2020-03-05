@@ -87,6 +87,7 @@ public class RecoverActivity extends AppCompatActivity {
 
         recoverButton = findViewById(R.id.recoverAccount);
         recoverButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
+        recoverButton.setText(Settings.labels.Send);
 
         recoverButton.setOnClickListener(new View.OnClickListener() {
             @Override

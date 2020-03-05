@@ -168,6 +168,10 @@ public class SessionManager {
 
         editor.remove(recover).commit();
         editor.remove(newaccount).commit();
+
+        editor.remove(appInfo).commit();
+        editor.remove(packageName).commit();
+        editor.remove(externalAppId).commit();
     }
 
     public void setRecover(){ editor.putBoolean(recover, true).commit(); }

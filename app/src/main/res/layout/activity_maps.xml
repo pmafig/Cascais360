@@ -126,13 +126,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.1"
+                android:paddingBottom="15dp"
+                android:gravity="center|center"
+                android:orientation="horizontal"
                 android:background="@drawable/border_top">
+                <ImageView
+                    android:id="@+id/sliderdots_left_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="35dp"
+                    android:src="@drawable/ic_left_black" />
                 <TextView
                     android:id="@+id/sliderPagerNumeration"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:text="1 / 9" />
+                <ImageView
+                    android:id="@+id/sliderdots_right_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="35dp"
+                    android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
         </LinearLayout>
 

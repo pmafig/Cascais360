@@ -1,8 +1,8 @@
 package nsop.neds.mycascais.Entities.WebApi;
 
 public class CreateTemporaryLoginUserResponse {
-    public boolean OperationSucess;
+    public boolean IsCreated;
     public String Token;
-    public boolean Email;
-    public boolean SMS;
+    public boolean EmailSent;
+    public boolean SMSSent;
 }

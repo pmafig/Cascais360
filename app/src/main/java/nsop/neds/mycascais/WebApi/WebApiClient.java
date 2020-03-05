@@ -14,6 +14,7 @@ public class WebApiClient {
     public static String BASE_URL = "https://webapiqua.cascais.pt/api";
 
     public enum API{
+        crm,
         cms,
         account,
         WebApiAccount
