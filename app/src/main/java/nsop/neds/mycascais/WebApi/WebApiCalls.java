@@ -104,4 +104,14 @@ public class WebApiCalls {
         String rt = new MessageEncryption().Encrypt(json, WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.WebApiAccount + "/" + WebApiClient.METHODS.GetExternalAppInfo + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
+
+    public static String setMobileAuth(String ssk, String userId, int phoneId){
+        String rt = new MessageEncryption().Encrypt("{\"ssk\":\""+ ssk +"\", \"userid\":\"" + userId +"\", \"PhoneId\":"+ phoneId +"}", WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.crm + "/" + WebApiClient.METHODS.AddCustomerLogin + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
+    public static String setEmailAuth(String ssk, String userId, int emailId){
+        String rt = new MessageEncryption().Encrypt("{\"ssk\":\""+ ssk +"\", \"userid\":\"" + userId +"\", EmailID \":" + emailId +"}", WebApiClient.SITE_KEY);
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.crm + "/" + WebApiClient.METHODS.AddCustomerLogin + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
 }

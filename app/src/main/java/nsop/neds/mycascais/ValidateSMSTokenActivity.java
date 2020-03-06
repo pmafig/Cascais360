@@ -7,9 +7,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,14 +32,18 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.ReportList;
+import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenRequest;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenResponse;
+import nsop.neds.mycascais.Manager.ContactAsAuth;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
+import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.ReportManager;
+import nsop.neds.mycascais.WebApi.WebApiCalls;
 import nsop.neds.mycascais.WebApi.WebApiClient;
 import nsop.neds.mycascais.WebApi.WebApiMessages;
 
@@ -48,7 +54,10 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
     TextView resendSmsToken;
 
     String token = "";
+    String mobileNumber = "";
+    int mobileId;
     String alertMessage = "";
+    boolean isAuth = false;
 
     boolean receivedToken = false;
 
@@ -78,6 +87,18 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
             if (bundle.containsKey(Variables.ReceivedToken)) {
                 receivedToken = true;
                 token = bundle.getString(Variables.ReceivedToken);
+            }
+
+            if (bundle.containsKey(Variables.MobileId)) {
+                mobileId = bundle.getInt(Variables.MobileId);
+            }
+
+            if (bundle.containsKey(Variables.IsAuth)) {
+                isAuth = bundle.getBoolean(Variables.IsAuth);
+            }
+
+            if (bundle.containsKey(Variables.MobileNumber)) {
+                mobileNumber = bundle.getString(Variables.MobileNumber);
             }
 
             if (bundle.containsKey(Variables.AlertMessage)) {
@@ -142,31 +163,18 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
 
         final String token = smsToken.getText().toString();
 
+        SessionManager sm = new SessionManager(ValidateSMSTokenActivity.this);
+
         String jsonRequest = "";
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
-        String url = "";
-
-        SessionManager session = new SessionManager(this);
-
-        /*if(session.getRecover()){
-            jsonRequest = String.format("{\"SmsToken\":\"%s\", \"PhoneNumber\":\"%s\", \"CountryCode\":\"%s\"}", token, new SessionManager(this).getMobileNumber(), "+351");
-            webapimethod = WebApiMethods.VALIDATERECOVERSMSTOKEN;
-        }else if (session.getNewAccount()){
-            jsonRequest = String.format("{\"SmsToken\":\"%s\"}", smsToken.getText());
-            webapimethod = WebApiMethods.VALIDATESMSTOKEN;
-        }else {*/
         progressDialog.setMessage("Validando código...");
-        AccountManager mAccountManager = AccountManager.get(this);
-        Account[] availableAccounts = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
-        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
-        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        final UserEntity user = AccountGeneral.getUser(this);
 
-        jsonRequest = String.format("{\"SmsToken\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", i:false}", smsToken.getText(), ssk, userId);
-        url = String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ValidateMobilePhoneContact);
-
+        jsonRequest = String.format("{\"Token\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", LanguageID:%s}", token, user.getSsk(), user.getUserId(), sm.getLangCodePosition() + 1);
+        String url = String.format("/%s/%s", WebApiClient.API.crm, WebApiClient.METHODS.ValidateEntityState);
 
         progressDialog.show();
 
@@ -181,29 +189,68 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
 
-                String json = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, response.replace('"', ' ').trim());
-                System.out.println(json);
-
-                String message = ReportManager.getErrorReportList(json);
-
                 progressDialog.dismiss();
 
-                if (ReportManager.IsValid(json)) {
-                    Toast.makeText(getBaseContext(), Settings.labels.ContactChanged, Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(ValidateSMSTokenActivity.this, EditAccountActivity.class));
-                } else {
-                    if (!message.isEmpty()) {
-                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, message.trim());
-                    } else {
-                        LayoutManager.alertMessage(ValidateSMSTokenActivity.this, Settings.labels.AppInMaintenanceMessage);
+                final String message = WebApiMessages.DecryptMessage(response);
+
+                JSONObject jsonMessage = null;
+                String receivedMessage = "";
+
+                try {
+                    jsonMessage = new JSONObject(message);
+                } catch (JSONException ex) { }
+
+                try {
+                    if (jsonMessage.has("ReportList") && !jsonMessage.isNull("ReportList")) {
+
+                        Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+
+                        List<ReportList> reportList = null;
+
+                        reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+
+                        StringBuilder sb = new StringBuilder();
+
+                        for (int i = 0; i < reportList.size(); i++) {
+                            sb.append(reportList.get(i).Description);
+                            if (i + 1 < reportList.size()) {
+                                sb.append("\n");
+                            }
+                        }
+
+                        if(sb.length() > 0) {
+                            receivedMessage = sb.toString();
+                            LayoutManager.alertMessage(ValidateSMSTokenActivity.this, receivedMessage);
+                        }else{
+                            SessionManager sm = new SessionManager(ValidateSMSTokenActivity.this);
+
+                            if(sm.getMobileNumber() == null || sm.getMobileNumber().equals("")){
+                                sm.setMobileNumber(mobileNumber);
+                            }
+
+                            if(isAuth){
+                                new ContactAsAuth().execute(WebApiCalls.setMobileAuth(user.getSsk(), user.getUserId(), mobileId));
+                            }
+
+                            Intent intent = new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class);
+                            startActivity(intent);
+                        }
+
+
+
+
                     }
+                } catch (JSONException e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(ValidateSMSTokenActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
     private void ValidateNewRegisterSmsToken() {
-        /*EditText smsToken = this.findViewById(R.id.smsTokenPhone);
+        EditText smsToken = this.findViewById(R.id.smsTokenPhone);
 
         final String token = smsToken.getText().toString();
 
@@ -235,7 +282,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 //Toast.makeText(getBaseContext(), getResources().getString(R.string.info_message_new_user_success), Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(ValidateSMSTokenActivity.this, LoginActivity.class));
             }
-        });*/
+        });
 
         if(!token.isEmpty()) {
             Intent intent = new Intent(this, RegisterActivity.class);

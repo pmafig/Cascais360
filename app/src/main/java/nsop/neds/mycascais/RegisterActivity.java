@@ -176,6 +176,10 @@ public class RegisterActivity extends AppCompatActivity {
         accountPasswordField = findViewById(R.id.accountPassword);
         accountRePasswordField = findViewById(R.id.accountRePassword);
 
+        accountUsernameField.setHint(Settings.labels.Username);
+        accountPasswordField.setHint(Settings.labels.Password);
+        accountRePasswordField.setHint(Settings.labels.Password);
+
         accountCountryField = findViewById(R.id.accountCountry);
 
         accountAgreementField = findViewById(R.id.accountCheckboxAgreement);
@@ -600,7 +604,7 @@ public class RegisterActivity extends AppCompatActivity {
         progressDialog.setMessage(Settings.labels.ProcessingData);
         progressDialog.show();
 
-        CreateTemporaryLoginUserRequest request = new CreateTemporaryLoginUserRequest();
+        final CreateTemporaryLoginUserRequest request = new CreateTemporaryLoginUserRequest();
 
         if(userEmail != null && !userEmail.isEmpty()) {
             request.Email = userEmail;
@@ -641,13 +645,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
                 progressDialog.dismiss();
-                Toast.makeText(RegisterActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                LayoutManager.alertMessage(RegisterActivity.this, Settings.labels.AppInMaintenanceMessage);
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
                 progressDialog.dismiss();
-                createUserResponse(response);
+                createUserResponse(response, request.PhoneNumber);
             }
         });
     }
@@ -708,7 +712,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void createUserResponse(String response) {
+    private void createUserResponse(String response, String username) {
         final String message = WebApiMessages.DecryptMessage(response);
 
         JSONObject responseMessage = null;
@@ -751,6 +755,19 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (responseData.IsCreated) {
 
+                    InputValidatorManager validator = new InputValidatorManager();
+
+                    if(validator.isValidPhone(username)){
+                        Data.SmsValidationContext = Data.ValidationContext.newAccount;
+                        Intent verify = new Intent(RegisterActivity.this, ValidateSMSTokenActivity.class);
+                        verify.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        verify.putExtra(Variables.AlertMessage, receivedMessage);
+                        startActivity(verify);
+                    }else{
+                        LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
+                    }
+
+
 
                 /*if (responseData.EmailSent) {
                     LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
@@ -788,7 +805,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             if(!receivedMessage.isEmpty()){*/
-                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, receivedMessage);
+
                 }
             }
 

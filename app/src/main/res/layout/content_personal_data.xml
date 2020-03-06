@@ -113,7 +113,6 @@
                             android:id="@+id/accountEmail"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:cursorVisible="true"
                             android:paddingHorizontal="10dp"
                             android:hint=""
                             android:drawablePadding="11dp"
@@ -164,11 +163,10 @@
                             android:id="@+id/accountPhone"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:cursorVisible="true"
                             android:paddingHorizontal="10dp"
                             android:hint=""
                             android:drawablePadding="11dp"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="phone"
                             android:enabled="false"/>
                     </LinearLayout>

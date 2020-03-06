@@ -43,6 +43,7 @@ public class Variables {
     public static String Description = "description";
     public static String Token = "token";
     public static String ReceivedToken = "ReceivedToken";
+    public static String IsAuth = "IsAuth";
     public static String AlertMessage = "AlertMessage";
 
     public static String RecoverPassword = "recoverPassword";
@@ -51,6 +52,8 @@ public class Variables {
     //region Intent variables
     public static String PackageName = "PACKAGE_NAME";
     public static String ExternalAppId = "APP_ID";
+    public static String MobileNumber = "MobileNumber";
+    public static String MobileId = "MobileId";
     //endregion
 
     //region Queristring variables

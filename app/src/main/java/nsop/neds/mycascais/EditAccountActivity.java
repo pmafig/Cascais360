@@ -42,6 +42,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.UserEntity;
@@ -71,12 +72,16 @@ public class EditAccountActivity extends AppCompatActivity {
     private boolean addEmail = false;
     private boolean addPhoneNumber = false;
 
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_data);
 
         sm = new SessionManager(this);
+
+        progressDialog = new ProgressDialog(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         menuFragment = findViewById(R.id.menu);
@@ -111,11 +116,11 @@ public class EditAccountActivity extends AppCompatActivity {
 
         EditText name = findViewById(R.id.accountName);
         name.setHint(sm.getFullName());
-        name.setFocusable(false);
+        //name.setFocusable(false);
 
         EditText email = findViewById(R.id.accountEmail);
         email.setHint(sm.getEmail());
-        email.setFocusable(false);
+        //email.setFocusable(false);
 
         //EditText address = findViewById(R.id.accountAddress);
         //address.setHint(sm.getAddress());
@@ -169,22 +174,18 @@ public class EditAccountActivity extends AppCompatActivity {
         String email = accountEmailField.getHint().toString();
 
         if(contact.isEmpty()) {
-
             addPhoneNumber = true;
 
             accountPhoneField.setEnabled(true);
-            accountPhoneField.setHint(sm.getMobileNumber());
             accountPhoneField.setBackground(getDrawable(R.drawable.mycascais_edittext));
             accountPhoneField.requestFocus();
 
             findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
             findViewById(R.id.editAccount).setVisibility(View.GONE);
         }else if(email.isEmpty()){
-
             addEmail = true;
 
             accountEmailField.setEnabled(true);
-            accountEmailField.setHint(sm.getMobileNumber());
             accountEmailField.setBackground(getDrawable(R.drawable.mycascais_edittext));
             accountEmailField.requestFocus();
 
@@ -196,7 +197,6 @@ public class EditAccountActivity extends AppCompatActivity {
     }
 
     private void cancelAccount(){
-
         if(addPhoneNumber) {
             EditText accountPhoneField = findViewById(R.id.accountPhone);
             accountPhoneField.setEnabled(false);
@@ -208,7 +208,7 @@ public class EditAccountActivity extends AppCompatActivity {
         }else if(addEmail){
             EditText accountEmailField = findViewById(R.id.accountEmail);
             accountEmailField.setEnabled(false);
-            accountEmailField.setHint(sm.getMobileNumber());
+            accountEmailField.setHint(sm.getEmail());
             accountEmailField.setBackground(getDrawable(R.drawable.border_bottom));
 
             findViewById(R.id.editAccount).setVisibility(View.VISIBLE);
@@ -420,8 +420,6 @@ public class EditAccountActivity extends AppCompatActivity {
             LayoutManager.alertMessage(this, validationMessage);
         }else {
 
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-
             progressDialog.setMessage(Settings.labels.AddingEmail);
             progressDialog.show();
 
@@ -429,7 +427,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 Data.SmsValidationContext = Data.ValidationContext.addAuth;
             }
 
-            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EmailID\":\"%s\", LanguageID:%s}",
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"Email\":\"%s\", LanguageID:%s}",
                     user.getSsk(), user.getUserId(), emailContact, sm.getLangCodePosition() + 1);
 
             WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.ADDCUSTOMEREMAIL), jsonRequest, true, new TextHttpResponseHandler() {
@@ -445,8 +443,6 @@ public class EditAccountActivity extends AppCompatActivity {
                     AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
                     appSignatureHelper.getAppSignatures();
 
-                    progressDialog.dismiss();
-
                     String message = WebApiMessages.DecryptMessage(response);
 
                     JSONObject jsonMessage = null;
@@ -457,38 +453,51 @@ public class EditAccountActivity extends AppCompatActivity {
 
                     }
 
-                    CreateLoginUserResponse responseData = null;
+                    ChangeEntityValidationStateResponse responseData = null;
 
                     if (jsonMessage.has(Variables.ResponseData)) {
                         try {
-                            responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), CreateLoginUserResponse.class);
-                        } catch (JSONException ex) {
-                            //TODO add error message
-                        }
-                    }
 
-                    Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+                            if (jsonMessage.has("ReportList") && !jsonMessage.isNull("ReportList")) {
 
-                    if (jsonMessage.has(Variables.ReportList)) {
-                        try {
-                            List<ReportList> reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+                                String receivedMessage = "";
 
-                            StringBuilder sb = new StringBuilder();
+                                Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
 
-                            for (int i = 0; i < reportList.size(); i++) {
-                                sb.append(reportList.get(i).Description);
-                                if (i + 1 < reportList.size()) {
-                                    sb.append("\n");
+                                List<ReportList> reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+                                if(reportList.size() > 0) {
+                                    StringBuilder sb = new StringBuilder();
+
+                                    for (int i = 0; i < reportList.size(); i++) {
+                                        sb.append(reportList.get(i).Description);
+                                        if (i + 1 < reportList.size()) {
+                                            sb.append("\n");
+                                        }
+                                    }
+
+                                    if (sb.length() > 0) {
+                                        receivedMessage = sb.toString();
+                                    } else {
+                                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    progressDialog.dismiss();
+                                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.CreateAccount, receivedMessage);
                                 }
                             }
 
-                            if (sb.length() > 0) {
-                                LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.CreateAccount, sb.toString());
+                            responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
+
+                            if (responseData.IsAdded) {
+                                changeEntityValidationState(isAuthenticator, responseData.EmailID, emailContact, true);
                             } else {
-                                Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                                //TODO add error message
                             }
 
+
                         } catch (JSONException ex) {
+                            //TODO add error message
                         }
                     }
                 }
@@ -521,8 +530,6 @@ public class EditAccountActivity extends AppCompatActivity {
         if(!validationMessage.isEmpty()){
             LayoutManager.alertMessage(this, validationMessage);
         }else {
-
-            final ProgressDialog progressDialog = new ProgressDialog(this);
 
             progressDialog.setMessage(Settings.labels.AddingPhoneContact);
             progressDialog.show();
@@ -558,13 +565,43 @@ public class EditAccountActivity extends AppCompatActivity {
                     if (jsonMessage.has(Variables.ResponseData)) {
                         try {
 
+                            if (jsonMessage.has("ReportList") && !jsonMessage.isNull("ReportList")) {
+
+                                String receivedMessage = "";
+
+                                Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+
+                                List<ReportList> reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+                                if(reportList.size() > 0) {
+                                    StringBuilder sb = new StringBuilder();
+
+                                    for (int i = 0; i < reportList.size(); i++) {
+                                        sb.append(reportList.get(i).Description);
+                                        if (i + 1 < reportList.size()) {
+                                            sb.append("\n");
+                                        }
+                                    }
+
+                                    if (sb.length() > 0) {
+                                        receivedMessage = sb.toString();
+                                    } else {
+                                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    progressDialog.dismiss();
+                                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.CreateAccount, receivedMessage);
+                                }
+                            }
+
                             responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
 
-                            if(responseData.IsAdded) {
-                                changeEntityValidationState(isAuthenticator, responseData.PhoneContactID);
-                            }else{
+                            if (responseData.IsAdded) {
+                                changeEntityValidationState(isAuthenticator, responseData.PhoneContactID, phoneContact, false);
+                            } else {
                                 //TODO add error message
                             }
+
 
                         } catch (JSONException ex) {
                             //TODO add error message
@@ -575,19 +612,15 @@ public class EditAccountActivity extends AppCompatActivity {
         }
     }
 
-    private void changeEntityValidationState(final boolean isAuthenticator, final int id){
+    private void changeEntityValidationState(final boolean isAuthenticator, final int id, final String mobileNumber, final boolean email){
         UserEntity user = AccountGeneral.getUser(this);
 
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-
-        progressDialog.setMessage(Settings.labels.AddingPhoneContact);
-        progressDialog.show();
 
         if(isAuthenticator){
             Data.SmsValidationContext = Data.ValidationContext.addAuth;
         }
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s}",
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s, \"I\":1}",
                 user.getSsk(), user.getUserId(), id, sm.getLangCodePosition() + 1);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.CHANGEENTITYVALIDATIONSTATE), jsonRequest, true, new TextHttpResponseHandler() {
@@ -605,33 +638,76 @@ public class EditAccountActivity extends AppCompatActivity {
 
                 progressDialog.dismiss();
 
-                final String json = WebApiMessages.DecryptMessage(response);
+                final String message = WebApiMessages.DecryptMessage(response);
 
-                SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
+                JSONObject jsonMessage = null;
+                String receivedMessage = "";
+
+                try {
+                    jsonMessage = new JSONObject(message);
+                } catch (JSONException ex) {
+                    Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                }
+
+                try {
+                    if (jsonMessage.has("ReportList") && !jsonMessage.isNull("ReportList")) {
+
+                        Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+
+                        List<ReportList> reportList = null;
+
+                            reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+
+                        StringBuilder sb = new StringBuilder();
+
+                        for (int i = 0; i < reportList.size(); i++) {
+                            sb.append(reportList.get(i).Description);
+                            if (i + 1 < reportList.size()) {
+                                sb.append("\n");
+                            }
+                        }
+
+                        if(sb.length() > 0) {
+                            receivedMessage = sb.toString();
+                        }else{
+                            Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (JSONException e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                }
+
+                if(email){
+                    if(!receivedMessage.isEmpty()) {
+
+                        LayoutManager.alertMessage(EditAccountActivity.this, receivedMessage);
+                    }else{
+                        Toast.makeText(EditAccountActivity.this, Settings.labels.AppInMaintenanceMessage, Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Data.SmsValidationContext = Data.ValidationContext.changeContact;
+
+                    Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
+                    intent.putExtra(Variables.AlertMessage, receivedMessage);
+                    intent.putExtra(Variables.MobileNumber, mobileNumber);
+                    intent.putExtra(Variables.IsAuth, isAuthenticator);
+                    startActivity(intent);
+                }
+
+                /*SmsRetrieverClient client = SmsRetriever.getClient(getBaseContext());
 
                 Task<Void> task = client.startSmsRetriever();
 
+                final String finalReceivedMessage = receivedMessage;
                 task.addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Data.SmsValidationContext = Data.ValidationContext.changeContact;
 
                         Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
-                        try {
-                            Response response =  new Gson().fromJson(json, Response.class);
-
-                            if(response.ResponseData.InvalidaSession){
-
-                            }
-                        }catch (Exception ex){
-                            try{
-                                JSONObject data = new JSONObject(json);
-                                String smsCode = data.getString(Variables.ResponseData);
-                                intent.putExtra(Variables.Token, smsCode);
-                            }catch (JSONException jex){
-
-                            }
-                        }
+                        intent.putExtra(Variables.AlertMessage, finalReceivedMessage);
 
                         startActivity(intent);
                     }
@@ -641,7 +717,7 @@ public class EditAccountActivity extends AppCompatActivity {
                         //String test = "ok";
                         //Toast.makeText(AccountActivity.this, getResources().getString(R.string.request_error), Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
 
             }
         });

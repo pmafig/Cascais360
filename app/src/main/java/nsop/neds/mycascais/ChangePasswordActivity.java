@@ -369,7 +369,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
 
-                    //TODO toast message
                     Toast.makeText(this, Settings.labels.LoginSubtitle, Toast.LENGTH_SHORT).show();
                 }
             }

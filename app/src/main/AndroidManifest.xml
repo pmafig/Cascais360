@@ -88,7 +88,19 @@
         <activity
             android:name="nsop.neds.mycascais.EmailSentActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="myqua.cascais.pt"
+                    android:pathPattern="/Customers/EntityValidation"
+                    android:scheme="mycascais360app" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="nsop.neds.mycascais.DetailActivity"
             android:screenOrientation="portrait"/>

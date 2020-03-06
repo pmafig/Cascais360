@@ -37,7 +37,9 @@ public class WebApiClient {
         ResendSMSToken,
         GetExternalAppInfo,
         GetCountryList,
-        ValidateCustomerContact
+        ValidateCustomerContact,
+        ValidateEntityState,
+        AddCustomerLogin
     }
 
     private static final String USERAGENT = Build.VERSION.RELEASE;
