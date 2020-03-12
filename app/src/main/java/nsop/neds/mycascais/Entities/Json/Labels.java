@@ -125,4 +125,5 @@ public class Labels {
     public String SubscriptionRemoved = "Subscrição removida com sucesso.";
     public String AddingEmail = "Addicionando email...";
     public String AddingPhoneContact = "Addicionando telemóvel...";
+    public String CheckYourInternetConnection = "Verifique a sua ligação à internet.";
 }

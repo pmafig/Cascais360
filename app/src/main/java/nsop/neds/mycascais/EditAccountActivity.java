@@ -618,6 +618,8 @@ public class EditAccountActivity extends AppCompatActivity {
 
         if(isAuthenticator){
             Data.SmsValidationContext = Data.ValidationContext.addAuth;
+            sm.isAuth();
+            sm.setEmailId(id);
         }
 
         String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s, \"I\":1}",
@@ -659,6 +661,8 @@ public class EditAccountActivity extends AppCompatActivity {
                             reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
 
 
+
+
                         StringBuilder sb = new StringBuilder();
 
                         for (int i = 0; i < reportList.size(); i++) {
@@ -692,6 +696,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     Intent intent = new Intent(EditAccountActivity.this, ValidateSMSTokenActivity.class);
                     intent.putExtra(Variables.AlertMessage, receivedMessage);
                     intent.putExtra(Variables.MobileNumber, mobileNumber);
+                    intent.putExtra(Variables.MobileId, id);
                     intent.putExtra(Variables.IsAuth, isAuthenticator);
                     startActivity(intent);
                 }

@@ -12,12 +12,16 @@ public class Weather {
     public String Text;
 
     public String getIcon() throws URISyntaxException {
-        URI uri = new URI(this.Icon);
-        String path = uri.getPath();
-        String idStr = path.substring( path.lastIndexOf('/')+1);
+        try {
+            URI uri = new URI(this.Icon);
+            String path = uri.getPath();
+            String idStr = path.substring(path.lastIndexOf('/') + 1);
 
-        String s = idStr.replace(".svg", "");
+            String s = idStr.replace(".svg", "");
 
-        return "ic_" + s;
+            return "ic_" + s;
+        }catch (Exception ex){
+            return "ic_1";
+        }
     }
 }

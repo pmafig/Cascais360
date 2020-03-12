@@ -7,7 +7,7 @@
 
     <include layout="@layout/app_bar"/>
 
-    <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
+    <!--<include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>-->
 
     <!--<include layout="@layout/content_email_sent" />-->
 

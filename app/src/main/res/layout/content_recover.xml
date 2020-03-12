@@ -60,7 +60,6 @@
             android:paddingHorizontal="30dp"
             android:paddingBottom="30dp">
 
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/recoverEmail"
                 android:layout_width="match_parent"
@@ -71,8 +70,8 @@
                 android:paddingVertical="10dp"
                 android:drawableLeft="@drawable/ic_user"
                 android:drawablePadding="11dp"
-                android:imeOptions="actionNext"
-                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
 

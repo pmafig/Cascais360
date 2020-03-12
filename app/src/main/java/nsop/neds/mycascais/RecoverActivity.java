@@ -216,6 +216,7 @@ public class RecoverActivity extends AppCompatActivity {
                         });
 
                         Intent intent = new Intent(RecoverActivity.this, ValidateSMSTokenActivity.class);
+                        intent.putExtra(Variables.MobileNumber, userName);
                         intent.putExtra(Variables.Token, responseData.Token);
                         startActivity(intent);
 

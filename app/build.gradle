@@ -47,7 +47,8 @@ dependencies {
     //JSON Serialization
     implementation 'com.google.code.gson:gson:2.8.6'
 
-    implementation 'com.google.android.material:material:1.0.0'
+    //implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha09'
 
     // Maps utils (required for custom markers)
     implementation 'com.google.maps.android:android-maps-utils:0.6.2'

@@ -67,14 +67,13 @@
                         android:id="@+id/accountName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-
                         android:hint="@string/mycascais_email_phone"
                         android:paddingHorizontal="5dp"
                         android:paddingVertical="5dp"
                         android:drawableLeft="@drawable/ic_user"
                         android:drawablePadding="5dp"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
+                        android:inputType="textEmailAddress"
                         android:background="@drawable/mycascais_edittext"
                         android:fontFamily="@font/montserrat_light"
                         android:focusable="true"
@@ -85,7 +84,6 @@
                         android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
                         android:drawablePadding="11dp"
                         android:hint="@string/mycascais_password"
                         android:paddingHorizontal="10dp"
@@ -96,7 +94,10 @@
                         android:background="@drawable/mycascais_edittext"
                         android:fontFamily="@font/montserrat_light"
                         android:focusable="true"
-                        android:focusableInTouchMode="true"/>
+                        android:focusableInTouchMode="true"
+                        app:endIconDrawable="@android:drawable/ic_input_add"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/colorPrimaryDark"/>
 
                     <!--Termos e condições - cor do ano-->
                     <!--Politica de privacidade - cor do ano-->

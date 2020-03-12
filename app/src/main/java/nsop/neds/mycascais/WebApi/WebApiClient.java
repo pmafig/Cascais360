@@ -16,7 +16,6 @@ public class WebApiClient {
     public enum API{
         crm,
         cms,
-        account,
         WebApiAccount
     }
 

@@ -80,7 +80,7 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                     User user = new Gson().fromJson(responseData.toString(), User.class);
 
                     if(user.InvalidSession){
-                        Intent intent = new Intent(context, RefreshTokenActivity.class);
+                        Intent intent = new Intent(context, NoDataActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.putExtra(Variables.Id, this.nid);
                         context.startActivity(intent);

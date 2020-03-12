@@ -1,6 +1,6 @@
 package nsop.neds.mycascais.Entities.WebApi;
 
 public class ResendSMSTokenRequest {
-    public String SmsToken;
+    public String PhoneNumber;
     public int LanguageID;
 }

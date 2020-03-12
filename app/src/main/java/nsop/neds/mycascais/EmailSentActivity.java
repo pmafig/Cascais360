@@ -71,6 +71,9 @@ public class EmailSentActivity extends AppCompatActivity {
     private void ValidateSmsToken(String token) {
         SessionManager sm = new SessionManager(EmailSentActivity.this);
 
+        final boolean isAuth = sm.getIsAuth();
+        final int emailID = sm.getEmailId();
+
         String jsonRequest = "";
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -125,23 +128,12 @@ public class EmailSentActivity extends AppCompatActivity {
                             }
                         }
 
-                        /*if(sb.length() > 0) {
-                            receivedMessage = sb.toString();
-                            LayoutManager.alertMessage(ValidateSMSTokenActivity.this, receivedMessage);
-                        }else{
-                            SessionManager sm = new SessionManager(ValidateSMSTokenActivity.this);
+                        if(isAuth){
+                            new ContactAsAuth().execute(WebApiCalls.setEmailAuth(user.getSsk(), user.getUserId(), emailID));
+                        }
 
-                            if(sm.getMobileNumber() == null || sm.getMobileNumber().equals("")){
-                                sm.setEmail(mobileNumber);
-                            }
-
-                            if(isAuth){
-                                new ContactAsAuth().execute(WebApiCalls.setMobileAuth(user.getSsk(), user.getUserId(), mobileId));
-                            }
-
-                            Intent intent = new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class);
-                            startActivity(intent);
-                        }*/
+                        Intent intent = new Intent(EmailSentActivity.this, ProfileActivity.class);
+                        startActivity(intent);
 
                     }
                 } catch (JSONException e) {

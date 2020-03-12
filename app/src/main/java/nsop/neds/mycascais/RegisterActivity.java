@@ -760,6 +760,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if(validator.isValidPhone(username)){
                         Data.SmsValidationContext = Data.ValidationContext.newAccount;
                         Intent verify = new Intent(RegisterActivity.this, ValidateSMSTokenActivity.class);
+                        verify.putExtra(Variables.MobileNumber, username);
                         verify.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         verify.putExtra(Variables.AlertMessage, receivedMessage);
                         startActivity(verify);
@@ -909,7 +910,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
 
-                    LayoutManager.alertMessage(this, Settings.labels.CreateAccount, sb.toString());
+                    LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
                 }catch (JSONException ex){}
             }
         }

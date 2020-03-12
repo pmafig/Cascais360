@@ -31,7 +31,7 @@
                 android:drawableLeft="@drawable/ic_user"
                 android:drawablePadding="5dp"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
 

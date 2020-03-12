@@ -57,6 +57,9 @@ public class SessionManager {
     private static final String packageName = "packageName";
     private static final String externalAppId = "externalAppId";
 
+    private static final String isAuth = "isAuth";
+    private static final String emailID = "emailId";
+
     private Context context;
 
     public SessionManager(Context context){
@@ -223,6 +226,15 @@ public class SessionManager {
     public int getExternalAppExternalId(){ return sharedpreferences.getInt(externalAppId, 0);    }
 
     public void setExternalAppPackageExternalId(int id){ editor.putInt(externalAppId, id).commit(); }
+
+
+    public void isAuth(){ editor.putBoolean(isAuth, true).commit(); }
+
+    public boolean getIsAuth(){ return sharedpreferences.getBoolean(isAuth, false);    }
+
+    public void setEmailId(int id){ editor.putInt(emailID, id).commit(); }
+
+    public int getEmailId(){ return sharedpreferences.getInt(emailID, 0);    }
 
     public boolean isLoggedOn(){
         AccountManager mAccountManager = AccountManager.get(context);

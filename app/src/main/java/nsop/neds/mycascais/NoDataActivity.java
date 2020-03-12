@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -51,6 +52,8 @@ public class NoDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_no_data);
 
+        refreshToken();
+
         backButton = findViewById(R.id.accountBack);
         noDataMessage = findViewById(R.id.noDataMessage);
 
@@ -62,7 +65,61 @@ public class NoDataActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+
                 finish();
+            }
+        });
+    }
+
+    private void refreshToken(){
+        final Context context = this;
+        final int _nid = getIntent().getIntExtra("nid", 0);
+
+        SessionManager sm = new SessionManager(this);
+
+        AccountManager mAccountManager = AccountManager.get(context);
+        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+
+        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
+        String userid = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        String refreshToken = mAccountManager.getUserData(availableAccounts[0], "RefreshToken");
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"RefreshToken\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}", ssk, userid, refreshToken, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
+
+        WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.RefreshLoginUser), jsonRequest, true, new TextHttpResponseHandler(){
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                String message = WebApiMessages.DecryptMessage(response);
+
+                String ssk = ReportManager.getSSk(message);
+                String userId = ReportManager.getUserID(message);
+                String refreshToken = ReportManager.getRefreshToken(message);
+
+                SessionManager sm = new SessionManager(context);
+                sm.setRefreshToken(refreshToken);
+
+                AccountManager mAccountManager = AccountManager.get(context);
+
+                final Account availableAccounts[] = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+                boolean asAccount = availableAccounts.length != 0;
+
+                Account account = availableAccounts[0];
+
+                if(!ssk.isEmpty()) {
+                    mAccountManager.setUserData(account, "SSK", ssk);
+                    mAccountManager.setUserData(account, "UserId", userId);
+                    mAccountManager.setUserData(account, "RefreshToken", refreshToken);
+                }
             }
         });
     }

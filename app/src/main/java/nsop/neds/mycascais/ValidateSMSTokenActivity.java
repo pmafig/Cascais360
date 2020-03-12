@@ -109,12 +109,13 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 token = bundle.getString(Variables.Token);
 
                 if (!token.isEmpty() && !receivedToken) {
-                    smsTokenField.setText(token);
+                    //JUST FOR DEBUGGING
+                    //smsTokenField.setText(token);
                 }
             }
         }
 
-        final String finalToken = token;
+        final String finalMobileNumber = mobileNumber;
 
         validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +128,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                     ValidateNewRegisterSmsToken();
                     break;
                 case recoverAccount:
-                    RecoverSmsToken(finalToken);
+                    RecoverSmsToken(finalMobileNumber);
                     break;
                 case addAuth:
                     ValidateCustomerContact();
@@ -143,12 +144,12 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 SessionManager sm = new SessionManager(ValidateSMSTokenActivity.this);
                 ResendSMSTokenRequest request = new ResendSMSTokenRequest();
 
-                request.SmsToken = token;
+                request.PhoneNumber = finalMobileNumber;
                 request.LanguageID = sm.getLangCodePosition() + 1;
 
                 //new ResendSMSManager(ValidateSMSTokenActivity.this).execute(WebApiCalls.getResendSmsToken(request));
 
-                RecoverSmsToken(token);
+                RecoverSmsToken(finalMobileNumber);
             }
         });
 
@@ -294,7 +295,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
 
     }
 
-    private void RecoverSmsToken(String token) {
+    private void RecoverSmsToken(String phoneNumber) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
         progressDialog.setMessage(Settings.labels.ProcessingData);
@@ -303,10 +304,8 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
         SessionManager sm = new SessionManager(this);
         ResendSMSTokenRequest request = new ResendSMSTokenRequest();
 
-        request.SmsToken = token;
+        request.PhoneNumber = phoneNumber;
         request.LanguageID = sm.getLangCodePosition() + 1;
-
-
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ResendSMSToken), new Gson().toJson(request), true,  new TextHttpResponseHandler(){
             @Override

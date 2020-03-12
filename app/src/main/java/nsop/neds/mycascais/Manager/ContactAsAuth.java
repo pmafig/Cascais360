@@ -31,8 +31,17 @@ public class ContactAsAuth extends AsyncTask<String, Void, Void> {
     @Override
     protected Void doInBackground(String... strings) {
         try {
+            JSONObject response = CommonManager.getResponseData(strings[0]);
 
-        } catch (Exception e) {
+            if(response != null) {
+                JSONObject responseData = response.getJSONObject(Variables.ResponseData);
+
+                //SessionManager sm = new SessionManager(context);
+                //sm.setExternalAppInfo(responseData.toString());
+
+                //ExternalAppInfo appInfo = new Gson().fromJson(responseData.toString(), ExternalAppInfo.class);
+            }
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
