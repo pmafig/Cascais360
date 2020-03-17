@@ -48,6 +48,7 @@ import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
+import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.ReportManager;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
@@ -205,8 +206,9 @@ public class LoginActivity extends AppCompatActivity {
         EditText accountNameField = findViewById(R.id.accountName);
         EditText accountPasswordField = findViewById(R.id.accountPassword);
 
-        String accountName = accountNameField.getText().toString();
-        String accountPassword = accountPasswordField.getText().toString();
+        String accountName = accountNameField.getText().toString().trim();
+        Data.CurrentAccountName = accountName;
+        String accountPassword = accountPasswordField.getText().toString().trim();
 
         if(accountName.isEmpty() || accountPassword.isEmpty()){
             LayoutManager.alertMessage(this, Settings.labels.LoginSubtitle);

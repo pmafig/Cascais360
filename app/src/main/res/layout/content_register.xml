@@ -131,7 +131,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
 
-            <com.google.android.material.textfield.TextInputEditText
+            <!--<com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountPassword"
                 android:visibility="gone"
                 android:layout_marginTop="20dp"
@@ -146,9 +146,30 @@
                 android:drawableStart="@drawable/ic_locker"
                 android:imeOptions="actionNext"
                 android:inputType="textPassword"
-                android:background="@drawable/mycascais_edittext"/>
+                android:background="@drawable/mycascais_edittext"/>-->
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/accountPasswordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="password_toggle"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/accountPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:background="@drawable/mycascais_edittext"
+                    android:drawablePadding="11dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="10dp"
+                    android:drawableStart="@drawable/ic_locker"
+                    android:imeOptions="actionDone"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/accountRePassword"
                 android:visibility="gone"
                 android:layout_marginTop="20dp"
@@ -163,7 +184,27 @@
                 android:drawableStart="@drawable/ic_locker"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
-                android:background="@drawable/mycascais_edittext"/>
+                android:background="@drawable/mycascais_edittext"/>-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/accountRePasswordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="password_toggle"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/accountRePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:background="@drawable/mycascais_edittext"
+                    android:drawablePadding="11dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="10dp"
+                    android:drawableStart="@drawable/ic_locker"
+                    android:imeOptions="actionDone"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/regiter_password_requirements"

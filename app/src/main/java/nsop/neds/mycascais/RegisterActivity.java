@@ -37,6 +37,7 @@ import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -114,6 +115,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText accountToken;
 
+    TextInputLayout accountPasswordLayout;
+    TextInputLayout accountRePasswordLayout;
+
     EditText accountUsernameField;
     EditText accountNifField;
     EditText accountVatinField;
@@ -175,6 +179,9 @@ public class RegisterActivity extends AppCompatActivity {
         accountNameField = findViewById(R.id.accountName);
         accountPasswordField = findViewById(R.id.accountPassword);
         accountRePasswordField = findViewById(R.id.accountRePassword);
+
+        accountPasswordLayout = findViewById(R.id.accountPasswordLayout);
+        accountRePasswordLayout = findViewById(R.id.accountRePasswordLayout);
 
         accountUsernameField.setHint(Settings.labels.Username);
         accountPasswordField.setHint(Settings.labels.Password);
@@ -405,8 +412,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         accountRequirements.setVisibility(View.VISIBLE);
         accountNameField.setVisibility(recover ? View.GONE : View.VISIBLE);
-        newPassword.setVisibility(View.VISIBLE);
-        rePassword.setVisibility(View.VISIBLE);
+
+        accountPasswordLayout.setVisibility(View.VISIBLE);
+        accountRePasswordLayout.setVisibility(View.VISIBLE);
+        //newPassword.setVisibility(View.VISIBLE);
+        //rePassword.setVisibility(View.VISIBLE);
 
         newPassword.addTextChangedListener(new TextWatcher() {
             @Override
@@ -512,15 +522,15 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void validateAccount(){
         String accountName = accountNameField.getText().toString();
-        String accountPassword = accountPasswordField.getText().toString();
-        String accountRePassword = accountRePasswordField.getText().toString();
+        String accountPassword = accountPasswordField.getText().toString().trim();
+        String accountRePassword = accountRePasswordField.getText().toString().trim();
 
         ValidateUser(accountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
     }
 
     private void recoverAccount(){
-        String accountPassword = accountPasswordField.getText().toString();
-        String accountRePassword = accountRePasswordField.getText().toString();
+        String accountPassword = accountPasswordField.getText().toString().trim();
+        String accountRePassword = accountRePasswordField.getText().toString().trim();
 
         ValidateResetLoginUser(Data.CurrentAccountName, accountPassword, accountRePassword, Settings.LangCode.equals("pt") ? 1 : 2);
     }

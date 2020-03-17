@@ -63,7 +63,7 @@
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="30dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <!--<com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/accountName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -77,9 +77,9 @@
                         android:background="@drawable/mycascais_edittext"
                         android:fontFamily="@font/montserrat_light"
                         android:focusable="true"
-                        android:focusableInTouchMode="true"/>
+                        android:focusableInTouchMode="true"/>-->
 
-                    <com.google.android.material.textfield.TextInputEditText
+                    <!--<com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/accountPassword"
                         android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
@@ -97,7 +97,46 @@
                         android:focusableInTouchMode="true"
                         app:endIconDrawable="@android:drawable/ic_input_add"
                         app:endIconMode="password_toggle"
-                        app:endIconTint="@color/colorPrimaryDark"/>
+                        app:endIconTint="@color/colorPrimaryDark"/>-->
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/accountNameLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/mycascais_edittext"
+                            android:inputType="textEmailAddress"
+                            android:paddingHorizontal="5dp"
+                            android:paddingVertical="5dp"
+                            android:drawableLeft="@drawable/ic_user"
+                            android:drawablePadding="5dp"
+                            android:imeOptions="actionNext"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/accountPasswordLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:endIconMode="password_toggle">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/accountPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:background="@drawable/mycascais_edittext"
+                            android:drawablePadding="11dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:drawableStart="@drawable/ic_lock"
+                            android:imeOptions="actionDone"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <!--Termos e condições - cor do ano-->
                     <!--Politica de privacidade - cor do ano-->

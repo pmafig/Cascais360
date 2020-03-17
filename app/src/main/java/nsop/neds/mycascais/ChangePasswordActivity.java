@@ -223,9 +223,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
     }
 
     private void changePasswordClick(){
-        String older = olderPassword.getText().toString();
-        String newone = newPassword.getText().toString();
-        String re = rePassword.getText().toString();
+        String older = olderPassword.getText().toString().trim();
+        String newone = newPassword.getText().toString().trim();
+        String re = rePassword.getText().toString().trim();
 
         changeAccountPassword(older, newone, re);
     }
@@ -270,7 +270,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     //refreshToken(accountFunc.changePassword, getBaseContext());
                 } else {
                     if (ReportManager.getIsSuccess(json)) {
-                        //autoLogin(Data.CurrentAccountName,  newPassword.getText().toString().trim());
+                        autoLogin(Data.CurrentAccountName,  newPassword.getText().toString().trim());
                     } else {
                         AlertDialog.Builder alertMessage = new AlertDialog.Builder(ChangePasswordActivity.this, R.style.AlertMessageDialog);
                         String message = ReportManager.getErrorReportList(json);
