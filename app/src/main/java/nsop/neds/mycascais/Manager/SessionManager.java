@@ -42,6 +42,7 @@ public class SessionManager {
     private static final String userstatus = "userstatus";
     private static final String refreshtoken = "refreshtoken";
     private static final String mobilenumber = "mobilenumber";
+    private static final String mobilenumbermain = "mobilenumbermain";
     private static final String email = "email";
     private static final String address = "Morada";
 
@@ -175,6 +176,8 @@ public class SessionManager {
         editor.remove(appInfo).commit();
         editor.remove(packageName).commit();
         editor.remove(externalAppId).commit();
+
+        editor.remove(mobilenumbermain).commit();
     }
 
     public void setRecover(){ editor.putBoolean(recover, true).commit(); }
@@ -202,6 +205,10 @@ public class SessionManager {
     public void setMobileNumber(String status){ editor.putString(mobilenumber, status).commit(); }
 
     public String getMobileNumber(){ return sharedpreferences.getString(mobilenumber, "");    }
+
+    public void setMobileNumberMain(boolean status){ editor.putBoolean(mobilenumbermain, status).commit(); }
+
+    public boolean getMobileNumberMain(){ return sharedpreferences.getBoolean(mobilenumbermain, false);    }
 
     public void setDisclaimers(String json){ editor.putString(disclaimers, json).commit(); }
 

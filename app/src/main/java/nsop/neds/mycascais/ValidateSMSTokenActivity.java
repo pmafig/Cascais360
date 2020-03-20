@@ -231,6 +231,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                             }
 
                             if(isAuth){
+                                sm.setMobileNumberMain(true);
                                 new ContactAsAuth().execute(WebApiCalls.setMobileAuth(user.getSsk(), user.getUserId(), mobileId));
                             }
 

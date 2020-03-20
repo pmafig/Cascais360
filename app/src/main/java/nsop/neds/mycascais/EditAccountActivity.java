@@ -135,7 +135,7 @@ public class EditAccountActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
 
-        if(!sm.getEmail().isEmpty() && !sm.getMobileNumber().isEmpty()){
+        if(sm.getMobileNumberMain() && !sm.getEmail().isEmpty() && !sm.getMobileNumber().isEmpty()){
             editButton.setVisibility(View.GONE);
         }
 
@@ -173,7 +173,7 @@ public class EditAccountActivity extends AppCompatActivity {
         String contact = accountPhoneField.getHint().toString();
         String email = accountEmailField.getHint().toString();
 
-        if(contact.isEmpty()) {
+        if(!sm.getMobileNumberMain() || contact.isEmpty()) {
             addPhoneNumber = true;
 
             accountPhoneField.setEnabled(true);
@@ -182,7 +182,9 @@ public class EditAccountActivity extends AppCompatActivity {
 
             findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
             findViewById(R.id.editAccount).setVisibility(View.GONE);
-        }else if(email.isEmpty()){
+        }
+
+        if(email.isEmpty()){
             addEmail = true;
 
             accountEmailField.setEnabled(true);
@@ -191,7 +193,9 @@ public class EditAccountActivity extends AppCompatActivity {
 
             findViewById(R.id.editAccountSubmitFrame).setVisibility(View.VISIBLE);
             findViewById(R.id.editAccount).setVisibility(View.GONE);
-        }else{
+        }
+
+        if(sm.getMobileNumberMain() && !contact.isEmpty() && !email.isEmpty()){
             LayoutManager.alertMessage(this, "Não é possível alterar os dados.");
         }
     }

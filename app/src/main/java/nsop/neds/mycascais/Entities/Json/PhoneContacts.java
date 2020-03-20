@@ -7,5 +7,6 @@ public class PhoneContacts {
     public String CountryCode;
     public String Number;
     public boolean Main;
+    public boolean Login;
     public boolean SendSMS;
 }

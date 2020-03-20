@@ -309,13 +309,23 @@ public class LoginActivity extends AppCompatActivity {
                         String phoneNumber = "";
 
                         for (PhoneContacts contact : responseLogin.PhoneContacts){
-                            if(contact.Main){
+                            if(contact.Login){
                                 phoneNumber = contact.Number;
+                                sm.setMobileNumberMain(true);
                             }
                         }
 
                         if(phoneNumber.isEmpty()){
-                            phoneNumber = responseLogin.PhoneContacts.get(0).Number;
+
+                            for (PhoneContacts contact : responseLogin.PhoneContacts){
+                                if(contact.Main){
+                                    phoneNumber = contact.Number;
+                                }
+                            }
+
+                            if(phoneNumber.isEmpty() && responseLogin.PhoneContacts.size() > 0) {
+                                phoneNumber = responseLogin.PhoneContacts.get(0).Number;
+                            }
                         }
 
                         sm.setMobileNumber(phoneNumber);
