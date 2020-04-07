@@ -1,5 +1,7 @@
 package nsop.neds.mycascais.Entities.Json;
 
+import java.util.List;
+
 public class PhoneContacts {
     public int ID;
     public String CustomerID;
@@ -9,4 +11,5 @@ public class PhoneContacts {
     public boolean Main;
     public boolean Login;
     public boolean SendSMS;
+    public List<ValidationStates> ValidationStates;
 }

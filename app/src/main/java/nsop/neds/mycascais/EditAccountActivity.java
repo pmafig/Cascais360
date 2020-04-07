@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,12 +43,15 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Email;
 import nsop.neds.mycascais.Entities.Json.Labels;
+import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.ChangeEntityValidationStateResponse;
 import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserResponse;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -72,7 +76,12 @@ public class EditAccountActivity extends AppCompatActivity {
     private boolean addEmail = false;
     private boolean addPhoneNumber = false;
 
+    private LoginUserResponse user;
+
     ProgressDialog progressDialog;
+
+    boolean userEmailLogin = false;
+    boolean userPhoneNumberLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +112,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.MyProfile);
 
+
         TextView title = findViewById(R.id.account_data_title);
         title.setText(Settings.labels.PersonalData);
         title.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -114,12 +124,122 @@ public class EditAccountActivity extends AppCompatActivity {
         Button editSubmitButton = findViewById(R.id.editAccountSubmit);
         editSubmitButton.setBackgroundColor(Color.parseColor(Settings.colors.YearColor));
 
+        ImageView starEmailAuth = findViewById(R.id.accountEmailValidationImage);
+        TextView labelEmailAuth = findViewById(R.id.accountEmailValidationLabel);
+
+        ImageView starPhoneAuth = findViewById(R.id.accountPhoneValidationImage);
+        TextView labelPhoneAuth = findViewById(R.id.accountPhoneValidationLabel);
+
+
+        String userPhoneNumber = "";
+        userPhoneNumberLogin = false;
+        boolean userPhoneNumberValid = false;
+
+        String userEmail = "";
+        userEmailLogin = false;
+        boolean userEmailValid = false;
+
+        if(sm.isLoggedOn()) {
+            user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+            //PhoneNumber
+            if(userPhoneNumber.isEmpty()) {
+                for (PhoneContacts phone : user.PhoneContacts) {
+                    if (phone.Login) {
+                        userPhoneNumber = phone.Number;
+                        userPhoneNumberLogin = true;
+                        userPhoneNumberValid = phone.ValidationStates.size() > 0 && phone.ValidationStates.get(0).TypeID == 2;
+                        break;
+                    }
+                }
+            }
+
+            if(userPhoneNumber.isEmpty()) {
+                for (PhoneContacts phone : user.PhoneContacts) {
+                    if (phone.Main) {
+                        userPhoneNumber = phone.Number;
+                        userPhoneNumberValid = phone.ValidationStates.size() > 0 && phone.ValidationStates.get(0).TypeID == 2;
+                        break;
+                    }
+                }
+            }
+
+            if(userPhoneNumber.isEmpty()) {
+                if(user.PhoneContacts.size() > 0){
+                    userPhoneNumber = user.PhoneContacts.get(0).Number;
+                    userPhoneNumberValid = user.PhoneContacts.get(0).ValidationStates.size() > 0 && user.PhoneContacts.get(0).ValidationStates.get(0).TypeID == 2;
+                }
+            }
+
+            //Email
+            if(userEmail.isEmpty()) {
+                for (Email email : user.Emails) {
+                    if (email.Login) {
+                        userEmail = email.EmailAddress;
+                        userEmailLogin = true;
+                        userEmailValid = email.ValidationStates.size() > 0 && email.ValidationStates.get(0).TypeID == 2;
+                        break;
+                    }
+                }
+            }
+
+            if(userEmail.isEmpty()) {
+                for (Email email : user.Emails) {
+                    if (email.Main) {
+                        userEmail = email.EmailAddress;
+                        userEmailValid = email.ValidationStates.size() > 0 && email.ValidationStates.get(0).TypeID == 2;
+                        break;
+                    }
+                }
+            }
+
+            if(userEmail.isEmpty()) {
+                if(user.Emails.size() > 0){
+                    userEmail = user.Emails.get(0).EmailAddress;
+                    userEmailValid = user.Emails.get(0).ValidationStates.size() > 0 && user.Emails.get(0).ValidationStates.get(0).TypeID == 2;
+                }
+            }
+
+        }
+
+        if(userPhoneNumberLogin) {
+            starPhoneAuth.setVisibility(View.VISIBLE);
+            starPhoneAuth.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(EditAccountActivity.this, Settings.labels.AuthenticationContact, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            starPhoneAuth.setVisibility(View.INVISIBLE);
+        }
+
+        labelPhoneAuth.setText(userPhoneNumberValid ? Settings.labels.Validated : Settings.labels.NotValidated);
+        labelPhoneAuth.setTextColor(userPhoneNumberValid ? Color.parseColor("#00FF00") : Color.parseColor("#FF0000"));
+
+
+        if(userEmailLogin){
+            starEmailAuth.setVisibility(View.VISIBLE);
+            starEmailAuth.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(EditAccountActivity.this, Settings.labels.AuthenticationContact, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            starEmailAuth.setVisibility(View.INVISIBLE);
+        }
+
+        labelEmailAuth.setText(userEmailValid ? Settings.labels.Validated : Settings.labels.NotValidated);
+        labelEmailAuth.setTextColor(userEmailValid ? Color.parseColor("#00FF00") : Color.parseColor("#FF0000"));
+
+
         EditText name = findViewById(R.id.accountName);
         name.setHint(sm.getFullName());
         //name.setFocusable(false);
 
         EditText email = findViewById(R.id.accountEmail);
-        email.setHint(sm.getEmail());
+        email.setHint(userEmail);
         //email.setFocusable(false);
 
         //EditText address = findViewById(R.id.accountAddress);
@@ -127,7 +247,7 @@ public class EditAccountActivity extends AppCompatActivity {
         //address.setFocusable(false);
 
         EditText phone = findViewById(R.id.accountPhone);
-        phone.setHint(sm.getMobileNumber());
+        phone.setHint(userPhoneNumber);//);
 
         View view = this.findViewById(R.id.accountPhone);
 
@@ -135,7 +255,7 @@ public class EditAccountActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
 
-        if(sm.getMobileNumberMain() && !sm.getEmail().isEmpty() && !sm.getMobileNumber().isEmpty()){
+        if(userEmailLogin && userPhoneNumberLogin){
             editButton.setVisibility(View.GONE);
         }
 
@@ -173,7 +293,7 @@ public class EditAccountActivity extends AppCompatActivity {
         String contact = accountPhoneField.getHint().toString();
         String email = accountEmailField.getHint().toString();
 
-        if(!sm.getMobileNumberMain() || contact.isEmpty()) {
+        if(!userPhoneNumberLogin) {
             addPhoneNumber = true;
 
             accountPhoneField.setEnabled(true);
@@ -184,7 +304,7 @@ public class EditAccountActivity extends AppCompatActivity {
             findViewById(R.id.editAccount).setVisibility(View.GONE);
         }
 
-        if(email.isEmpty()){
+        if(!userEmailLogin){
             addEmail = true;
 
             accountEmailField.setEnabled(true);
@@ -195,7 +315,7 @@ public class EditAccountActivity extends AppCompatActivity {
             findViewById(R.id.editAccount).setVisibility(View.GONE);
         }
 
-        if(sm.getMobileNumberMain() && !contact.isEmpty() && !email.isEmpty()){
+        if(userEmailLogin && userPhoneNumberLogin){
             LayoutManager.alertMessage(this, "Não é possível alterar os dados.");
         }
     }
@@ -266,7 +386,7 @@ public class EditAccountActivity extends AppCompatActivity {
             valid = false;
         }
 
-        if( validator.isNullOrEmpty(accountName)){
+        if(validator.isNullOrEmpty(accountName)){
             final EditText accountNameField = findViewById(R.id.accountName);
             accountNameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override

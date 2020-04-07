@@ -126,4 +126,7 @@ public class Labels {
     public String AddingEmail = "Addicionando email...";
     public String AddingPhoneContact = "Addicionando telemóvel...";
     public String CheckYourInternetConnection = "Verifique a sua ligação à internet.";
+    public String AuthenticationContact;
+    public String Validated;
+    public String NotValidated;
 }

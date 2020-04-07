@@ -29,6 +29,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
+import nsop.neds.mycascais.Entities.Json.Dates;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.Event;
 import nsop.neds.mycascais.Entities.Json.Point;
@@ -198,7 +199,9 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                         final Calendar endTime = Calendar.getInstance();
                         beginTime.set(2019, 11, 4, 16, 30);
 
-                        new CalendarManager(context).addevent(event.Title, event.Description, event.Points.get(0).Title);
+                        Dates dates =  event.Dates.get(0);
+
+                        new CalendarManager(context).addevent(event.Title, event.Description, event.Points.get(0).Title, dates);
                     }
                 });
 

@@ -23,6 +23,8 @@ public class Event {
 
     public Price Price;
 
+    public List<Dates> Dates;
+
     public List<Tabs> Tabs;
     
 }

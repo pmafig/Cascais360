@@ -9,11 +9,13 @@ import android.provider.CalendarContract;
 import android.text.Html;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import nsop.neds.mycascais.Entities.Json.Dates;
 import nsop.neds.mycascais.Settings.Settings;
 
 public class CalendarManager {
@@ -24,11 +26,34 @@ public class CalendarManager {
         this.context = context;
     }
 
-    public void addevent(String title, String description, String location){
+    public void addevent(String title, String description, String location, Dates dates){
+
+        // Construct event details
+        long startMillis = 0;
+        long endMillis = 0;
+
+        Calendar cal = Calendar.getInstance();
+        Calendar cale = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cal.setTime(sdf.parse(dates.value.replace('T', ' ')));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            cale.setTime(sdf.parse(dates.end_value.replace('T', ' ')));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        startMillis = cal.getTimeInMillis();
+        endMillis = cale.getTimeInMillis();
 
         Intent intent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
-                //.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginDateMillis)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
                 .putExtra(CalendarContract.Events.TITLE, title)
                 .putExtra(CalendarContract.Events.DESCRIPTION, Html.fromHtml(description).toString())
                 .putExtra(CalendarContract.Events.EVENT_LOCATION, location);
@@ -43,7 +68,7 @@ public class CalendarManager {
         intent.putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
 
 
-        intent.putExtra(CalendarContract.Reminders.MINUTES, 15);
+        intent.putExtra(CalendarContract.Reminders.MINUTES, 90);
         //intent.putExtra(CalendarContract.Reminders.EVENT_ID, eventID);
         intent.putExtra(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
 

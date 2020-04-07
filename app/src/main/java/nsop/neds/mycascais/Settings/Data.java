@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nsop.neds.mycascais.Entities.DashboardEntity;
+import nsop.neds.mycascais.Entities.Json.Category;
 import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.EventsCategories;
 import nsop.neds.mycascais.Entities.Json.InfoEventBlock;
@@ -59,4 +60,6 @@ public class Data {
     public static Boolean RecoverByEmail;
 
     public static Boolean RecoverBySms;
+
+    public static List<Category> NotificationsCategoryList;
 }

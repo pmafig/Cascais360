@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import nsop.neds.mycascais.Entities.Json.Category;
 import nsop.neds.mycascais.Entities.Json.EventsCategories;
 import nsop.neds.mycascais.Entities.Json.PlacesCategories;
 import nsop.neds.mycascais.Entities.Json.RoutesCategories;
@@ -29,6 +31,8 @@ import nsop.neds.mycascais.WebApi.WebApiCalls;
 public class NotificationsTownActivity extends AppCompatActivity {
 
     LinearLayout menuFragment;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +61,15 @@ public class NotificationsTownActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.Notifications);
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        final int id = bundle.getInt(Variables.Id);
+
+
         TextView notificationTitle = findViewById(R.id.notifications_title);
         notificationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
-        LinearLayout categories = findViewById(R.id.notification_category);
+        final LinearLayout categories = findViewById(R.id.notification_category);
 
         categories.removeAllViews();
 
@@ -86,6 +95,20 @@ public class NotificationsTownActivity extends AppCompatActivity {
                 item.setThumbTintList(new ColorStateList(states, thumbColors));
                 item.setTrackTintList(new ColorStateList(states, thumbColors));
             }
+
+            item.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+
+                        Category category = new Category();
+                        category.CategoryID = id;
+                        category.TownCouncilID = 1;
+
+                        Data.NotificationsCategoryList.add(category);
+                    }
+                }
+            });
 
             categories.addView(block);
         }

@@ -20,16 +20,22 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.DetailActivity;
+import nsop.neds.mycascais.Entities.Json.Category;
+import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.Event;
 import nsop.neds.mycascais.Entities.Json.Notifications;
@@ -38,6 +44,7 @@ import nsop.neds.mycascais.Entities.Json.Route;
 import nsop.neds.mycascais.Entities.Json.Search;
 import nsop.neds.mycascais.Entities.Json.Weather;
 import nsop.neds.mycascais.R;
+import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.WebApiClient;
 import nsop.neds.mycascais.WebApi.WebApiMessages;
@@ -147,7 +154,12 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
 
                 String temp = responseData.getString("NodeList");
 
+                String tempCategory = responseData.getString("CategoryList");
+
                 Notifications search = new Gson().fromJson(temp, Notifications.class);
+
+                Type CategoryTypeList = new TypeToken<ArrayList<Category>>() { }.getType();
+                Data.NotificationsCategoryList = new Gson().fromJson(tempCategory, CategoryTypeList);
 
                 return search.Data;
             }

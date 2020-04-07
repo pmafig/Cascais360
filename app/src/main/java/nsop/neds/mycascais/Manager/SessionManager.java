@@ -161,6 +161,8 @@ public class SessionManager {
     public void setDisplaystatus(String status){ editor.putString(userstatus, status).commit(); }
 
     public void clear(){
+        editor.remove(user).commit();
+
         editor.remove(username).commit();
         editor.remove(fullname).commit();
         editor.remove(address).commit();
@@ -178,6 +180,7 @@ public class SessionManager {
         editor.remove(externalAppId).commit();
 
         editor.remove(mobilenumbermain).commit();
+
     }
 
     public void setRecover(){ editor.putBoolean(recover, true).commit(); }
