@@ -5,5 +5,5 @@ import java.util.List;
 public class UpdateSubscriptions {
     public String userid;
     public String ssk;
-    public List<Category> Categories;
+    public List<NotificationsCategory> Categories;
 }

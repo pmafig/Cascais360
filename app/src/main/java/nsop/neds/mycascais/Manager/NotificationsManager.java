@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.text.style.ReplacementSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,10 +39,16 @@ import nsop.neds.mycascais.Entities.Json.Category;
 import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.Event;
+import nsop.neds.mycascais.Entities.Json.EventsCategories;
+import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.Notifications;
+import nsop.neds.mycascais.Entities.Json.NotificationsCategory;
 import nsop.neds.mycascais.Entities.Json.Place;
+import nsop.neds.mycascais.Entities.Json.PlacesCategories;
 import nsop.neds.mycascais.Entities.Json.Route;
+import nsop.neds.mycascais.Entities.Json.RoutesCategories;
 import nsop.neds.mycascais.Entities.Json.Search;
+import nsop.neds.mycascais.Entities.Json.TownCouncils;
 import nsop.neds.mycascais.Entities.Json.Weather;
 import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.Settings.Data;
@@ -53,11 +60,13 @@ import nsop.neds.mycascais.WebApi.WebApiMethods;
 public class NotificationsManager extends AsyncTask<String, Void, Search> {
 
     Context context;
-    LinearLayout content;
+    LinearLayout contents;
+    LinearLayout subscriptions;
 
-    public NotificationsManager(Context context, LinearLayout content){
+    public NotificationsManager(Context context, LinearLayout content, LinearLayout subscriptions){
         this.context = context;
-        this.content = content;
+        this.contents = content;
+        this.subscriptions = subscriptions;
     }
 
     @Override
@@ -91,6 +100,66 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
                 }
             }
         }
+
+
+        for (int i = 0; i < Data.NotificationsCategoryList.size() ; i++){
+            NotificationsCategory n = Data.NotificationsCategoryList.get(i);
+
+            for (int e = 0; e < Data.NotificationsEventsCategories.size(); e++){
+                EventsCategories event = Data.NotificationsEventsCategories.get(e);
+
+                if(n.CID == event.ID){
+                    for (int t = 0; t < Data.Towns.size(); t++){
+                        TownCouncils town = Data.Towns.get(t);
+                        if(n.TCID == town.ID){
+                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Events, event.Description, town.Description));
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+
+            for (int e = 0; e < Data.NotificationsPlacesCategories.size(); e++){
+                PlacesCategories place = Data.NotificationsPlacesCategories.get(e);
+
+                if(n.CID == place.ID){
+                    for (int t = 0; t < Data.Towns.size(); t++){
+                        TownCouncils town = Data.Towns.get(t);
+                        if(n.TCID == town.ID){
+                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Places, place.Description, town.Description));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (int e = 0; e < Data.NotificationsRoutesCategories.size(); e++){
+                RoutesCategories route = Data.NotificationsRoutesCategories.get(e);
+
+                if(n.CID == route.ID){
+                    for (int t = 0; t < Data.Towns.size(); t++){
+                        TownCouncils town = Data.Towns.get(t);
+                        if(n.TCID == town.ID){
+                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Routes, route.Description, town.Description));
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    private void addSubscription(String line){
+        View block = View.inflate(context, R.layout.block_subscription_item, null);
+
+        final TextView nameField = block.findViewById(R.id.notification_name);
+        nameField.setText(line);
+
+        this.subscriptions.addView(block);
     }
 
     private void addNotification(String name, final int id){
@@ -140,7 +209,7 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
             }
         });
 
-        this.content.addView(block);
+        this.contents.addView(block);
     }
 
 
@@ -158,8 +227,13 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
 
                 Notifications search = new Gson().fromJson(temp, Notifications.class);
 
-                Type CategoryTypeList = new TypeToken<ArrayList<Category>>() { }.getType();
+                Type CategoryTypeList = new TypeToken<ArrayList<NotificationsCategory>>() { }.getType();
+
                 Data.NotificationsCategoryList = new Gson().fromJson(tempCategory, CategoryTypeList);
+
+                if(Data.NotificationsCategoryList == null){
+                    Data.NotificationsCategoryList = new ArrayList<>();
+                }
 
                 return search.Data;
             }

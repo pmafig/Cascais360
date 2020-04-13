@@ -123,10 +123,15 @@ public class Labels {
     public String AskForAuthentication;
     public String ContactAuth = "Contacto inserido com sucesso.";
     public String SubscriptionRemoved = "Subscrição removida com sucesso.";
+    public String SubscriptionUpdated = "Subscrições atualizadas com sucesso.";
     public String AddingEmail = "Addicionando email...";
     public String AddingPhoneContact = "Addicionando telemóvel...";
     public String CheckYourInternetConnection = "Verifique a sua ligação à internet.";
     public String AuthenticationContact;
     public String Validated;
     public String NotValidated;
+    public String SubscribedContents= "Conteúdos subscritos";;
+    public String SubscribedNotifications = "Notificações subscritas";
+    public String SubscribeNotifications = "Subscrever notificações";
+
 }

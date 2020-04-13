@@ -4,6 +4,7 @@ import android.os.Build;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 
@@ -26,8 +27,6 @@ public class WebApiClient {
         RefreshLoginUser,
         CreateTemporaryLoginUser,
         CreateLoginUser,
-        UpdateMobilePhoneContact,
-        ValidateMobilePhoneContact,
         ValidateMobileTemporaryLoginUser,
         ValidateSmsToken,
         ResetLoginUser,
@@ -67,6 +66,14 @@ public class WebApiClient {
     public static void post(String url, String message, Boolean encrypt, AsyncHttpResponseHandler responseHandler) {
         setHttpClient();
         client.post(getAbsoluteUrl(url, encrypt ?  new MessageEncryption().Encrypt(message, SITE_KEY) : message), responseHandler);
+    }
+
+    public static void postNotifications(String url, String message, AsyncHttpResponseHandler responseHandler) {
+        setHttpClient();
+        RequestParams params = new RequestParams();
+        params.add("rt", new MessageEncryption().Encrypt(message, SITE_KEY));
+
+        client.post(BASE_URL + url + "/" + SITE_ID, params, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl, String rT) {

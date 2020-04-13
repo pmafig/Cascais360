@@ -22,11 +22,7 @@ public class WebApiMethods {
     public static final String VALIDATEEMAILTEMPORARYACCOUNT = "CheckValidationToken";
 
 
-    public static final String UPDATEMOBILEPHONECONTACT = "UpdateMobilePhoneContact";
-
     public static final String UPDATECUSTOMERCONTACT = "UpdateCustomerContact";
-
-    public static final String VALIDATEMOBILEPHONECONTACT = "ValidateMobilePhoneContact";
 
     public static final String REFRESHLOGINUSER = "RefreshLoginUser";
 
@@ -41,5 +37,7 @@ public class WebApiMethods {
     public static final String ADDCUSTOMEREMAIL = "AddCustomerEmail";
     public static final String ADDCUSTOMERPHONECONTACT = "AddCustomerPhoneContact";
     public static final String CHANGEENTITYVALIDATIONSTATE = "ChangeEntityValidationState";
+
+    public static final String UPDATESUBSCRIPTIONS= "UpdateSubscriptions";
     //endregion
 }

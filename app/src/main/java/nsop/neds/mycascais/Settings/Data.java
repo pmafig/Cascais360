@@ -11,6 +11,7 @@ import nsop.neds.mycascais.Entities.Json.Country;
 import nsop.neds.mycascais.Entities.Json.EventsCategories;
 import nsop.neds.mycascais.Entities.Json.InfoEventBlock;
 import nsop.neds.mycascais.Entities.Json.MapMarker;
+import nsop.neds.mycascais.Entities.Json.NotificationsCategory;
 import nsop.neds.mycascais.Entities.Json.PlacesCategories;
 import nsop.neds.mycascais.Entities.Json.RoutesCategories;
 import nsop.neds.mycascais.Entities.Json.Search;
@@ -61,5 +62,5 @@ public class Data {
 
     public static Boolean RecoverBySms;
 
-    public static List<Category> NotificationsCategoryList;
+    public static List<NotificationsCategory> NotificationsCategoryList;
 }

@@ -44,6 +44,7 @@ public class NotificationsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                startActivity(new Intent(NotificationsListActivity.this, NotificationsActivity.class));
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
@@ -53,7 +54,8 @@ public class NotificationsListActivity extends AppCompatActivity {
         new MenuManager(this, toolbar, menuFragment, Settings.labels.Notifications);
 
         TextView notificationTitle = findViewById(R.id.notifications_title);
-        notificationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        //notificationTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
+        notificationTitle.setText(Settings.labels.SubscribeNotifications);
 
         String type = getIntent().getStringExtra(Variables.Type);
 
@@ -63,7 +65,7 @@ public class NotificationsListActivity extends AppCompatActivity {
 
         switch (type) {
             case Variables.Events:
-                notificationTitle.setText(Settings.labels.Events);
+                //notificationTitle.setText(Settings.labels.Events);
 
                 for(final EventsCategories e : Data.NotificationsEventsCategories){
                     View block = View.inflate(NotificationsListActivity.this, R.layout.block_notification_item, null);
@@ -87,7 +89,7 @@ public class NotificationsListActivity extends AppCompatActivity {
 
                 break;
             case Variables.Routes:
-                notificationTitle.setText(Settings.labels.Routes);
+                //notificationTitle.setText(Settings.labels.Routes);
 
                 for(final RoutesCategories r : Data.NotificationsRoutesCategories){
                     View block = View.inflate(NotificationsListActivity.this, R.layout.block_notification_item, null);
@@ -111,7 +113,7 @@ public class NotificationsListActivity extends AppCompatActivity {
 
                 break;
             case Variables.Places:
-                notificationTitle.setText(Settings.labels.Places);
+                //notificationTitle.setText(Settings.labels.Places);
 
                 for(final PlacesCategories p : Data.NotificationsPlacesCategories){
                     View block = View.inflate(NotificationsListActivity.this, R.layout.block_notification_item, null);

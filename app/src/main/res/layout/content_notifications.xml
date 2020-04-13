@@ -33,6 +33,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"-->
 
+                    <!--<TextView
+                        android:id="@+id/notifications_main_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:text="Notificações"
+                        android:textAllCaps="true"
+                        android:paddingBottom="5dp"
+                        android:background="@drawable/border_bottom"/>-->
 
                     <TextView
                         android:id="@+id/notifications_title"
@@ -40,7 +49,9 @@
                         android:layout_height="wrap_content"
                         android:textSize="16dp"
                         android:text="Notificações"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorBlack"
+                        android:textStyle="bold"
                         android:paddingBottom="5dp"
                         android:background="@drawable/border_bottom"/>
                     <LinearLayout
@@ -77,6 +88,13 @@
                         android:text="Locais"
                         android:background="@drawable/custom_ripple"
                         android:drawableRight="@drawable/ic_right_arrow"/>
+                    <LinearLayout
+                        android:id="@+id/subscriptions_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        tools:ignore="MissingConstraints">
+                    </LinearLayout>
                 </LinearLayout>
 
                     <TextView
@@ -84,8 +102,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16dp"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:text="Conteúdos subscritos"
+                        android:textColor="@color/colorBlack"
+                        android:textStyle="bold"
                         android:paddingBottom="5dp"
                         android:background="@drawable/border_bottom"/>
                     <LinearLayout

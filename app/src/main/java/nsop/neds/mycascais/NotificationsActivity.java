@@ -64,8 +64,11 @@ public class NotificationsActivity extends AppCompatActivity {
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.Notifications);
 
+        TextView titleNot = findViewById(R.id.notifications_title);
+        titleNot.setText(Settings.labels.SubscribedNotifications);
+
         TextView titleNotification = findViewById(R.id.subscription_title);
-        titleNotification.setText(Settings.labels.Notifications);
+        titleNotification.setText(Settings.labels.SubscribedContents);
 
         TextView eventsNotification = findViewById(R.id.notification_events);
         eventsNotification.setText(Settings.labels.Events);
@@ -107,7 +110,7 @@ public class NotificationsActivity extends AppCompatActivity {
         });
 
         UserEntity user = AccountGeneral.getUser(this);
-        new NotificationsManager(this, (LinearLayout) findViewById(R.id.notification_frame)).execute(WebApiCalls.getNotification(user.getSsk(), user.getUserId()));
+        new NotificationsManager(this, (LinearLayout) findViewById(R.id.notification_frame), (LinearLayout) findViewById(R.id.subscriptions_frame)).execute(WebApiCalls.getNotification(user.getSsk(), user.getUserId()));
     }
 
 

@@ -27,15 +27,18 @@
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="30dp">
 
+
                     <TextView
                         android:id="@+id/notifications_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/border_bottom"
-                        android:textAllCaps="true"
-                        android:paddingBottom="5dp"
+                        android:textSize="16dp"
                         android:text="Notificações"
-                        android:textSize="16dp" />
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorBlack"
+                        android:textStyle="bold"
+                        android:paddingBottom="5dp"
+                        android:background="@drawable/border_bottom"/>
 
                     <LinearLayout
                         android:id="@+id/notification_category"
