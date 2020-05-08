@@ -49,7 +49,9 @@ public class Labels {
     public String Email;
     public String Send;
     public String OldPassword;
+    public String NewPassword;
     public String Password;
+    public String PasswordConfirmation;
     public String CreateAccount;
     public String PasswordRequirements;
     public String PasswordRequirementsMessage;

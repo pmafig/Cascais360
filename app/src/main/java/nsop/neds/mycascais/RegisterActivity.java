@@ -185,7 +185,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         accountUsernameField.setHint(Settings.labels.Username);
         accountPasswordField.setHint(Settings.labels.Password);
-        accountRePasswordField.setHint(Settings.labels.Password);
+        accountRePasswordField.setHint(Settings.labels.PasswordConfirmation);
 
         accountCountryField = findViewById(R.id.accountCountry);
 
@@ -509,7 +509,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         int countryPosition = accountCountryField.getSelectedItemPosition();
 
-        if(Data.CountryList != null && Data.CountryList.size() > 0) {
+        if(accountVatinField.getVisibility() == View.VISIBLE && Data.CountryList != null && Data.CountryList.size() > 0) {
             countryId = Data.CountryList.get(countryPosition).Id;
         }
 
@@ -640,10 +640,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(userVatin != null && !userVatin.isEmpty()) {
             request.Vatin = userVatin;
-        }
-
-        if(countryId > 0) {
-            request.CountryID = 1;
         }
 
         if(languageId > 0) {
@@ -846,7 +842,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if(responseData != null && responseData.IsCreated){
-            String username = Data.CurrentAccountName;
+            String username = responseData.UserName;
             String password = accountPasswordField.getText().toString();
             autoLogin(username, password);
         }else {
@@ -890,16 +886,16 @@ public class RegisterActivity extends AppCompatActivity {
 
         ValidateResetLoginUserResponse responseData = null;
 
-        if(responseMessage.has("ResponseData")) {
+        if(responseMessage.has(Variables.ResponseData)) {
             try {
-                responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), ValidateResetLoginUserResponse.class);
+                responseData = new Gson().fromJson(responseMessage.getJSONObject(Variables.ResponseData).toString(), ValidateResetLoginUserResponse.class);
             }catch (JSONException ex){
                 //TODO add error message
             }
         }
 
         if(responseData != null && responseData.PasswordChanged){
-            String username = Data.CurrentAccountName;
+            String username = responseData.UserName;
             String password = accountPasswordField.getText().toString();
             autoLogin(username, password);
         }else {
@@ -974,7 +970,15 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void postSuccess(String json){
         Response data = new Gson().fromJson(json, Response.class);
-
+        JSONObject jsonData = null;
+        String jsonUser = "";
+        try {
+            jsonData = new JSONObject(json);
+            JSONObject responseData = jsonData.getJSONObject(Variables.ResponseData);
+            jsonUser = responseData.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if(data.ReportList != null && data.ReportList.size() > 0){
             LayoutManager.alertMessage(this, Settings.labels.CreateAccount, data.ReportList.get(0).Description);
         }else {
@@ -990,6 +994,8 @@ public class RegisterActivity extends AppCompatActivity {
                     sm.setDisplayname(data.ResponseData.DisplayName);
                     sm.setFullName(ReportManager.getFullName(json));
                     sm.setEmail(ReportManager.getEmail(json));
+
+                    sm.setUser(jsonUser);
 
                     if (data.ResponseData.PhoneContacts != null && data.ResponseData.PhoneContacts.size() > 0) {
                         sm.setMobileNumber(data.ResponseData.PhoneContacts.get(0).Number);

@@ -31,8 +31,11 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 import nsop.neds.mycascais.Entities.Json.ReportList;
+import nsop.neds.mycascais.Entities.Json.ValidationStates;
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenRequest;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenResponse;
 import nsop.neds.mycascais.Manager.ContactAsAuth;
@@ -232,15 +235,64 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
 
                             if(isAuth){
                                 sm.setMobileNumberMain(true);
+
+                                LoginUserResponse userINSession = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                for(PhoneContacts phone : userINSession.PhoneContacts){
+                                    if(phone.Number.startsWith(mobileNumber)){
+                                        if(phone.ValidationStates == null){
+                                            phone.ValidationStates = new ArrayList<>();
+                                            ValidationStates vs = new ValidationStates();
+                                            vs.TypeID = 2;
+                                            vs.Active = true;
+                                            phone.ValidationStates.add(vs);
+                                        }else{
+                                            for(int i = 0; i < userINSession.PhoneContacts.size(); i++){
+                                                if(userINSession.PhoneContacts.get(0).Number.startsWith(mobileNumber)) {
+                                                    if(userINSession.PhoneContacts.get(0).ValidationStates != null){
+                                                        userINSession.PhoneContacts.get(0).ValidationStates.get(0).TypeID = 2;
+                                                        userINSession.PhoneContacts.get(0).Login = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                sm.setUser(new Gson().toJson(userINSession));
+
                                 new ContactAsAuth().execute(WebApiCalls.setMobileAuth(user.getSsk(), user.getUserId(), mobileId));
+                            }else{
+                                LoginUserResponse userINSession = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                for(PhoneContacts phone : userINSession.PhoneContacts){
+                                    if(phone.Number.startsWith(mobileNumber)){
+                                        if(phone.ValidationStates == null){
+                                            phone.ValidationStates = new ArrayList<>();
+                                            ValidationStates vs = new ValidationStates();
+                                            vs.TypeID = 2;
+                                            vs.Active = true;
+                                            phone.ValidationStates.add(vs);
+                                        }else{
+                                            for(int i = 0; i < userINSession.PhoneContacts.size(); i++){
+                                                if(userINSession.PhoneContacts.get(0).Number.startsWith(mobileNumber)) {
+                                                    if(userINSession.PhoneContacts.get(0).ValidationStates != null){
+                                                        userINSession.PhoneContacts.get(0).ValidationStates.get(0).TypeID = 2;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                sm.setUser(new Gson().toJson(userINSession));
                             }
 
                             Intent intent = new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class);
                             startActivity(intent);
                         }
-
-
-
 
                     }
                 } catch (JSONException e) {
@@ -374,7 +426,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
 
         String url = "";
 
-        SessionManager session = new SessionManager(this);
+        final SessionManager session = new SessionManager(this);
 
         progressDialog.setMessage("Validando código...");
         AccountManager mAccountManager = AccountManager.get(this);
@@ -385,7 +437,6 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
 
         jsonRequest = String.format("{\"Token\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", i:false}", token, ssk, userId);
         url = String.format("/%s/%s", WebApiClient.API.cms, WebApiClient.METHODS.ValidateCustomerContact);
-
 
         progressDialog.show();
 
@@ -405,6 +456,7 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 if (ReportManager.IsValidated(json)) {
+
                     Toast.makeText(getBaseContext(), Settings.labels.ContactAuth, Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ValidateSMSTokenActivity.this, ProfileActivity.class));
                 } else {

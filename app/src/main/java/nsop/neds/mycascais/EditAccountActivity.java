@@ -48,6 +48,8 @@ import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.Json.Response;
+import nsop.neds.mycascais.Entities.Json.User;
+import nsop.neds.mycascais.Entities.Json.ValidationStates;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.ChangeEntityValidationStateResponse;
 import nsop.neds.mycascais.Entities.WebApi.CreateLoginUserResponse;
@@ -148,7 +150,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     if (phone.Login) {
                         userPhoneNumber = phone.Number;
                         userPhoneNumberLogin = true;
-                        userPhoneNumberValid = phone.ValidationStates.size() > 0 && phone.ValidationStates.get(0).TypeID == 2;
+                        userPhoneNumberValid = phone.ValidationStates != null && phone.ValidationStates.size() > 0 && phone.ValidationStates.get(0).TypeID == 2;
                         break;
                     }
                 }
@@ -167,8 +169,12 @@ public class EditAccountActivity extends AppCompatActivity {
             if(userPhoneNumber.isEmpty()) {
                 if(user.PhoneContacts.size() > 0){
                     userPhoneNumber = user.PhoneContacts.get(0).Number;
-                    userPhoneNumberValid = user.PhoneContacts.get(0).ValidationStates.size() > 0 && user.PhoneContacts.get(0).ValidationStates.get(0).TypeID == 2;
+                    userPhoneNumberValid = user.PhoneContacts.get(0).ValidationStates != null &&  user.PhoneContacts.get(0).ValidationStates.size() > 0 && user.PhoneContacts.get(0).ValidationStates.get(0).TypeID == 2;
                 }
+            }
+
+            if(!userPhoneNumber.isEmpty()){
+                labelPhoneAuth.setVisibility(View.VISIBLE);
             }
 
             //Email
@@ -198,6 +204,10 @@ public class EditAccountActivity extends AppCompatActivity {
                     userEmail = user.Emails.get(0).EmailAddress;
                     userEmailValid = user.Emails.get(0).ValidationStates.size() > 0 && user.Emails.get(0).ValidationStates.get(0).TypeID == 2;
                 }
+            }
+
+            if(!userEmail.isEmpty()){
+                labelEmailAuth.setVisibility(View.VISIBLE);
             }
 
         }
@@ -502,7 +512,32 @@ public class EditAccountActivity extends AppCompatActivity {
                             if(addEmail){
                                 addCustomerEmail(true);
                             }else if (addPhoneNumber){
-                                addCustomerPhoneContact(true);
+
+                                boolean _exist = false;
+                                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                for(PhoneContacts phone : user.PhoneContacts){
+                                    if(phone.Number.equals(phoneContact)){
+                                        _exist = true;
+
+                                        if(phone.ValidationStates != null && phone.ValidationStates.size() > 0){
+                                            ValidationStates validation = phone.ValidationStates.get(0);
+                                            if(validation.Active && validation.TypeID == 2){
+                                                addAuthPhoneContact(phone.ID);
+                                            }else{
+                                                changeEntityValidationState(true, phone.ID, phoneContact, false);
+                                                break;
+                                            }
+                                        }else{
+                                            changeEntityValidationState(true, phone.ID, phoneContact, false);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if(!_exist){
+                                    addCustomerPhoneContact(true);
+                                }
                             }
                             builder.show().dismiss();
                             break;
@@ -563,7 +598,6 @@ public class EditAccountActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String response) {
-
                     AppSignatureHelper appSignatureHelper = new AppSignatureHelper(EditAccountActivity.this);
                     appSignatureHelper.getAppSignatures();
 
@@ -614,6 +648,23 @@ public class EditAccountActivity extends AppCompatActivity {
                             responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
 
                             if (responseData.IsAdded) {
+
+                                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                Email  addedEmail = new Email();
+                                addedEmail.EmailAddress = emailContact;
+
+                                ValidationStates validation = new ValidationStates();
+                                validation.TypeID = isAuthenticator ? 2 : 1;
+                                validation.Active = true;
+
+                                addedEmail.ValidationStates = new ArrayList<>();
+                                addedEmail.ValidationStates.add(validation);
+
+                                user.Emails.add(addedEmail);
+
+                                sm.setUser(new Gson().toJson(user));
+
                                 changeEntityValidationState(isAuthenticator, responseData.EmailID, emailContact, true);
                             } else {
                                 //TODO add error message
@@ -640,9 +691,9 @@ public class EditAccountActivity extends AppCompatActivity {
 
         String validationMessage = "";
 
-        if(mobileNumber.startsWith(phoneContact)){
+        /*if(mobileNumber.startsWith(phoneContact)){
             validationMessage = Settings.labels.ChangePhoneNumberMessageMustBeDifferent;
-        }
+        }*/
 
         if(phoneContactField.isEnabled() && !validPhoneNumber){
             if(!validationMessage.isEmpty()){
@@ -721,7 +772,153 @@ public class EditAccountActivity extends AppCompatActivity {
                             responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
 
                             if (responseData.IsAdded) {
+                                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                PhoneContacts addedContact = new PhoneContacts();
+                                addedContact.Number = phoneContact;
+                                addedContact.ID = responseData.PhoneContactID;
+
+                                if(isAuthenticator){
+                                    addedContact.Login = true;
+                                }
+
+                                user.PhoneContacts.add(addedContact);
+
+                                sm.setUser(new Gson().toJson(user));
+
                                 changeEntityValidationState(isAuthenticator, responseData.PhoneContactID, phoneContact, false);
+                            } else {
+                                //TODO add error message
+                            }
+
+
+                        } catch (JSONException ex) {
+                            //TODO add error message
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void addAuthPhoneContact(final int phoneID){
+        UserEntity user = AccountGeneral.getUser(this);
+        final EditText phoneContactField = findViewById(R.id.accountPhone);
+
+        final String phoneContact = phoneContactField.getText().toString();
+
+        boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
+
+        String validationMessage = "";
+
+        if(phoneContactField.isEnabled() && !validPhoneNumber){
+            if(!validationMessage.isEmpty()){
+                validationMessage += "\n";
+            }
+            validationMessage += Settings.labels.InvalidContact;
+        }
+
+        if(!validationMessage.isEmpty()){
+            LayoutManager.alertMessage(this, validationMessage);
+        }else {
+
+            progressDialog.setMessage(Settings.labels.AddingPhoneContact);
+            progressDialog.show();
+
+
+            String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"PhoneID\":\"%s\"}",
+                    user.getSsk(), user.getUserId(), phoneID);
+
+            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount,  WebApiClient.METHODS.AddCustomerLogin), jsonRequest, true, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progressDialog.dismiss();
+                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.TryAgain);
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String response) {
+
+                    String message = WebApiMessages.DecryptMessage(response);
+
+                    JSONObject jsonMessage = null;
+                    try {
+                        jsonMessage = new JSONObject(message);
+                    } catch (JSONException ex) {
+                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                    }
+
+                    ChangeEntityValidationStateResponse responseData = null;
+
+                    if (jsonMessage.has(Variables.ResponseData)) {
+                        try {
+
+                            if (jsonMessage.has("ReportList") && !jsonMessage.isNull("ReportList")) {
+
+                                String receivedMessage = "";
+
+                                Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
+
+                                List<ReportList> reportList = new Gson().fromJson(jsonMessage.getJSONArray(Variables.ReportList).toString(), ReportListType);
+
+                                if(reportList.size() > 0) {
+                                    StringBuilder sb = new StringBuilder();
+
+                                    for (int i = 0; i < reportList.size(); i++) {
+                                        sb.append(reportList.get(i).Description);
+                                        if (i + 1 < reportList.size()) {
+                                            sb.append("\n");
+                                        }
+                                    }
+
+                                    if (sb.length() > 0) {
+                                        receivedMessage = sb.toString();
+                                    } else {
+                                        Toast.makeText(EditAccountActivity.this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    progressDialog.dismiss();
+                                    LayoutManager.alertMessage(EditAccountActivity.this, Settings.labels.CreateAccount, receivedMessage);
+                                }
+                            }
+
+                            responseData = new Gson().fromJson(jsonMessage.getJSONObject(Variables.ResponseData).toString(), ChangeEntityValidationStateResponse.class);
+
+                            if (responseData.IsAdded) {
+                                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                for(int i = 0; i < user.PhoneContacts.size() ; i++){
+                                    if(user.PhoneContacts.get(i).ID == phoneID){
+                                            if(user.PhoneContacts.get(i).ValidationStates != null &&
+                                                    user.PhoneContacts.get(i).ValidationStates.size() > 0){
+
+                                            if(user.PhoneContacts.get(i).ValidationStates.get(0).Active){
+                                                user.PhoneContacts.get(i).ValidationStates.get(0).TypeID = 2;
+                                                user.PhoneContacts.get(i).Login = true;
+                                                phoneContactField.setEnabled(false);
+                                                ImageView starPhoneAuth = findViewById(R.id.accountPhoneValidationImage);
+                                                starPhoneAuth.setVisibility(View.VISIBLE);
+                                                starPhoneAuth.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Toast.makeText(EditAccountActivity.this, Settings.labels.AuthenticationContact, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                                Button editSubmitButton = findViewById(R.id.editAccountSubmit);
+                                                Button editCancelButton = findViewById(R.id.editAccountCancel);
+                                                editSubmitButton.setVisibility(View.GONE);
+                                                editCancelButton.setVisibility(View.GONE);
+
+                                                EditText accountPhoneField = findViewById(R.id.accountPhone);
+                                                accountPhoneField.setEnabled(false);
+                                                accountPhoneField.setBackground(getDrawable(R.drawable.border_bottom));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                sm.setUser(new Gson().toJson(user));
+
                             } else {
                                 //TODO add error message
                             }
@@ -848,7 +1045,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     }
                 });*/
 
-            }
+                }
         });
 
     }

@@ -38,6 +38,8 @@ public class WebApiMethods {
     public static final String ADDCUSTOMERPHONECONTACT = "AddCustomerPhoneContact";
     public static final String CHANGEENTITYVALIDATIONSTATE = "ChangeEntityValidationState";
 
+    public static final String ADDCUSTOMERLOGIN = "AddCustomerEmail";
+
     public static final String UPDATESUBSCRIPTIONS= "UpdateSubscriptions";
     //endregion
 }

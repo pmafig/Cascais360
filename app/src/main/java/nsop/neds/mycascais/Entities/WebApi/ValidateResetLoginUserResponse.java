@@ -1,6 +1,7 @@
 package nsop.neds.mycascais.Entities.WebApi;
 
 public class ValidateResetLoginUserResponse {
+    public String UserName;
     public boolean Email;
     public boolean SMS;
     public String Token;

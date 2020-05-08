@@ -112,8 +112,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         rePassword = findViewById(R.id.accountRePassword);
 
         olderPassword.setHint(Settings.labels.OldPassword);
-        newPassword.setHint(Settings.labels.Password);
-        rePassword.setHint(Settings.labels.Password);
+        newPassword.setHint(Settings.labels.NewPassword);
+        rePassword.setHint(Settings.labels.PasswordConfirmation);
 
         sm = new SessionManager(this);
 
