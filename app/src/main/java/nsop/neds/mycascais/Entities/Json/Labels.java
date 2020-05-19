@@ -135,5 +135,6 @@ public class Labels {
     public String SubscribedContents= "Conteúdos subscritos";;
     public String SubscribedNotifications = "Notificações subscritas";
     public String SubscribeNotifications = "Subscrever notificações";
+    public String NonEventDates = "Não existem datas para este evento.";
 
 }

@@ -335,7 +335,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     sm.setAddress(ReportManager.getAddress(json));
 
-                    submit(responseLogin.SSK, responseLogin.UserID, responseLogin.RefreshToken);
+                    submit(responseLogin.SSK, responseLogin.AuthID, responseLogin.RefreshToken);
                 } catch (Exception e) {
                     AccountGeneral.logout(this);
                     intentNavegation();

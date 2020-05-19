@@ -49,7 +49,9 @@ import nsop.neds.mycascais.Entities.Json.Route;
 import nsop.neds.mycascais.Entities.Json.RoutesCategories;
 import nsop.neds.mycascais.Entities.Json.Search;
 import nsop.neds.mycascais.Entities.Json.TownCouncils;
+import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.Json.Weather;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
@@ -102,54 +104,58 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
         }
 
 
-        for (int i = 0; i < Data.NotificationsCategoryList.size() ; i++){
-            NotificationsCategory n = Data.NotificationsCategoryList.get(i);
+        if(Data.NotificationsCategoryList != null) {
+            for (int i = 0; i < Data.NotificationsCategoryList.size(); i++) {
+                NotificationsCategory n = Data.NotificationsCategoryList.get(i);
 
-            for (int e = 0; e < Data.NotificationsEventsCategories.size(); e++){
-                EventsCategories event = Data.NotificationsEventsCategories.get(e);
+                if(Data.NotificationsEventsCategories != null) {
+                    for (int e = 0; e < Data.NotificationsEventsCategories.size(); e++) {
+                        EventsCategories event = Data.NotificationsEventsCategories.get(e);
 
-                if(n.CID == event.ID){
-                    for (int t = 0; t < Data.Towns.size(); t++){
-                        TownCouncils town = Data.Towns.get(t);
-                        if(n.TCID == town.ID){
-                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Events, event.Description, town.Description));
-                            break;
+                        if (n.CID == event.ID) {
+                            for (int t = 0; t < Data.Towns.size(); t++) {
+                                TownCouncils town = Data.Towns.get(t);
+                                if (n.TCID == town.ID) {
+                                    addSubscription(String.format("%s -> %s -> %s", Settings.labels.Events, event.Description, town.Description));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if( Data.NotificationsPlacesCategories != null) {
+                    for (int e = 0; e < Data.NotificationsPlacesCategories.size(); e++) {
+                        PlacesCategories place = Data.NotificationsPlacesCategories.get(e);
+
+                        if (n.CID == place.ID) {
+                            for (int t = 0; t < Data.Towns.size(); t++) {
+                                TownCouncils town = Data.Towns.get(t);
+                                if (n.TCID == town.ID) {
+                                    addSubscription(String.format("%s -> %s -> %s", Settings.labels.Places, place.Description, town.Description));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(Data.NotificationsRoutesCategories != null) {
+                    for (int e = 0; e < Data.NotificationsRoutesCategories.size(); e++) {
+                        RoutesCategories route = Data.NotificationsRoutesCategories.get(e);
+
+                        if (n.CID == route.ID) {
+                            for (int t = 0; t < Data.Towns.size(); t++) {
+                                TownCouncils town = Data.Towns.get(t);
+                                if (n.TCID == town.ID) {
+                                    addSubscription(String.format("%s -> %s -> %s", Settings.labels.Routes, route.Description, town.Description));
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
             }
-
-
-
-            for (int e = 0; e < Data.NotificationsPlacesCategories.size(); e++){
-                PlacesCategories place = Data.NotificationsPlacesCategories.get(e);
-
-                if(n.CID == place.ID){
-                    for (int t = 0; t < Data.Towns.size(); t++){
-                        TownCouncils town = Data.Towns.get(t);
-                        if(n.TCID == town.ID){
-                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Places, place.Description, town.Description));
-                            break;
-                        }
-                    }
-                }
-            }
-
-            for (int e = 0; e < Data.NotificationsRoutesCategories.size(); e++){
-                RoutesCategories route = Data.NotificationsRoutesCategories.get(e);
-
-                if(n.CID == route.ID){
-                    for (int t = 0; t < Data.Towns.size(); t++){
-                        TownCouncils town = Data.Towns.get(t);
-                        if(n.TCID == town.ID){
-                            addSubscription(String.format("%s -> %s -> %s", Settings.labels.Routes, route.Description, town.Description));
-                            break;
-                        }
-                    }
-                }
-            }
-
-
         }
     }
 
@@ -245,13 +251,11 @@ public class NotificationsManager extends AsyncTask<String, Void, Search> {
     }
 
     public void setNotification(int nid){
-        AccountManager mAccountManager = AccountManager.get(this.context);
-        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
-        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
-        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        SessionManager sm = new SessionManager(context);
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, nid);
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", loginUser.SSK, loginUser.AuthID, nid);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETSUBSCRIPTION), jsonRequest, true, new TextHttpResponseHandler() {
             @Override

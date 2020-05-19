@@ -667,6 +667,7 @@ public class RegisterActivity extends AppCompatActivity {
         CreateLoginUserRequest request = new CreateLoginUserRequest();
         request.FullName = userName;
         request.Password = new MessageEncryption().Encrypt(password, WebApiClient.SITE_KEY);
+
         request.ConfirmPassword = new MessageEncryption().Encrypt(confPassword, WebApiClient.SITE_KEY);
         request.Token = token;
         request.LanguageID = languageId;
@@ -975,7 +976,9 @@ public class RegisterActivity extends AppCompatActivity {
         try {
             jsonData = new JSONObject(json);
             JSONObject responseData = jsonData.getJSONObject(Variables.ResponseData);
-            jsonUser = responseData.toString();
+            if(responseData != null) {
+                jsonUser = responseData.toString();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

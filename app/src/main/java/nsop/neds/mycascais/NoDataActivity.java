@@ -31,6 +31,7 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.ReportList;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenRequest;
 import nsop.neds.mycascais.Entities.WebApi.ResendSMSTokenResponse;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -81,14 +82,17 @@ public class NoDataActivity extends AppCompatActivity {
 
         SessionManager sm = new SessionManager(this);
 
-        AccountManager mAccountManager = AccountManager.get(context);
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+        /*AccountManager mAccountManager = AccountManager.get(context);
         Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
         String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
         String userid = mAccountManager.getUserData(availableAccounts[0], "UserId");
-        String refreshToken = mAccountManager.getUserData(availableAccounts[0], "RefreshToken");
+        String refreshToken = mAccountManager.getUserData(availableAccounts[0], "RefreshToken");*/
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"RefreshToken\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}", ssk, userid, refreshToken, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"RefreshToken\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
+                user.SSK, user.AuthID, user.RefreshToken, sm.getFirebaseToken(), sm.getLangCodePosition() + 1);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.RefreshLoginUser), jsonRequest, true, new TextHttpResponseHandler(){
             @Override
@@ -100,12 +104,14 @@ public class NoDataActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, String response) {
 
                 String message = WebApiMessages.DecryptMessage(response);
+                SessionManager sm = new SessionManager(context);
 
-                String ssk = ReportManager.getSSk(message);
-                String userId = ReportManager.getUserID(message);
+                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                String ssk = user.SSK; //ReportManager.getSSk(message);
+                String userId = user.AuthID; //ReportManager.getUserID(message);
                 String refreshToken = ReportManager.getRefreshToken(message);
 
-                SessionManager sm = new SessionManager(context);
                 sm.setRefreshToken(refreshToken);
 
                 AccountManager mAccountManager = AccountManager.get(context);

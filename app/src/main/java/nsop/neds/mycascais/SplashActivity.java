@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.Json.DisclaimerField;
 import nsop.neds.mycascais.Entities.Json.Resources;
+import nsop.neds.mycascais.Entities.Json.ThirdPartyIntegration;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.CountryListManager;
@@ -64,6 +66,11 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
                 if (intent != null && bundle != null) {
+                    if(bundle.containsKey(Variables.Id)){
+                        new ResourcesManager(this, bundle.getString(Variables.Id)).execute(WebApiCalls.getResources());
+                        return;
+                    }
+
                     if (bundle.containsKey(Variables.PackageName)) {
                         packageName = bundle.getString(Variables.PackageName);
                         sm.setExternalAppPackageName(packageName);
@@ -72,6 +79,7 @@ public class SplashActivity extends AppCompatActivity {
                         externalAppId = bundle.getInt(Variables.ExternalAppId);
                         sm.setExternalAppPackageExternalId(externalAppId);
                     }
+
                 }
 
                 if (!packageName.isEmpty() && externalAppId > 0) {
@@ -122,28 +130,12 @@ public class SplashActivity extends AppCompatActivity {
                             disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
                             startActivity(disclaimerIntent);
                         } else if (disclaimer.HasAccepted) {
-                            final List<DisclaimerField> disclaimerFieldList = new ArrayList<>();
+                            ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
+                            integrationData.DisclaimerFields.addAll(disclaimer.DisclaimerFields);
 
-                            if (disclaimer != null && disclaimer.DisclaimerFields != null && disclaimer.DisclaimerFields.size() > 0) {
-                                for (int i = 0; i < disclaimer.DisclaimerFields.size(); i++) {
-                                    DisclaimerField field = disclaimer.DisclaimerFields.get(i);
-                                    if (user.FullDisclaimer != null && user.FullDisclaimer.size() > 0) {
-                                        for (int j = 0; j < user.FullDisclaimer.size(); j++) {
-                                            if (field.BitwiseID == user.FullDisclaimer.get(j).BitwiseID) {
-
-                                                DisclaimerField f = new DisclaimerField();
-                                                f.Name = field.Name;
-                                                f.Description = user.FullDisclaimer.get(j).Description;
-                                                disclaimerFieldList.add(f);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+                            new CommonManager().launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), "fc4e5f84847b4712b88f11db42fd804a"));
                         } else {
-                            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(Settings.labels.DisclaimerDeniedbyUser, "fc4e5f84847b4712b88f11db42fd804a"));
+                            new CommonManager().launchApp(this, packageName, MessageEncryption.Encrypt(Settings.labels.DisclaimerDeniedbyUser, "fc4e5f84847b4712b88f11db42fd804a"));
                         }
                     } else {
                         new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
@@ -172,14 +164,7 @@ public class SplashActivity extends AppCompatActivity {
             });*/
                     new ExternalAppManager(this).execute(WebApiCalls.getExternalAppInfo(externalAppId));
                 } else {
-                    if (intent.hasExtra(Variables.Id)) {
-                        new ResourcesManager(this, false, false).execute(WebApiCalls.getResources());
-                        Intent i = new Intent(this, DetailActivity.class);
-                        i.putExtra(Variables.Id, getIntent().getStringExtra(Variables.Id));
-                        startActivity(i);
-                    } else {
-                        new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
-                    }
+                    new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
                 }
             } catch (Exception ex) {
                 new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());

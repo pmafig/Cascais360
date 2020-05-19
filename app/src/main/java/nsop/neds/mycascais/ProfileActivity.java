@@ -10,6 +10,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.gson.Gson;
+
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
@@ -58,11 +61,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         SessionManager sm = new SessionManager(this);
 
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
         TextView welcome = findViewById(R.id.welcome);
         welcome.setText(Settings.labels.Welcome);
 
         TextView userName = findViewById(R.id.userName);
-        userName.setText(sm.getDisplayname());
+        userName.setText(user.DisplayName);
 
         TextView titleProfile = findViewById(R.id.account_settings_title);
         titleProfile.setText(Settings.labels.AccountSettings);

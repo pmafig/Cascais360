@@ -12,7 +12,8 @@ public class LoginUserResponse {
     public String SessionExpirationDate;
     public boolean IsAuthenticated;
     public String SSK;
-    public String UserID;
+    public String AuthID;
+    public String MyCascaisID;
     public String DisplayName;
     public String DisplayValidation;
     public List<Disclaimer> Disclaimers;
@@ -22,7 +23,7 @@ public class LoginUserResponse {
     public boolean HasSmsMobile;
     public String RefreshToken;
     public List<PhoneContacts> PhoneContacts;
-    public List<DisclaimerField> FullDisclaimer;
+    //public List<DisclaimerField> FullDisclaimer;
     public List<App> AppList;
     public List<Email> Emails;
 }

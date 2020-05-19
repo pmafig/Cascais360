@@ -223,7 +223,7 @@ public class CommonManager {
         }
     }
 
-    public void launchApp(Context context, String packageName, String variable) {
+    public static void launchApp(Context context, String packageName, String variable) {
         Intent intent = new Intent();
         intent.setPackage(packageName);
 

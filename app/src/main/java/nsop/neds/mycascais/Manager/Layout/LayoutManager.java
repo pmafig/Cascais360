@@ -1326,7 +1326,7 @@ public class LayoutManager {
 
         LinearLayout price_frame = mainContent.findViewById(R.id.event_price_wrapper);
 
-        if(event.Price.Text != null) {
+        if(event.Price.Text != null  && !event.Price.Text.isEmpty()) {
             ImageView euroIcon = mainContent.findViewById(R.id.euro_icon);
             euroIcon.setColorFilter(Color.parseColor(Settings.colors.YearColor));
             TextView priceLabel = mainContent.findViewById(R.id.label_price);

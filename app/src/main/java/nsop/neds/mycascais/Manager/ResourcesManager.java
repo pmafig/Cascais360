@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import nsop.neds.mycascais.DetailActivity;
 import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.MainActivity;
 import nsop.neds.mycascais.OnBoardingActivity;
@@ -23,11 +24,24 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
     private Context context;
     private boolean redirect;
     private boolean fromSettings;
+    private String id = "";
+
+    public ResourcesManager(Context context, String id){
+        this.context = context;
+        this.id = id;
+    }
 
     public ResourcesManager(Context context, boolean redirect, boolean fromSettings){
         this.context = context;
         this.redirect = redirect;
         this.fromSettings = fromSettings;
+    }
+
+    public ResourcesManager(Context context, boolean redirect, boolean fromSettings, String id){
+        this.context = context;
+        this.redirect = redirect;
+        this.fromSettings = fromSettings;
+        this.id = id;
     }
 
     @Override
@@ -39,16 +53,15 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
 
             if(response != null) {
 
-                JSONObject responseData = response.getJSONObject("ResponseData");
+                JSONObject responseData = response.getJSONObject(Variables.ResponseData);
 
-                String crc = responseData.getString("CRC");
+                String crc = responseData.getString(Variables.CRC);
 
                 Resources inMemory = sm.getResources();
 
                 if(inMemory != null && crc.startsWith(inMemory.CRC))
                     return inMemory;
-
-                JSONObject jsonObject = responseData.getJSONObject("Data");
+                JSONObject jsonObject = responseData.getJSONObject(Variables.Data);
 
                 Resources resources = new Gson().fromJson(jsonObject.toString(), Resources.class);
                 resources.CRC = crc;
@@ -67,8 +80,6 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
             e.printStackTrace();
         }
 
-
-
         return null;
     }
 
@@ -80,6 +91,12 @@ public class ResourcesManager extends AsyncTask<String, Void, Resources> {
             if(resources != null) {
 
                 setSettings(resources);
+
+                if(!this.id.isEmpty()){
+                    Intent i = new Intent(context, DetailActivity.class);
+                    i.putExtra(Variables.Id, Integer.valueOf(id));
+                    context.startActivity(i);
+                }
 
                 if(this.fromSettings){
                     context.startActivity(new Intent(context, SettingsActivity.class));

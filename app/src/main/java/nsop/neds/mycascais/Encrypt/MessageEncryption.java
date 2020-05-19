@@ -10,9 +10,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class MessageEncryption {
 
-    final private int flags = Base64.NO_WRAP;
+    final static private int flags = Base64.NO_WRAP;
 
-    public String Decrypt(String key, String message) {
+    public static String Decrypt(String key, String message) {
         try {
 
             message = message.replace(" ", "+");
@@ -42,7 +42,7 @@ public class MessageEncryption {
         return null;
     }
 
-    public String Encrypt(String message, String key) {
+    public static String Encrypt(String message, String key) {
         try {
 
             byte[] decodedToken =  message.getBytes("UTF-8");
@@ -70,7 +70,7 @@ public class MessageEncryption {
         return null;
     }
 
-    private byte[] GetPassword(byte[] fullEncryptedPassword)
+    private static byte[] GetPassword(byte[] fullEncryptedPassword)
     {
         int passwordSize = fullEncryptedPassword.length - 16;
 
@@ -79,7 +79,7 @@ public class MessageEncryption {
         return password;
     }
 
-    private byte[] GetInitializationVector(byte[] fullEncryptedPassword)
+    private static byte[] GetInitializationVector(byte[] fullEncryptedPassword)
     {
         int startOffSet = fullEncryptedPassword.length - 16;
 
@@ -90,7 +90,7 @@ public class MessageEncryption {
         return initializationVector;
     }
 
-    private byte[] JoinBytes(byte[] message, byte[] iv)
+    private static byte[] JoinBytes(byte[] message, byte[] iv)
     {
         byte[] result = new byte[message.length + iv.length];
 

@@ -20,7 +20,9 @@ import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Search;
+import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.MenuManager;
@@ -65,10 +67,13 @@ public class NotificationsActivity extends AppCompatActivity {
         new MenuManager(this, toolbar, menuFragment, Settings.labels.Notifications);
 
         TextView titleNot = findViewById(R.id.notifications_title);
-        titleNot.setText(Settings.labels.SubscribedNotifications);
+        titleNot.setText(Settings.labels.SubscribeNotifications);
 
         TextView titleNotification = findViewById(R.id.subscription_title);
         titleNotification.setText(Settings.labels.SubscribedContents);
+
+        TextView titleNotificationSubscription = findViewById(R.id.subscription_notification_title);
+        titleNotificationSubscription.setText(Settings.labels.SubscribedNotifications);
 
         TextView eventsNotification = findViewById(R.id.notification_events);
         eventsNotification.setText(Settings.labels.Events);
@@ -109,8 +114,11 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
-        UserEntity user = AccountGeneral.getUser(this);
-        new NotificationsManager(this, (LinearLayout) findViewById(R.id.notification_frame), (LinearLayout) findViewById(R.id.subscriptions_frame)).execute(WebApiCalls.getNotification(user.getSsk(), user.getUserId()));
+        SessionManager sm = new SessionManager(this);
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+        new NotificationsManager(this, (LinearLayout) findViewById(R.id.notification_frame), (LinearLayout) findViewById(R.id.subscriptions_frame))
+                .execute(WebApiCalls.getNotification(user.SSK, user.AuthID));
     }
 
 

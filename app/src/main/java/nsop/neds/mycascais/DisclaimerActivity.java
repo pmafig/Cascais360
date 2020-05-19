@@ -40,6 +40,7 @@ import nsop.neds.mycascais.Entities.Json.DisclaimerField;
 import nsop.neds.mycascais.Entities.Json.ExternalAppInfo;
 import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.Entities.Json.Response;
+import nsop.neds.mycascais.Entities.Json.ThirdPartyIntegration;
 import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
@@ -145,30 +146,17 @@ public class DisclaimerActivity extends AppCompatActivity {
 
                 diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados: ", appInfo.AppName));
 
-                if(disclaimer != null && disclaimer.DisclaimerFields != null && disclaimer.DisclaimerFields.size() > 0) {
-                    for (int i = 0; i < disclaimer.DisclaimerFields.size(); i++) {
-                        DisclaimerField field = disclaimer.DisclaimerFields.get(i);
-                        if(user.FullDisclaimer != null && user.FullDisclaimer.size() > 0) {
-                            for (int j = 0; j < user.FullDisclaimer.size(); j++) {
-                                if (field.BitwiseID == user.FullDisclaimer.get(j).BitwiseID) {
-                                    View disclaimerField = View.inflate(this, R.layout.block_disclalimer_field, null);
-                                    TextView tv_item = disclaimerField.findViewById(R.id.disclaimer_item);
-                                    TextView tv_value = disclaimerField.findViewById(R.id.disclaimer_value);
-                                    tv_item.setText(field.Name);
-                                    //tv_item.setTextColor(Color.parseColor(Settings.colors.YearColor));
-                                    tv_value.setText(user.FullDisclaimer.get(j).Description);
-                                    disclaimerContent.addView(disclaimerField);
+                if(disclaimer != null && disclaimer.DisclaimerFields != null) {
+                    for (DisclaimerField field : disclaimer.DisclaimerFields) {
+                        View disclaimerField = View.inflate(this, R.layout.block_disclalimer_field, null);
+                        TextView tv_item = disclaimerField.findViewById(R.id.disclaimer_item);
+                        TextView tv_value = disclaimerField.findViewById(R.id.disclaimer_value);
+                        tv_item.setText(field.Name);
+                        //tv_item.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                        tv_value.setText(field.Description);
+                        disclaimerContent.addView(disclaimerField);
 
-                                    DisclaimerField f = new DisclaimerField();
-                                    f.Name = field.Name;
-                                    f.Description = user.FullDisclaimer.get(j).Description;
-                                    disclaimerFieldList.add(f);
-
-                                    bitwiseAutotization += field.BitwiseID;
-                                    break;
-                                }
-                            }
-                        }
+                        bitwiseAutotization += field.BitwiseID;
                     }
                 }
 
@@ -208,8 +196,8 @@ public class DisclaimerActivity extends AppCompatActivity {
         progressDialog.show();
 
         SetDisclaimerRequest disclaimerRequest = new SetDisclaimerRequest();
-        disclaimerRequest.SSK = user.getSsk();
-        disclaimerRequest.UserID = user.getUserId();
+        disclaimerRequest.ssk = user.getSsk();
+        disclaimerRequest.userid = user.getUserId();
         disclaimerRequest.HasAccepted = accept;
         disclaimerRequest.AllowedFields = autorizationFields;
         disclaimerRequest.ExternalSiteID = sm.getExternalAppExternalId();
@@ -227,7 +215,7 @@ public class DisclaimerActivity extends AppCompatActivity {
                 if(accept) {
                     accept();
                 }else{
-                    diclained();
+                    declined();
                 }
             }
         });
@@ -240,19 +228,20 @@ public class DisclaimerActivity extends AppCompatActivity {
         sm.setExternalAppPackageExternalId(0);
         sm.setExternalAppPackageName(null);
 
+        ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
+        integrationData.DisclaimerFields.addAll(disclaimer.DisclaimerFields);
+
         Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
         try {
-            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
-            //intent.putExtra(packageName + ".vault", new MessageEncryption().Encrypt(new Gson().toJson(disclaimerFieldList), "fc4e5f84847b4712b88f11db42fd804a"));
+            CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), "fc4e5f84847b4712b88f11db42fd804a"));
         }catch (Exception ex){
-            new CommonManager().launchApp(this, packageName, new MessageEncryption().Encrypt("error... " + ex.getMessage(), "fc4e5f84847b4712b88f11db42fd804a"));
-            //intent.putExtra(packageName + ".vault", "error... " + ex.getMessage());
+            CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt("error... " + ex.getMessage(), "fc4e5f84847b4712b88f11db42fd804a"));
         }
         startActivityForResult(intent, 1);
     }
 
-    private void diclained(){
+    private void declined(){
         SessionManager sm = new SessionManager(this);
 
         sm.setExternalAppInfo(null);

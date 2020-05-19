@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.internal.LinkedTreeMap;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -29,11 +30,13 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
+import nsop.neds.mycascais.EditAccountActivity;
 import nsop.neds.mycascais.Entities.Json.Dates;
 import nsop.neds.mycascais.Entities.Json.Detail;
 import nsop.neds.mycascais.Entities.Json.Event;
 import nsop.neds.mycascais.Entities.Json.Point;
 import nsop.neds.mycascais.Entities.Json.User;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.Response;
 import nsop.neds.mycascais.LoginActivity;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -41,6 +44,8 @@ import nsop.neds.mycascais.NoDataActivity;
 import nsop.neds.mycascais.R;
 import nsop.neds.mycascais.RefreshTokenActivity;
 import nsop.neds.mycascais.Settings.Settings;
+import nsop.neds.mycascais.WebApi.ReportManager;
+import nsop.neds.mycascais.WebApi.WebApiCalls;
 import nsop.neds.mycascais.WebApi.WebApiClient;
 import nsop.neds.mycascais.WebApi.WebApiMessages;
 import nsop.neds.mycascais.WebApi.WebApiMethods;
@@ -68,7 +73,6 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
         try {
             JSONObject response = CommonManager.getResponseData(strings[0]);
 
-
             SessionManager sm = new SessionManager(context);
 
             if(response != null) {
@@ -79,15 +83,22 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
                 if(sm.isLoggedOn()) {
                     User user = new Gson().fromJson(responseData.toString(), User.class);
+                    LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
                     if(user.InvalidSession){
-                        Intent intent = new Intent(context, NoDataActivity.class);
+
+                        new RefreshManager(this.title, this.nid, this.context, this.mainContent, this.loading).execute(WebApiCalls.getRefreshToken(loginUser.SSK, loginUser.AuthID, loginUser.RefreshToken, sm.getFirebaseToken(), sm.getLangCodePosition() + 1));
+                        /*Intent intent = new Intent(context, NoDataActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.putExtra(Variables.Id, this.nid);
-                        context.startActivity(intent);
+                        context.startActivity(intent);*/
                     }else {
-                        final JSONObject jsonDetail = responseData.getJSONObject(Variables.ContentDetail);
-                        jsonObject = jsonDetail.getJSONObject(Variables.Data);
+                        try {
+                            final JSONObject jsonDetail = responseData.getJSONObject(Variables.ContentDetail);
+                            jsonObject = jsonDetail.getJSONObject(Variables.Data);
+                        }catch (Exception e) {
+                            jsonObject = responseData.getJSONObject(Variables.Data);
+                        }
                         String _s = jsonObject.toString();
                         Detail detail = new Gson().fromJson(_s, Detail.class);
                         detail.Like = user.Like;
@@ -193,22 +204,18 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                         //addReminderInCalendar();
                         Event event = detail.Events.get(0);
 
-                        final Calendar beginTime = Calendar.getInstance();
-                        beginTime.set(2019, 11, 4, 15, 30);
-
-                        final Calendar endTime = Calendar.getInstance();
-                        beginTime.set(2019, 11, 4, 16, 30);
-
-                        Dates dates =  event.Dates.get(0);
-
-                        new CalendarManager(context).addevent(event.Title, event.Description, event.Points.get(0).Title, dates);
+                            if(event.Dates != null && event.Dates.size() > 0) {
+                                new CalendarManager(context).addevent(event.Title, event.Description, event.Points.get(0).Title, event.Dates.get(0));
+                            }else{
+                                Toast.makeText(context, Settings.labels.NonEventDates, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
 
                 mainContent.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
             }else{
-                context.startActivity(new Intent(context, NoDataActivity.class));
+                //context.startActivity(new Intent(context, NoDataActivity.class));
             }
         } catch (Exception e) {
             Log.e("Error", e.getMessage());
@@ -220,13 +227,11 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
 
 
     public void setLike(int nid){
-        AccountManager mAccountManager = AccountManager.get(this.context);
-        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+        final SessionManager sm = new SessionManager(context);
 
-        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
-        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, this.nid);
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", user.SSK, user.AuthID, this.nid);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETLIKESTATUS), jsonRequest, true, new TextHttpResponseHandler() {
             @Override
@@ -262,13 +267,11 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
     }
 
     public void setNotification(int nid){
-        AccountManager mAccountManager = AccountManager.get(this.context);
-        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
+        final SessionManager sm = new SessionManager(context);
 
-        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
-        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", ssk, userId, this.nid);
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"NID\":\"%s\"}", user.SSK, user.AuthID, this.nid);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.cms, WebApiMethods.SETSUBSCRIPTION), jsonRequest, true, new TextHttpResponseHandler() {
             @Override
@@ -302,5 +305,4 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
             }
         });
     }
-
 }

@@ -65,5 +65,6 @@ public class Variables {
     public static String ReportList = "ReportList";
     public static String Data = "Data";
     public static String ContentDetail = "ContentDetail";
+    public static String CRC = "CRC";
     //endregion
 }

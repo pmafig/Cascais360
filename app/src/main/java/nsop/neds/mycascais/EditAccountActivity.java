@@ -245,7 +245,8 @@ public class EditAccountActivity extends AppCompatActivity {
 
 
         EditText name = findViewById(R.id.accountName);
-        name.setHint(sm.getFullName());
+        //TODO change displayName to FullName
+        name.setHint(user.DisplayName);
         //name.setFocusable(false);
 
         EditText email = findViewById(R.id.accountEmail);

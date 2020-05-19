@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.text.style.UpdateAppearance;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -33,8 +34,10 @@ import nsop.neds.mycascais.Entities.Json.RoutesCategories;
 import nsop.neds.mycascais.Entities.Json.TownCouncil;
 import nsop.neds.mycascais.Entities.Json.TownCouncils;
 import nsop.neds.mycascais.Entities.Json.UpdateSubscriptions;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.Broadcast.AppSignatureHelper;
 import nsop.neds.mycascais.Manager.MenuManager;
+import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Manager.WeatherManager;
 import nsop.neds.mycascais.Settings.Data;
@@ -153,15 +156,13 @@ public class NotificationsTownActivity extends AppCompatActivity {
 
 
     public void updateSubscriptions(){
-        AccountManager mAccountManager = AccountManager.get(this);
-        Account[] availableAccounts  = mAccountManager.getAccountsByType(AccountGeneral.ACCOUNT_TYPE);
 
-        String ssk = mAccountManager.getUserData(availableAccounts[0], "SSK");
-        String userId = mAccountManager.getUserData(availableAccounts[0], "UserId");
+        SessionManager sm = new SessionManager(this);
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
         UpdateSubscriptions updateSubscriptions = new UpdateSubscriptions();
-        updateSubscriptions.ssk = ssk;
-        updateSubscriptions.userid = userId;
+        updateSubscriptions.ssk = loginUser.SSK;
+        updateSubscriptions.userid = loginUser.AuthID;
         updateSubscriptions.Categories = Data.NotificationsCategoryList;
 
         String jsonRequest = new Gson().toJson(updateSubscriptions);

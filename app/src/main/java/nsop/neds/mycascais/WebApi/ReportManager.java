@@ -96,7 +96,7 @@ public class ReportManager {
     }
 
     public static String getUserID(String json){
-        return getVariable(json, "UserID");
+        return getVariable(json, "MyCascaisID");
     }
 
     public static boolean emailSent(String json){

@@ -13,14 +13,15 @@ public class WebApiCalls {
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
-    public static String getDetail(int id, String ssk, String userId){
-        String rt;
+    public static String getDetail(int id){
+        String rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
 
-        if(ssk != "" && userId != ""){
-            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"ssk\":\""+ ssk +"\", \"userid\":\""+ userId +"\", \"LangCode\":\"" + Settings.LangCode + "\" }", WebApiClient.SITE_KEY);
-        }else{
-            rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"LangCode\":\"" + Settings.LangCode + "\"}", WebApiClient.SITE_KEY);
-        }
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
+    public static String getDetail(int id, String ssk, String userId){
+        String rt = new MessageEncryption().Encrypt("{ \"ID\":[" + id + "], \"Detail\":\"long\", \"ssk\":\""+ ssk +"\", \"userid\":\""+ userId +"\", \"LangCode\":\"" + Settings.LangCode + "\" }", WebApiClient.SITE_KEY);
+
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.cms + "/" + WebApiClient.METHODS.content + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 
@@ -113,5 +114,15 @@ public class WebApiCalls {
     public static String setEmailAuth(String ssk, String userId, int emailId){
         String rt = new MessageEncryption().Encrypt("{\"ssk\":\""+ ssk +"\", \"userid\":\"" + userId +"\", EmailID \":" + emailId +"}", WebApiClient.SITE_KEY);
         return WebApiClient.BASE_URL + "/" + WebApiClient.API.WebApiAccount + "/" + WebApiClient.METHODS.AddCustomerLogin + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
+    }
+
+    public static String getRefreshToken(String ssk, String authID, String refreshToken, String firebaseToken, int languageCode) {
+
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"RefreshToken\":\"%s\", \"FirebaseToken\":\"%s\", AppType:2, LanguageID:%s}",
+                ssk, authID, refreshToken, firebaseToken, languageCode);
+
+        String rt = new MessageEncryption().Encrypt(jsonRequest, WebApiClient.SITE_KEY);
+
+        return WebApiClient.BASE_URL + "/" + WebApiClient.API.WebApiAccount + "/" + WebApiClient.METHODS.RefreshLoginUser + "/" + WebApiClient.SITE_ID + "?rt=" + rt;
     }
 }

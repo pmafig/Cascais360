@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -27,28 +29,34 @@ public class CalendarManager {
     }
 
     public void addevent(String title, String description, String location, Dates dates){
-
-        // Construct event details
         long startMillis = 0;
         long endMillis = 0;
 
-        Calendar cal = Calendar.getInstance();
-        Calendar cale = Calendar.getInstance();
+        Calendar firstDate = Calendar.getInstance();
+        Calendar lastDate = Calendar.getInstance();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         try {
-            cal.setTime(sdf.parse(dates.value.replace('T', ' ')));
+            firstDate.setTime(sdf.parse(dates.value.replace('T', ' ')));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         try {
-            cale.setTime(sdf.parse(dates.end_value.replace('T', ' ')));
+            lastDate.setTime(sdf.parse(dates.end_value.replace('T', ' ')));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        startMillis = cal.getTimeInMillis();
-        endMillis = cale.getTimeInMillis();
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.set(Calendar.HOUR, firstDate.get(Calendar.HOUR));
+        currentDate.set(Calendar.MINUTE, firstDate.get(Calendar.MINUTE));
+        currentDate.set(Calendar.SECOND, firstDate.get(Calendar.SECOND));
+        currentDate.set(Calendar.MILLISECOND, firstDate.get(Calendar.MILLISECOND));
+
+        startMillis = firstDate.before(currentDate) ? currentDate.getTimeInMillis() : firstDate.getTimeInMillis();
+        endMillis = lastDate.getTimeInMillis();
 
         Intent intent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
@@ -61,12 +69,11 @@ public class CalendarManager {
         /*if(allday) {
             intent.putExtra(CalendarContract.Events.ALL_DAY, true);
         }else{
-            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endDateMillis);
+            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis);
         }*/
 
         //indica se o evento ocupa a disponibilidade do utilizador
         intent.putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
-
 
         intent.putExtra(CalendarContract.Reminders.MINUTES, 90);
         //intent.putExtra(CalendarContract.Reminders.EVENT_ID, eventID);
