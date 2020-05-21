@@ -106,7 +106,7 @@
                 <data
                     android:host="myqua.cascais.pt"
                     android:pathPattern="/Customers/EntityValidation"
-                    android:scheme="mycascais360app" />
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity

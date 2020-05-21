@@ -555,8 +555,8 @@ public class EditAccountActivity extends AppCompatActivity {
                 }
             };
 
-            builder.setMessage(Settings.labels.AskForAuthentication).setPositiveButton(Settings.labels.Confirm, dialogClickListener)
-                    .setNegativeButton(Settings.labels.Cancel, dialogClickListener).show();
+            builder.setMessage(Settings.labels.AskForAuthentication).setPositiveButton(Settings.labels.Yes, dialogClickListener)
+                    .setNegativeButton(Settings.labels.No, dialogClickListener).show();
         }
     }
 
@@ -587,8 +587,10 @@ public class EditAccountActivity extends AppCompatActivity {
                 Data.SmsValidationContext = Data.ValidationContext.addAuth;
             }
 
+            LoginUserResponse loginUserResponse = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);;
+
             String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"Email\":\"%s\", LanguageID:%s}",
-                    user.getSsk(), user.getUserId(), emailContact, sm.getLangCodePosition() + 1);
+                    loginUserResponse.SSK, loginUserResponse.AuthID, emailContact, sm.getLangCodePosition() + 1);
 
             WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.ADDCUSTOMEREMAIL), jsonRequest, true, new TextHttpResponseHandler() {
                 @Override
@@ -688,6 +690,8 @@ public class EditAccountActivity extends AppCompatActivity {
         final String phoneContact = phoneContactField.getText().toString();
         final String mobileNumber = new SessionManager(this).getMobileNumber();
 
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
         boolean validPhoneNumber = new InputValidatorManager().isValidPhone(phoneContact);
 
         String validationMessage = "";
@@ -715,7 +719,7 @@ public class EditAccountActivity extends AppCompatActivity {
             }
 
             String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"CountryCode\":\"%s\", \"PhoneNumber\":\"%s\", \"LanguageID\":%s}",
-                    user.getSsk(), user.getUserId(), "+351", phoneContact, sm.getLangCodePosition() + 1);
+                    loginUser.SSK, loginUser.AuthID, "+351", phoneContact, sm.getLangCodePosition() + 1);
 
             WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.ADDCUSTOMERPHONECONTACT), jsonRequest, true, new TextHttpResponseHandler() {
                 @Override
@@ -937,6 +941,7 @@ public class EditAccountActivity extends AppCompatActivity {
     private void changeEntityValidationState(final boolean isAuthenticator, final int id, final String mobileNumber, final boolean email){
         UserEntity user = AccountGeneral.getUser(this);
 
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
         if(isAuthenticator){
             Data.SmsValidationContext = Data.ValidationContext.addAuth;
@@ -945,7 +950,7 @@ public class EditAccountActivity extends AppCompatActivity {
         }
 
         String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s, \"I\":1}",
-                user.getSsk(), user.getUserId(), id, sm.getLangCodePosition() + 1);
+                loginUser.SSK, loginUser.AuthID, id, sm.getLangCodePosition() + 1);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.CHANGEENTITYVALIDATIONSTATE), jsonRequest, true, new TextHttpResponseHandler() {
             @Override

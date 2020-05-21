@@ -29,6 +29,7 @@ import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.UserEntity;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.ContactAsAuth;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
 import nsop.neds.mycascais.Manager.MenuManager;
@@ -57,7 +58,7 @@ public class EmailSentActivity extends AppCompatActivity {
 
         String tokenEnc = appLinkData.getQueryParameter(Variables.VT);
 
-        String token = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY, tokenEnc);
+        String token = new MessageEncryption().Decrypt(WebApiClient.SITE_KEY_MYCASCAIS, tokenEnc);
 
         ValidateSmsToken(token);
     }
@@ -82,7 +83,9 @@ public class EmailSentActivity extends AppCompatActivity {
 
         final UserEntity user = AccountGeneral.getUser(this);
 
-        jsonRequest = String.format("{\"Token\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", LanguageID:%s}", token, user.getSsk(), user.getUserId(), sm.getLangCodePosition() + 1);
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+        jsonRequest = String.format("{\"Token\":\"%s\", \"ssk\":\"%s\", \"userid\":\"%s\", LanguageID:%s}", token, loginUser.SSK, loginUser.AuthID, sm.getLangCodePosition() + 1);
         String url = String.format("/%s/%s", WebApiClient.API.crm, WebApiClient.METHODS.ValidateEntityState);
 
         progressDialog.show();

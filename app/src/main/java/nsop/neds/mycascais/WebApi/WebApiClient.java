@@ -10,6 +10,7 @@ import nsop.neds.mycascais.Encrypt.MessageEncryption;
 
 public class WebApiClient {
     public static final String SITE_KEY = "ae1b1452-947b-4f09-b77a-24c87f0efa6d";
+    public static final String SITE_KEY_MYCASCAIS = "4b4947f5-8d1c-46da-a03f-bbc1147aac38";
     public static final String SITE_ID = "17";
 
     public static String BASE_URL = "https://webapiqua.cascais.pt/api";

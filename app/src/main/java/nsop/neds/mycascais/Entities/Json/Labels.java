@@ -96,6 +96,7 @@ public class Labels {
     public String What;
     public String All;
     public String Yes;
+    public String No;
     public String GetDirections;
     public String Map;
     public String InitTrip;
