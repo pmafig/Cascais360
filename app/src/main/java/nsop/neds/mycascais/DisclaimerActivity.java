@@ -34,6 +34,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.App;
 import nsop.neds.mycascais.Entities.Json.Colors;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
 import nsop.neds.mycascais.Entities.Json.DisclaimerField;
@@ -138,13 +139,13 @@ public class DisclaimerActivity extends AppCompatActivity {
                 }
 
                 if (appInfo != null && appInfo.AppName != null) {
-                    diclaimerText.setText(String.format("Autoriza a APP %s aceder aos seguintes dados:", appInfo.AppName));
+                    diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados:", appInfo.AppName));
                 }else{
                     diclaimerText.setText("A APP não tem permissões!");
                     disclaimerConfirm.setVisibility(View.GONE);disclaimerCancel.setVisibility(View.GONE);
                 }
 
-                diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados: ", appInfo.AppName));
+                //diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados: ", appInfo.AppName));
 
                 if(disclaimer != null && disclaimer.DisclaimerFields != null) {
                     for (DisclaimerField field : disclaimer.DisclaimerFields) {
@@ -165,14 +166,14 @@ public class DisclaimerActivity extends AppCompatActivity {
                 disclaimerConfirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setClick(true, autorizationFields);
+                        setClick(true, autorizationFields, externalAppId);
                     }
                 });
 
                 disclaimerCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        setClick(false, autorizationFields);
+                        setClick(false, autorizationFields, externalAppId);
                     }
                 });
             }else{
@@ -187,17 +188,17 @@ public class DisclaimerActivity extends AppCompatActivity {
         }
     }
 
-    private void setClick(final boolean accept, final int autorizationFields){
+    private void setClick(final boolean accept, final int autorizationFields, final int appID){
         final ProgressDialog progressDialog = new ProgressDialog(DisclaimerActivity.this);
         SessionManager sm = new SessionManager(this);
-        UserEntity user = AccountGeneral.getUser(this);
 
-        //progressDialog.setMessage(Settings.labels.ProcessingData);
+        LoginUserResponse loginUser = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
         progressDialog.show();
 
         SetDisclaimerRequest disclaimerRequest = new SetDisclaimerRequest();
-        disclaimerRequest.ssk = user.getSsk();
-        disclaimerRequest.userid = user.getUserId();
+        disclaimerRequest.ssk = loginUser.SSK;
+        disclaimerRequest.userid = loginUser.AuthID;
         disclaimerRequest.HasAccepted = accept;
         disclaimerRequest.AllowedFields = autorizationFields;
         disclaimerRequest.ExternalSiteID = sm.getExternalAppExternalId();
@@ -213,7 +214,7 @@ public class DisclaimerActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 if(accept) {
-                    accept();
+                    accept(appID);
                 }else{
                     declined();
                 }
@@ -221,24 +222,43 @@ public class DisclaimerActivity extends AppCompatActivity {
         });
     }
 
-    private void accept(){
+    private void accept(int appID){
+        String key = "";
         SessionManager sm = new SessionManager(this);
+        
+        LoginUserResponse loginUserResponse = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+
+        for (App app: loginUserResponse.AppList) {
+            if(app.ID == appID){
+                key = app.Key;
+                break;
+            }
+        }
 
         sm.setExternalAppInfo(null);
         sm.setExternalAppPackageExternalId(0);
         sm.setExternalAppPackageName(null);
 
         ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
-        integrationData.DisclaimerFields.addAll(disclaimer.DisclaimerFields);
+        integrationData.SessionExpirationDate = loginUserResponse.SessionExpirationDate;
+        integrationData.IsAuthenticated = loginUserResponse.IsAuthenticated;
+        integrationData.SSK = loginUserResponse.SSK;
+        integrationData.AuthID = loginUserResponse.AuthID;
+        integrationData.MyCascaisID = loginUserResponse.MyCascaisID;
+        integrationData.DisplayName = loginUserResponse.DisplayName;
+        integrationData.DisplayValidation = loginUserResponse.DisplayValidation;
 
-        Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+        integrationData.Disclaimers.clear();
+        integrationData.Disclaimers.addAll(disclaimer.DisclaimerFields);
 
-        try {
-            CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), "fc4e5f84847b4712b88f11db42fd804a"));
-        }catch (Exception ex){
-            CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt("error... " + ex.getMessage(), "fc4e5f84847b4712b88f11db42fd804a"));
+        if(!key.isEmpty()) {
+            try {//fc4e5f84847b4712b88f11db42fd804a
+                CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), key));
+            } catch (Exception ex) {
+                CommonManager.launchApp(this, packageName, MessageEncryption.Encrypt("error... " + ex.getMessage(), key));
+            }
         }
-        startActivityForResult(intent, 1);
     }
 
     private void declined(){

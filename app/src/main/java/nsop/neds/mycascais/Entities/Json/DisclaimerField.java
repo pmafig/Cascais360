@@ -4,4 +4,5 @@ public class DisclaimerField {
     public int BitwiseID;
     public String Name;
     public String Description;
+    public boolean ValidationStatus;
 }

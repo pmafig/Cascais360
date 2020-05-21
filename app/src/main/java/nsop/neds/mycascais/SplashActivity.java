@@ -131,7 +131,7 @@ public class SplashActivity extends AppCompatActivity {
                             startActivity(disclaimerIntent);
                         } else if (disclaimer.HasAccepted) {
                             ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
-                            integrationData.DisclaimerFields.addAll(disclaimer.DisclaimerFields);
+                            integrationData.Disclaimers.addAll(disclaimer.DisclaimerFields);
 
                             new CommonManager().launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), "fc4e5f84847b4712b88f11db42fd804a"));
                         } else {

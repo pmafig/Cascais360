@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThirdPartyIntegration extends SessionHeader {
-    public final List<DisclaimerField> DisclaimerFields;
+    public final List<DisclaimerField> Disclaimers;
 
     public ThirdPartyIntegration(){
-        DisclaimerFields = new ArrayList<>();
+        Disclaimers = new ArrayList<>();
     }
 
     public String toJson(){
