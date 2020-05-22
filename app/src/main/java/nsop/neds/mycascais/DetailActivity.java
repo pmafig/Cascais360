@@ -1,5 +1,6 @@
 package nsop.neds.mycascais;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -75,8 +76,14 @@ public class DetailActivity extends AppCompatActivity {
         LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
         if(sm.isLoggedOn()){
-            new DetailManager((TextView)findViewById(R.id.toolbar_title), nid,this,(LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
-                    .execute(WebApiCalls.getDetail(nid, user.SSK, user.AuthID));
+            try {
+                new DetailManager((TextView) findViewById(R.id.toolbar_title), nid, this, (LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
+                        .execute(WebApiCalls.getDetail(nid, user.SSK, user.AuthID));
+            }catch (Exception e){
+                AccountGeneral.logout(this);
+                new DetailManager((TextView)findViewById(R.id.toolbar_title), nid, this, (LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
+                        .execute(WebApiCalls.getDetail(nid));
+            }
         }else{
             new DetailManager((TextView)findViewById(R.id.toolbar_title), nid, this, (LinearLayout) findViewById(R.id.detail_frame), (RelativeLayout) findViewById(R.id.loadingPanel))
                     .execute(WebApiCalls.getDetail(nid));
