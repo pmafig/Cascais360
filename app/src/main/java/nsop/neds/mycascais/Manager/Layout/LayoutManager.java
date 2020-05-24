@@ -1113,7 +1113,7 @@ public class LayoutManager {
         return frame_list;
     }
 
-    public static void setEvent(final Context context, LinearLayout mainContent, final Event event, boolean like, boolean subscribe){
+    public static void setEvent(final Context context, LinearLayout mainContent, final Event event, final boolean like, final boolean subscribe){
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(event.Title);
 
@@ -1363,13 +1363,23 @@ public class LayoutManager {
         }
     }
 
-    public static void setPlace(final Context context, LinearLayout mainContent, final Place place){
+    public static void setPlace(final Context context, LinearLayout mainContent, final Place place, final boolean like, final boolean subscribe){
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(place.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
 
         Glide.with(context).load(place.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
+
+        if(like){
+            ImageView likeButton = mainContent.findViewById(R.id.event_ac_heart_icon);
+            likeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
+
+        if(subscribe){
+            ImageView subscribeButton = mainContent.findViewById(R.id.event_ac_bell_icon);
+            subscribeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));
@@ -1625,22 +1635,23 @@ public class LayoutManager {
         }
     }
 
-    public static void setRoute(final Context context, LinearLayout mainContent, final Route route){
+    public static void setRoute(final Context context, LinearLayout mainContent, final Route route, final boolean like, final boolean subscribe){
         TextView title = mainContent.findViewById(R.id.event_title);
         title.setText(route.Title);
 
         final ImageView img = mainContent.findViewById(R.id.detail_image);
-        /*DownloadImageAsync obj = new DownloadImageAsync(){
-
-            @Override
-            protected void onPostExecute(Bitmap bmp) {
-                super.onPostExecute(bmp);
-                img.setImageBitmap(bmp);
-            }
-        };
-        obj.execute(route.Images.get(0));*/
 
         Glide.with(context).load(route.Images.get(0)).placeholder(R.drawable.image_frame).into(img);
+
+        if(like){
+            ImageView likeButton = mainContent.findViewById(R.id.event_ac_heart_icon);
+            likeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
+
+        if(subscribe){
+            ImageView subscribeButton = mainContent.findViewById(R.id.event_ac_bell_icon);
+            subscribeButton.setColorFilter(Color.parseColor(Settings.colors.YearColor), PorterDuff.Mode.SRC_ATOP);
+        }
 
         TextView descriptionTitle = mainContent.findViewById(R.id.event_description_title);
         descriptionTitle.setTextColor(Color.parseColor(Settings.colors.YearColor));

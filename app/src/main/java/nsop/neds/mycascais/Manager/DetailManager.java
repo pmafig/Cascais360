@@ -147,13 +147,13 @@ public class DetailManager extends AsyncTask<String, Void, Detail> {
                     nid = detail.Places.get(0).ID;
                     url = detail.Places.get(0).WebURL;
                     this.title.setText(detail.Places.get(0).CategoryTheme);
-                    LayoutManager.setPlace(context, mainContent, detail.Places.get(0));
+                    LayoutManager.setPlace(context, mainContent, detail.Places.get(0), detail.Like, detail.Subscribed);
                 }
                 if (detail.Routes != null && detail.Routes.size() > 0) {
                     nid = detail.Routes.get(0).ID;
                     url = detail.Routes.get(0).WebURL;
                     this.title.setText(detail.Routes.get(0).CategoryTheme);
-                    LayoutManager.setRoute(context, mainContent, detail.Routes.get(0));
+                    LayoutManager.setRoute(context, mainContent, detail.Routes.get(0), detail.Like, detail.Subscribed);
                 }
 
 
