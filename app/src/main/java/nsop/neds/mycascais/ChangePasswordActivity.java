@@ -31,6 +31,7 @@ import nsop.neds.mycascais.Encrypt.MessageEncryption;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserRequest;
+import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Manager.CommonManager;
 import nsop.neds.mycascais.Manager.ControlsManager.InputValidatorManager;
 import nsop.neds.mycascais.Manager.Layout.LayoutManager;
@@ -232,10 +233,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     private void changeAccountPassword(String accountOldPassword, String accountNewPassword, String accountRePassword){
 
-        UserEntity user = AccountGeneral.getUser(this);
+        //UserEntity user = AccountGeneral.getUser(this);
+
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
         String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"OldPassword\":\"%s\", \"Password\":\"%s\", \"ConfirmPassword\":\"%s\"}",
-                user.getSsk(), user.getUserId(),  new MessageEncryption().Encrypt(accountOldPassword, WebApiClient.SITE_KEY), new MessageEncryption().Encrypt(accountNewPassword, WebApiClient.SITE_KEY), new MessageEncryption().Encrypt(accountRePassword, WebApiClient.SITE_KEY));
+                user.SSK, user.AuthID,  new MessageEncryption().Encrypt(accountOldPassword, WebApiClient.SITE_KEY), new MessageEncryption().Encrypt(accountNewPassword, WebApiClient.SITE_KEY), new MessageEncryption().Encrypt(accountRePassword, WebApiClient.SITE_KEY));
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 

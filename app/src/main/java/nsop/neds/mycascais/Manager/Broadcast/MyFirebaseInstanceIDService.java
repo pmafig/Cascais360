@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.text.Html;
 import android.util.ArrayMap;
 
 import androidx.core.app.NotificationCompat;
@@ -124,8 +125,8 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService {
 
         notificationBuilder.setAutoCancel(true)
         .setColor(ContextCompat.getColor(this, R.color.colorAccent))
-        .setContentTitle(title)
-        .setContentText(body)
+        .setContentTitle(Html.fromHtml(title))
+        .setContentText(Html.fromHtml(body))
         .setDefaults(Notification.DEFAULT_ALL)
         .setWhen(System.currentTimeMillis())
         .setLargeIcon(bitmap)

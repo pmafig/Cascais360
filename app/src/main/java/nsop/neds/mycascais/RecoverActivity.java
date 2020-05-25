@@ -181,8 +181,8 @@ public class RecoverActivity extends AppCompatActivity {
                 }
 
                 if(sb.length() > 0) {
-                    Toast.makeText(this, Settings.labels.PasswordRecovery, Toast.LENGTH_LONG);
-                    //LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
+                    //Toast.makeText(this, Settings.labels.PasswordRecovery, Toast.LENGTH_LONG);
+                    LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
                 }else{
                     Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
                 }

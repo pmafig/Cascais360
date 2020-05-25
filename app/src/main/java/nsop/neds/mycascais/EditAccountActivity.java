@@ -949,7 +949,7 @@ public class EditAccountActivity extends AppCompatActivity {
             sm.setEmailId(id);
         }
 
-        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s, \"I\":1}",
+        String jsonRequest = String.format("{\"ssk\":\"%s\", \"userid\":\"%s\", \"EntityID\":\"%s\", \"LanguageID\":%s}",
                 loginUser.SSK, loginUser.AuthID, id, sm.getLangCodePosition() + 1);
 
         WebApiClient.post(String.format("/%s/%s", WebApiClient.API.crm, WebApiMethods.CHANGEENTITYVALIDATIONSTATE), jsonRequest, true, new TextHttpResponseHandler() {

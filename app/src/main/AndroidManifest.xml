@@ -104,7 +104,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="myqua.cascais.pt"
+                    android:host="my.cascais.pt"
                     android:pathPattern="/Customers/EntityValidation"
                     android:scheme="https" />
             </intent-filter>
@@ -154,11 +154,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="myqua.cascais.pt"
+                    android:host="my.cascais.pt"
                     android:pathPattern="/Account/Register"
                     android:scheme="https" />
                 <data
-                    android:host="myqua.cascais.pt"
+                    android:host="my.cascais.pt"
                     android:pathPattern="/Account/PasswordRecoveryVerification"
                     android:scheme="https" />
             </intent-filter>

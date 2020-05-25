@@ -2,6 +2,7 @@ package nsop.neds.mycascais;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -268,7 +269,9 @@ public class LoginActivity extends AppCompatActivity {
 
             responseLogin = new Gson().fromJson(jsonUser, LoginUserResponse.class);
 
-        }catch (JSONException ex){}
+        }catch (JSONException ex){
+
+        }
 
         if(response.ReportList != null && response.ReportList.size() > 0){
 
@@ -341,9 +344,9 @@ public class LoginActivity extends AppCompatActivity {
                     intentNavegation();
                 }
             } else {
-                //AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertessageDialog);
-                //alertMessage.setMessage(ReportManager.getReportList(json));
-                //alertMessage.show();
+                AlertDialog.Builder alertMessage = new AlertDialog.Builder(this, R.style.AlertMessageDialog);
+                alertMessage.setMessage(ReportManager.getReportList(json));
+                alertMessage.show();
             }
         }
     }
