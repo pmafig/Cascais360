@@ -83,6 +83,7 @@
             android:text="Geo"/>
 
         <FrameLayout
+            android:id="@+id/more_info_frame_geo_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout

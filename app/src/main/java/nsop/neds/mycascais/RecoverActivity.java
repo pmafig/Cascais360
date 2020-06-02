@@ -166,12 +166,11 @@ public class RecoverActivity extends AppCompatActivity {
                 responseData = new Gson().fromJson(responseMessage.getJSONObject("ResponseData").toString(), ResetLoginResponse.class);
             }
 
+            StringBuilder sb = new StringBuilder();
             Type ReportListType = new TypeToken<ArrayList<ReportList>>() {}.getType();
 
             if (responseMessage.has("ReportList")) {
                 List<ReportList> reportList = new Gson().fromJson(responseMessage.getJSONArray("ReportList").toString(), ReportListType);
-
-                StringBuilder sb = new StringBuilder();
 
                 for (int i = 0; i < reportList.size(); i++) {
                     sb.append(reportList.get(i).Description);
@@ -182,7 +181,7 @@ public class RecoverActivity extends AppCompatActivity {
 
                 if(sb.length() > 0) {
                     //Toast.makeText(this, Settings.labels.PasswordRecovery, Toast.LENGTH_LONG);
-                    LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
+                    //LayoutManager.alertMessage(this, Settings.labels.PasswordRecovery, sb.toString());
                 }else{
                     Toast.makeText(this, Settings.labels.TryAgain, Toast.LENGTH_SHORT).show();
                 }
@@ -200,6 +199,7 @@ public class RecoverActivity extends AppCompatActivity {
                         Task<Void> task = client.startSmsRetriever();
 
                         Data.SmsValidationContext = Data.ValidationContext.newAccount;
+                        //Data.SmsValidationContext = Data.ValidationContext.recoverAccount;
                         task.addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
@@ -219,6 +219,9 @@ public class RecoverActivity extends AppCompatActivity {
                         Intent intent = new Intent(RecoverActivity.this, ValidateSMSTokenActivity.class);
                         intent.putExtra(Variables.MobileNumber, userName);
                         intent.putExtra(Variables.Token, responseData.Token);
+                        if(sb.length() > 0) {
+                            intent.putExtra(Variables.AlertMessage, sb.toString());
+                        }
                         startActivity(intent);
 
                     }

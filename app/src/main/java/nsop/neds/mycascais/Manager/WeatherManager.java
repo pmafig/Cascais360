@@ -43,8 +43,7 @@ public class WeatherManager extends AsyncTask<String, Void, Weather> {
     protected void onPostExecute(Weather weather) {
         super.onPostExecute(weather);
 
-        if(weather != null) {
-
+        if(weather != null && weather.Current > 0) {
             TextView currentTemp = weartherContent.findViewById(R.id.currentTemperature);
             currentTemp.setText(String.valueOf(weather.Current));
 

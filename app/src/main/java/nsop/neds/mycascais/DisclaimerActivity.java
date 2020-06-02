@@ -42,6 +42,7 @@ import nsop.neds.mycascais.Entities.Json.ExternalAppInfo;
 import nsop.neds.mycascais.Entities.Json.Resources;
 import nsop.neds.mycascais.Entities.Json.Response;
 import nsop.neds.mycascais.Entities.Json.ThirdPartyIntegration;
+import nsop.neds.mycascais.Entities.Json.ThirdPartyIntegrationField;
 import nsop.neds.mycascais.Entities.Json.User;
 import nsop.neds.mycascais.Entities.UserEntity;
 import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
@@ -242,15 +243,20 @@ public class DisclaimerActivity extends AppCompatActivity {
 
         ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
         integrationData.SessionExpirationDate = loginUserResponse.SessionExpirationDate;
-        integrationData.IsAuthenticated = loginUserResponse.IsAuthenticated;
         integrationData.SSK = loginUserResponse.SSK;
         integrationData.AuthID = loginUserResponse.AuthID;
         integrationData.MyCascaisID = loginUserResponse.MyCascaisID;
         integrationData.DisplayName = loginUserResponse.DisplayName;
-        integrationData.DisplayValidation = loginUserResponse.DisplayValidation;
 
-        integrationData.Disclaimers.clear();
-        integrationData.Disclaimers.addAll(disclaimer.DisclaimerFields);
+        integrationData.Fields.clear();
+
+        for (DisclaimerField d : disclaimer.DisclaimerFields){
+            ThirdPartyIntegrationField f = new ThirdPartyIntegrationField();
+            f.Description = d.Description;
+            f.Name = d.Name;
+            f.ValidationStatus = d.ValidationStatus;
+            integrationData.Fields.add(f);
+        }
 
         if(!key.isEmpty()) {
             try {//fc4e5f84847b4712b88f11db42fd804a

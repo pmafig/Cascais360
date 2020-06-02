@@ -46,7 +46,7 @@
                 android:paddingVertical="5dp"
                 android:drawableLeft="@drawable/ic_user"
                 android:drawablePadding="5dp"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 android:inputType="phone"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
@@ -74,7 +74,7 @@
                 android:paddingVertical="5dp"
                 android:drawableLeft="@drawable/ic_user"
                 android:drawablePadding="5dp"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 android:inputType="phone"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/mycascais_edittext"/>
@@ -165,7 +165,7 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="10dp"
                     android:drawableStart="@drawable/ic_locker"
-                    android:imeOptions="actionDone"/>
+                    android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -202,7 +202,7 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="10dp"
                     android:drawableStart="@drawable/ic_locker"
-                    android:imeOptions="actionDone"/>
+                    android:imeOptions="actionNext"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -626,6 +626,14 @@ public class RegisterActivity extends AppCompatActivity {
             Data.CurrentAccountName = userPhone;
         }
 
+        if(countryId > 0) {
+            try {
+                request.CountryID = countryId;
+            }catch (Exception ex){
+                request.CountryID = 0;
+            }
+        }
+
         if(countryCode != null && !countryCode.isEmpty()) {
             request.CountryCode = countryCode;
         }

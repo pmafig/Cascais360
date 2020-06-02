@@ -31,6 +31,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import nsop.neds.mycascais.Authenticator.AccountGeneral;
 import nsop.neds.mycascais.Encrypt.MessageEncryption;
+import nsop.neds.mycascais.Entities.Json.Labels;
 import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 import nsop.neds.mycascais.Entities.Json.ReportList;
 import nsop.neds.mycascais.Entities.Json.ValidationStates;
@@ -306,46 +307,15 @@ public class ValidateSMSTokenActivity extends AppCompatActivity {
     private void ValidateNewRegisterSmsToken() {
         EditText smsToken = this.findViewById(R.id.smsTokenPhone);
 
-        final String token = smsToken.getText().toString();
+        final String insertToken = smsToken.getText().toString();
 
-        String jsonRequest = "";
-
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-
-        String url = "";
-
-        progressDialog.setMessage("Validando código...");
-
-        jsonRequest = String.format("{\"SmsToken\":\"%s\"}", token);
-        url = String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.ValidateSmsToken);
-
-        progressDialog.show();
-
-        WebApiClient.post(url, jsonRequest, true, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String response, Throwable throwable) {
-                progressDialog.dismiss();
-                //TODO: Alter string
-                //Toast.makeText(getBaseContext(), getResources().getString(R.string.info_message_new_user_insuccess), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String response) {
-                progressDialog.dismiss();
-                //TODO Alter string
-                //Toast.makeText(getBaseContext(), getResources().getString(R.string.info_message_new_user_success), Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(ValidateSMSTokenActivity.this, LoginActivity.class));
-            }
-        });
-
-        if(!token.isEmpty()) {
-            Intent intent = new Intent(this, RegisterActivity.class);
+        if(!insertToken.isEmpty() && insertToken.equals(token)){
+            Intent intent = new Intent(ValidateSMSTokenActivity.this, RegisterActivity.class);
             intent.putExtra(Variables.Token, token);
             startActivity(intent);
-        }else{
+        }else {
             LayoutManager.alertMessage(this, Settings.labels.InvalidToken);
         }
-
     }
 
     private void RecoverSmsToken(String phoneNumber) {

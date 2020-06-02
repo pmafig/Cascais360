@@ -5,11 +5,17 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThirdPartyIntegration extends SessionHeader {
-    public final List<DisclaimerField> Disclaimers;
+public class ThirdPartyIntegration {
+    public String SSK;
+    public String SessionExpirationDate;
+    public String AuthID;
+    public String MyCascaisID;
+    public String DisplayName;
+
+    public final List<ThirdPartyIntegrationField> Fields;
 
     public ThirdPartyIntegration(){
-        Disclaimers = new ArrayList<>();
+        Fields = new ArrayList<>();
     }
 
     public String toJson(){

@@ -1275,13 +1275,18 @@ public class LayoutManager {
                     name_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
                     address_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
                     town_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
-                    location_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
 
                     local_label.setText(Settings.labels.Place);
                     name_label.setText(Settings.labels.Name);
                     address_label.setText(Settings.labels.Address);
                     town_label.setText(Settings.labels.Parish);
-                    location_label.setText(Settings.labels.Geolocation);
+
+                    if(point.Coordinates != null) {
+                        location_label.setTextColor(Color.parseColor(Settings.colors.YearColor));
+                        location_label.setText(Settings.labels.Geolocation);
+                    }else{
+                        location_label.setVisibility(View.GONE);
+                    }
 
                     dialog.findViewById(R.id.close_detail).setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1291,17 +1296,22 @@ public class LayoutManager {
                     });
 
                     ImageView map_detail = dialog.findViewById(R.id.map_detail);
-                    map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
-                    map_detail.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(context, SearchActivity.class);
-                            intent.putExtra(Variables.Type, Variables.Maps);
-                            intent.putExtra(Variables.Lat, point.Coordinates.Lat);
-                            intent.putExtra(Variables.Lng, point.Coordinates.Lng);
-                            context.startActivity(intent);
-                        }
-                    });
+
+                    if(point.Coordinates != null) {
+                        map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+                        map_detail.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, SearchActivity.class);
+                                intent.putExtra(Variables.Type, Variables.Maps);
+                                intent.putExtra(Variables.Lat, point.Coordinates.Lat);
+                                intent.putExtra(Variables.Lng, point.Coordinates.Lng);
+                                context.startActivity(intent);
+                            }
+                        });
+                    }else{
+                        map_detail.setVisibility(View.GONE);
+                    }
 
                     TextView name = (TextView) dialog.findViewById(R.id.more_info_name);
                     name.setText(point.Title);
@@ -1314,7 +1324,12 @@ public class LayoutManager {
                     town.setText(point.TownCouncil.Description);
 
                     TextView location = (TextView) dialog.findViewById(R.id.more_info_geo_location);
-                    location.setText(String.format("%s, %s", point.Coordinates.Lat, point.Coordinates.Lng));
+
+                    if(point.Coordinates != null) {
+                        location.setText(String.format("%s, %s", point.Coordinates.Lat, point.Coordinates.Lng));
+                    }else{
+                        location.setVisibility(View.GONE);
+                    }
 
                     dialog.show();
                 }
@@ -1522,17 +1537,22 @@ public class LayoutManager {
                     location_label.setText(Settings.labels.Geolocation);
 
                     ImageView map_detail = dialog.findViewById(R.id.map_detail);
-                    map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
-                    map_detail.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(context, SearchActivity.class);
-                            intent.putExtra(Variables.Type, Variables.Maps);
-                            intent.putExtra(Variables.Lat, point.Coordinates.Lat);
-                            intent.putExtra(Variables.Lng, point.Coordinates.Lng);
-                            context.startActivity(intent);
-                        }
-                    });
+
+                    if(point.Coordinates != null) {
+                        map_detail.setColorFilter(Color.parseColor(Settings.colors.YearColor));
+                        map_detail.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, SearchActivity.class);
+                                intent.putExtra(Variables.Type, Variables.Maps);
+                                intent.putExtra(Variables.Lat, point.Coordinates.Lat);
+                                intent.putExtra(Variables.Lng, point.Coordinates.Lng);
+                                context.startActivity(intent);
+                            }
+                        });
+                    }else{
+                        map_detail.setVisibility(View.GONE);
+                    }
 
 
                     TextView name = (TextView) dialog.findViewById(R.id.more_info_name);

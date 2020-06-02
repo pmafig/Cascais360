@@ -53,7 +53,9 @@ public class NoDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_no_data);
 
-        refreshToken();
+        if(new SessionManager(this).isLoggedOn()) {
+            refreshToken();
+        }
 
         backButton = findViewById(R.id.accountBack);
         noDataMessage = findViewById(R.id.noDataMessage);

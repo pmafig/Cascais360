@@ -50,7 +50,7 @@
                 android:id="@+id/noDataMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Não é possível aceder neste momento, por favor tente novamente." />
+                android:text="Estamos a trabalhar no conteúdo deste envento, por favor tente novamente mais tarde." />
 
             <Button
                 android:id="@+id/accountBack"
