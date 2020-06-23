@@ -142,8 +142,9 @@ public class DisclaimerActivity extends AppCompatActivity {
                 if (appInfo != null && appInfo.AppName != null) {
                     diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados:", appInfo.AppName));
                 }else{
-                    diclaimerText.setText("A APP não tem permissões!");
+                    diclaimerText.setText("Por favor, repita a operação.");
                     disclaimerConfirm.setVisibility(View.GONE);disclaimerCancel.setVisibility(View.GONE);
+                    disclaimer = null;
                 }
 
                 //diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados: ", appInfo.AppName));
