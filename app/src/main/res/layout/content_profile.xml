@@ -91,7 +91,7 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="10dp"
                         android:paddingHorizontal="10dp"
-                        android:text="Personal Data"
+                        android:text="Dados pessoais"
                         android:background="@drawable/custom_ripple"
                         android:drawableRight="@drawable/ic_right_arrow"/>
                     <TextView
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
                         android:paddingHorizontal="10dp"
-                        android:text="Personal Data"
+                        android:text="Alterar palavra passe"
                         android:background="@drawable/custom_ripple"
                         android:drawableRight="@drawable/ic_right_arrow"/>
                     <TextView
@@ -109,7 +109,16 @@
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
                         android:paddingHorizontal="10dp"
-                        android:text="Personal Data"
+                        android:text="Notificações"
+                        android:background="@drawable/custom_ripple"
+                        android:drawableRight="@drawable/ic_right_arrow"/>
+                    <TextView
+                        android:id="@+id/consents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="Consentimentos"
                         android:background="@drawable/custom_ripple"
                         android:drawableRight="@drawable/ic_right_arrow"/>
                 </LinearLayout>

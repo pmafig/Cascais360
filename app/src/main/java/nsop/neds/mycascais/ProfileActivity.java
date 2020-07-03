@@ -25,19 +25,21 @@ public class ProfileActivity extends AppCompatActivity {
 
     LinearLayout menuFragment;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-        AppSignatureHelper appSignatureHelper = new AppSignatureHelper(this);
-        appSignatureHelper.getAppSignatures();
+            AppSignatureHelper appSignatureHelper = new AppSignatureHelper(this);
+            appSignatureHelper.getAppSignatures();
 
-        setContentView(R.layout.activity_profile);
+            SessionManager sm = new SessionManager(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        menuFragment = findViewById(R.id.menu);
+            setContentView(R.layout.activity_profile);
 
-        Intent intent = getIntent();
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            menuFragment = findViewById(R.id.menu);
+
+            Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
         LinearLayout backButton = toolbar.findViewById(R.id.menu_back_frame);
@@ -50,6 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     finish();
+                    startActivity(new Intent(ProfileActivity.this, MainActivity.class));
                     //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 }
             });
@@ -58,8 +61,6 @@ public class ProfileActivity extends AppCompatActivity {
         new WeatherManager(this, (LinearLayout) findViewById(R.id.wearther)).execute(WebApiCalls.getWeather());
 
         new MenuManager(this, toolbar, menuFragment, Settings.labels.MyProfile);
-
-        SessionManager sm = new SessionManager(this);
 
         LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
@@ -81,6 +82,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         TextView notifications = findViewById(R.id.notifications);
         notifications.setText(Settings.labels.Notifications);
+
+        TextView consents = findViewById(R.id.consents);
+        consents.setText(Settings.labels.Consent);
 
         personalData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,8 +110,17 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        //TODO Validar se o utilizador está logado
+        consents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, ConsentsActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
 
+        consents.setVisibility(View.GONE);
+
+        //TODO Validar se o utilizador está logado
     }
 
 

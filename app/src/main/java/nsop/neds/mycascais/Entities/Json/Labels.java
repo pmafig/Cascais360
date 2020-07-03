@@ -138,4 +138,6 @@ public class Labels {
     public String SubscribeNotifications = "Subscrever notificações";
     public String NonEventDates = "Não existem datas para este evento.";
 
+    public String Consent = "Consentimentos";
+    public String DisclaimerTitle;
 }

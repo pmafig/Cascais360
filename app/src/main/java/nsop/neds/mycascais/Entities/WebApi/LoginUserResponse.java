@@ -4,7 +4,7 @@ import java.util.List;
 
 import nsop.neds.mycascais.Entities.Json.App;
 import nsop.neds.mycascais.Entities.Json.Disclaimer;
-import nsop.neds.mycascais.Entities.Json.DisclaimerField;
+import nsop.neds.mycascais.Entities.Json.Consent;
 import nsop.neds.mycascais.Entities.Json.Email;
 import nsop.neds.mycascais.Entities.Json.PhoneContacts;
 
@@ -26,4 +26,8 @@ public class LoginUserResponse {
     //public List<DisclaimerField> FullDisclaimer;
     public List<App> AppList;
     public List<Email> Emails;
+
+    public boolean ShowConsent;
+    public List<Consent> RegisteredConsents;
+    public List<Consent> AvailableConsents;
 }

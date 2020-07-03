@@ -7,7 +7,7 @@ android {
         applicationId "nsop.neds.mycascais"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 13
+        versionCode 15
         versionName "1.0.9.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

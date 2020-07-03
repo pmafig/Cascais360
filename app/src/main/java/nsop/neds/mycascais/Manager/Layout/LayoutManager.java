@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -78,9 +77,6 @@ public class LayoutManager {
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                vibe.vibrate(100);
-
                 Intent event = new Intent(context, DetailActivity.class);
                 event.putExtra(Variables.Id, b.ID);
                 context.startActivity(event);
@@ -130,9 +126,6 @@ public class LayoutManager {
             clicableFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    vibe.vibrate(100);
-
                     Intent event = new Intent(context, DetailActivity.class);
                     event.putExtra(Variables.Id, f.ID);
                     context.startActivity(event);
@@ -259,9 +252,6 @@ public class LayoutManager {
                 cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                        vibe.vibrate(10);
-
                         //ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
                         Intent event = new Intent(context, DetailActivity.class);
                         int id = f.ID;
@@ -637,9 +627,6 @@ public class LayoutManager {
                 img.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                        vibe.vibrate(100);
-
                         Intent event = new Intent(context, DetailActivity.class);
                         int id = f.ID;
                         event.putExtra(Variables.Id, id);
@@ -823,9 +810,6 @@ public class LayoutManager {
                     img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                            vibe.vibrate(100);
-
                             Intent event = new Intent(context, DetailActivity.class);
                             int id = f.ID;
                             event.putExtra(Variables.Id, id);
@@ -1039,9 +1023,6 @@ public class LayoutManager {
                     img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                            vibe.vibrate(100);
-
                             //ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context,img,"imageMain");
                             Intent event = new Intent(context, DetailActivity.class);
                             int id = f.ID;

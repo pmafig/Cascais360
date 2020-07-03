@@ -95,7 +95,8 @@ public class LoginActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                //finish();
             }
         });
 
@@ -433,9 +434,13 @@ public class LoginActivity extends AppCompatActivity {
     public void intentNavegation(){
 
         SessionManager sm = new SessionManager(this);
+        LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
         String externalAppInfo = sm.getExternalAppInfo();
 
-        if(sm != null && !externalAppInfo.isEmpty()) {
+        if(user.ShowConsent){
+            Intent intent = new Intent(this, ConsentsActivity.class);
+            startActivity(intent);
+        }else if(sm != null && !externalAppInfo.isEmpty()) {
             Intent intent = new Intent(this, DisclaimerActivity.class);
             intent.putExtra(Variables.PackageName, sm.getExternalAppPackageName());
             intent.putExtra(Variables.ExternalAppId, sm.getExternalAppExternalId());
@@ -451,8 +456,12 @@ public class LoginActivity extends AppCompatActivity {
             event.putExtra(Variables.RequiredLogin, true);
             event.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(event);
-        }else {
+        }else if(user.IsAuthenticated){
             Intent intent = new Intent(this, ProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }else{
+            Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

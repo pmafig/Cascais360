@@ -48,6 +48,11 @@
             android:resource="@color/black_overlay" />
 
         <activity
+            android:name="nsop.neds.mycascais.ConsentsActivity"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name="nsop.neds.mycascais.DisclaimerActivity"
             android:launchMode="singleTop"
             android:noHistory="true"

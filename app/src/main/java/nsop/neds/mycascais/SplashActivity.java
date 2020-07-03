@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +42,8 @@ import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Settings.Data;
 import nsop.neds.mycascais.Settings.Settings;
 import nsop.neds.mycascais.WebApi.WebApiCalls;
+import nsop.neds.mycascais.WebApi.WebApiClient;
+import nsop.neds.mycascais.WebApi.WebApiMessages;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -104,83 +109,96 @@ public class SplashActivity extends AppCompatActivity {
                         Data.Towns = r.TownCouncils;
                     }
 
+                    //new ExternalAppManager(this).execute(WebApiCalls.getExternalAppInfo(externalAppId));
+                    final int finalExternalAppId = externalAppId;
+                    final int finalExternalAppId1 = externalAppId;
+                    final String finalPackageName = packageName;
+
                     new CountryListManager(this).execute(WebApiCalls.getCountryList(sm.getLangCodePosition() + 1));
 
-                    LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
-
-                    final String name = packageName;
-                    final int appId = externalAppId;
-                    String appKey = "";
-
-                    Disclaimer disclaimer = null;
-
-                    if (user != null) {
-                        for (Disclaimer d : user.Disclaimers) {
-                            if (d.SiteID == externalAppId) {
-                                disclaimer = d;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (disclaimer == null) {
-                        Intent disclaimerIntent = new Intent(SplashActivity.this, LoginActivity.class);
-                        startActivity(disclaimerIntent);
-                    } else if (disclaimer != null) {
-
-                        for (App app: user.AppList) {
-                            if(app.ID == appId){
-                                appKey = app.Key;
-                                break;
-                            }
+                    WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.GetExternalAppInfo), String.format("{\"appid\":%s}", externalAppId),true, new TextHttpResponseHandler(){
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            new ExternalAppManager(SplashActivity.this).execute(WebApiCalls.getExternalAppInfo(finalExternalAppId));
                         }
 
-                        if (disclaimer.HasDisclaimer || disclaimer.NeedUpdate) {
-                            Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
-                            disclaimerIntent.putExtra(Variables.PackageName, name);
-                            disclaimerIntent.putExtra(Variables.ExternalAppId, externalAppId);
-                            startActivity(disclaimerIntent);
-                        } else if (disclaimer.HasAccepted) {
-                            ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, String data) {
+                            String message = WebApiMessages.DecryptMessage(data);
+                            SessionManager sm = new SessionManager(SplashActivity.this);
 
-                            for (DisclaimerField d : disclaimer.DisclaimerFields){
-                                ThirdPartyIntegrationField f = new ThirdPartyIntegrationField();
-                                f.Description = d.Description;
-                                f.Name = d.Name;
-                                f.ValidationStatus = d.ValidationStatus;
-                                integrationData.Fields.add(f);
+                            if(message != null) {
+                                try {
+                                    JSONObject responseData =  new JSONObject(message);;
+                                    responseData = responseData.getJSONObject(Variables.ResponseData);
+                                    sm.setExternalAppInfo(responseData.toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                //ExternalAppInfo appInfo = new Gson().fromJson(responseData.toString(), ExternalAppInfo.class);
+
+                                LoginUserResponse user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+
+                                final String name = finalPackageName;
+                                final int appId = finalExternalAppId1;
+                                String appKey = "";
+
+                                Disclaimer disclaimer = null;
+
+                                if (user != null) {
+                                    for (Disclaimer d : user.Disclaimers) {
+                                        if (d.SiteID == finalExternalAppId1) {
+                                            disclaimer = d;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (disclaimer == null) {
+                                    Intent disclaimerIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                                    startActivity(disclaimerIntent);
+                                } else if (disclaimer != null) {
+
+                                    for (App app: user.AppList) {
+                                        if(app.ID == appId){
+                                            appKey = app.Key;
+                                            break;
+                                        }
+                                    }
+
+                                    if (disclaimer.HasAccepted && !disclaimer.NeedUpdate) {
+                                        ThirdPartyIntegration integrationData = new Gson().fromJson(sm.getUser(), ThirdPartyIntegration.class);
+
+                                        for (DisclaimerField d : disclaimer.DisclaimerFields){
+                                            ThirdPartyIntegrationField f = new ThirdPartyIntegrationField();
+                                            f.Description = d.Description;
+                                            f.Name = d.Name;
+                                            f.ValidationStatus = d.ValidationStatus;
+                                            integrationData.Fields.add(f);
+                                        }
+
+                                        new CommonManager().launchApp(SplashActivity.this, finalPackageName, MessageEncryption.Encrypt(integrationData.toJson(), appKey));
+
+                                    } else if (disclaimer.HasDisclaimer || disclaimer.NeedUpdate) {
+                                        Intent disclaimerIntent = new Intent(SplashActivity.this, DisclaimerActivity.class);
+                                        disclaimerIntent.putExtra(Variables.PackageName, name);
+                                        disclaimerIntent.putExtra(Variables.ExternalAppId, finalExternalAppId1);
+                                        startActivity(disclaimerIntent);//"fc4e5f84847b4712b88f11db42fd804a"));
+                                    } else {
+                                        new CommonManager().launchApp(SplashActivity.this, finalPackageName, MessageEncryption.Encrypt(Settings.labels.DisclaimerDeniedbyUser, appKey)); //"fc4e5f84847b4712b88f11db42fd804a"));
+                                    }
+                                } else {
+                                    new ResourcesManager(SplashActivity.this, true, false).execute(WebApiCalls.getResources());
+                                }
+
                             }
-
-                            new CommonManager().launchApp(this, packageName, MessageEncryption.Encrypt(integrationData.toJson(), appKey));//"fc4e5f84847b4712b88f11db42fd804a"));
-                        } else {
-                            new CommonManager().launchApp(this, packageName, MessageEncryption.Encrypt(Settings.labels.DisclaimerDeniedbyUser, appKey)); //"fc4e5f84847b4712b88f11db42fd804a"));
                         }
-                    } else {
-                        new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
-                    }
+                    });
 
-            /*String json = String.format("{\"appid\":%s}", externalAppId);
 
-            final String name = packageName;
-            final int appId = externalAppId;
 
-            WebApiClient.post(String.format("/%s/%s", WebApiClient.API.WebApiAccount, WebApiClient.METHODS.GetExternalAppInfo), json,true, new TextHttpResponseHandler(){
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    String message = WebApiMessages.DecryptMessage(responseString);
-                    Toast.makeText(SplashActivity.this, Settings.labels.AppInMaintenanceMessage, Toast.LENGTH_LONG).show();
-                }
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    String message = WebApiMessages.DecryptMessage(responseString);
-                    Intent disclaimer = new Intent(SplashActivity.this, DisclaimerActivity.class);
-                    disclaimer.putExtra(Variables.PackageName , name);
-                    disclaimer.putExtra(Variables.ExternalAppId, appId);
-                    startActivity(disclaimer);
-                }
-            });*/
-                    new ExternalAppManager(this).execute(WebApiCalls.getExternalAppInfo(externalAppId));
+
                 } else {
                     new ResourcesManager(this, true, false).execute(WebApiCalls.getResources());
                 }

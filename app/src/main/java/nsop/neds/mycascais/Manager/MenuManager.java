@@ -111,7 +111,6 @@ public class MenuManager {
         about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeMenu();
                 Intent intent = new Intent(context, AboutAppActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
@@ -251,6 +250,7 @@ public class MenuManager {
     }
 
     private void setToolbarUserInfo(){
+
         if(sm.asUserLoggedOn()){
             TextView name = menuFragment.findViewById(R.id.user_name);
             name.setText(sm.getDisplayname());

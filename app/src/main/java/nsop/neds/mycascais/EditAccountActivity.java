@@ -141,9 +141,11 @@ public class EditAccountActivity extends AppCompatActivity {
         userEmailLogin = false;
         boolean userEmailValid = false;
 
-        if(sm.isLoggedOn()) {
+        if(sm != null){
             user = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
+        }
 
+        if(user.IsAuthenticated) {
             //PhoneNumber
             if(userPhoneNumber.isEmpty()) {
                 for (PhoneContacts phone : user.PhoneContacts) {

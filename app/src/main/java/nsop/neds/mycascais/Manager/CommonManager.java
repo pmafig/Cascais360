@@ -1,5 +1,6 @@
 package nsop.neds.mycascais.Manager;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -238,10 +239,11 @@ public class CommonManager {
 
             Intent i = new Intent(Intent.ACTION_MAIN);
             i.putExtra(packageName + ".vault", variable);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK);
             i.setComponent(name);
 
             context.startActivity(i);
+            ((Activity)context).finish();
         }
     }
 

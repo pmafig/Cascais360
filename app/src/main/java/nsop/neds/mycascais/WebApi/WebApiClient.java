@@ -13,7 +13,7 @@ public class WebApiClient {
     public static final String SITE_KEY_MYCASCAIS = "4b4947f5-8d1c-46da-a03f-bbc1147aac38";
     public static final String SITE_ID = "17";
 
-    public static String BASE_URL = "https://webapiqua.cascais.pt/api";
+    public static String BASE_URL = "https://webapi.cascais.pt/api";
 
     public enum API{
         crm,

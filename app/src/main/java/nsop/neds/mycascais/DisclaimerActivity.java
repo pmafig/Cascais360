@@ -85,6 +85,7 @@ public class DisclaimerActivity extends AppCompatActivity {
         LinearLayout menuFragment = findViewById(R.id.menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
+        //findViewById(R.id.toolbar_image).setVisibility(View.GONE);
         findViewById(R.id.menu_button_frame).setVisibility(View.GONE);
 
         int bitwiseAutotization = 0;
@@ -140,7 +141,7 @@ public class DisclaimerActivity extends AppCompatActivity {
                 }
 
                 if (appInfo != null && appInfo.AppName != null) {
-                    diclaimerText.setText(String.format("Autoriza a applicação %s aceder aos seguintes dados:", appInfo.AppName));
+                    diclaimerText.setText(String.format(Settings.labels.DisclaimerTitle, appInfo.AppName));
                 }else{
                     diclaimerText.setText("Por favor, repita a operação.");
                     disclaimerConfirm.setVisibility(View.GONE);disclaimerCancel.setVisibility(View.GONE);
@@ -218,7 +219,7 @@ public class DisclaimerActivity extends AppCompatActivity {
                 if(accept) {
                     accept(appID);
                 }else{
-                    declined();
+                    declined(appID);
                 }
             }
         });
@@ -230,6 +231,16 @@ public class DisclaimerActivity extends AppCompatActivity {
         
         LoginUserResponse loginUserResponse = new Gson().fromJson(sm.getUser(), LoginUserResponse.class);
 
+        for (Disclaimer d : loginUserResponse.Disclaimers) {
+            if (d.SiteID == appID) {
+                d.HasAccepted = true;
+                d.NeedUpdate = false;
+                d.HasDisclaimer = false;
+                break;
+            }
+        }
+
+        sm.setUser(new Gson().toJson(loginUserResponse));
 
         for (App app: loginUserResponse.AppList) {
             if(app.ID == appID){
@@ -268,7 +279,7 @@ public class DisclaimerActivity extends AppCompatActivity {
         }
     }
 
-    private void declined(){
+    private void declined(int appID){
         SessionManager sm = new SessionManager(this);
 
         sm.setExternalAppInfo(null);

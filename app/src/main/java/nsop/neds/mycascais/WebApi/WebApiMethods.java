@@ -33,6 +33,8 @@ public class WebApiMethods {
 
     public static final String SETDISCLAIMERRESPONSE = "SetDisclaimerResponse";
 
+    public static final String SETCONSENT = "SetConsent";
+
     //region crm
     public static final String ADDCUSTOMEREMAIL = "AddCustomerEmail";
     public static final String ADDCUSTOMERPHONECONTACT = "AddCustomerPhoneContact";
