@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include layout="@layout/app_bar"/>
+    <include layout="@layout/app_bar_mycascais"/>
 
     <include android:id="@+id/menu" android:visibility="gone" layout="@layout/fragment_menu"/>
 

@@ -118,16 +118,13 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        consents.setVisibility(View.GONE);
+        consents.setVisibility(user.AvailableConsents.size() > 0 ? View.VISIBLE : View.GONE);
 
-        //TODO Validar se o utilizador está logado
     }
-
 
     @Override
     public Intent getParentActivityIntent() {
         Intent parentIntent = getIntent();
         return parentIntent;
     }
-
 }

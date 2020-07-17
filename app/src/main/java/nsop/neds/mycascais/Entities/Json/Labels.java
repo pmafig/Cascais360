@@ -140,4 +140,5 @@ public class Labels {
 
     public String Consent = "Consentimentos";
     public String DisclaimerTitle;
+    public String ConsentBottomMessage = "A qualquer momento poderá alterar a sua opção ou gerir todos os seus dados na sua área pessoal.";
 }

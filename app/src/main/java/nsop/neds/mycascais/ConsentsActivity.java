@@ -35,6 +35,7 @@ import nsop.neds.mycascais.Entities.WebApi.LoginUserResponse;
 import nsop.neds.mycascais.Entities.WebApi.SetConsentRequest;
 import nsop.neds.mycascais.Entities.WebApi.SetDisclaimerRequest;
 import nsop.neds.mycascais.Manager.CommonManager;
+import nsop.neds.mycascais.Manager.MenuManager;
 import nsop.neds.mycascais.Manager.SessionManager;
 import nsop.neds.mycascais.Manager.Variables;
 import nsop.neds.mycascais.Settings.Settings;
@@ -51,14 +52,21 @@ public class ConsentsActivity extends AppCompatActivity {
 
     SessionManager mSession;
 
+    LinearLayout menuFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consents);
 
-        findViewById(R.id.menu_button_frame).setVisibility(View.GONE);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        menuFragment = findViewById(R.id.menu);
 
         LinearLayout consentContent = findViewById(R.id.consent_content);
+
+        TextView consent_bootom_message = findViewById(R.id.consent_bottom_message);
+
+        consent_bootom_message.setText(Settings.labels.ConsentBottomMessage);
 
         consentContinue = findViewById(R.id.consentContinue);
 
@@ -79,6 +87,12 @@ public class ConsentsActivity extends AppCompatActivity {
                 consentTitle.setText(Settings.labels.SubscribeNotifications);
 
                 LoginUserResponse user = new Gson().fromJson(mSession.getUser(), LoginUserResponse.class);
+
+                if(user.ShowConsent) {
+                    findViewById(R.id.menu_button_frame).setVisibility(View.GONE);
+                }else{
+                    new MenuManager(this, toolbar, menuFragment, null);
+                }
 
                 if (user != null) {
 
